@@ -54,6 +54,9 @@ class Pdist(dict):
     def __call__(self, key): 
         if key in self: return self[key]/self.N  
         else: return self.missingfn(key, self.N)
+# add function to deal with uncommon words 
+def avoid_long_words(word,N):
+    return 10.0/(N*10**len(word))
 
 def datafile(name, sep='\t'):
     "Read key,value pairs from file."
@@ -74,7 +77,8 @@ if __name__ == '__main__':
 
     sys.setrecursionlimit(10**6)
 
-    Pw = Pdist(data=datafile(opts.counts1w))
+    #Pw = Pdist(data=datafile(opts.counts1w))
+    Pw = Pdist(data=datafile(opts.counts1w),missingfn=avoid_long_words)
     segmenter = Segment(Pw)
     with open(opts.input) as f:
         for line in f:
