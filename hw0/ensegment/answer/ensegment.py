@@ -83,10 +83,12 @@ if __name__ == '__main__':
 
 
     #Pw = Pdist(data=datafile(opts.counts1w))
-    Pw = Pdist(data=datafile(opts.counts1w),missingfn=avoid_long_words)
+    #Pw = Pdist(data=datafile(opts.counts1w),missingfn=avoid_long_words)
+    
     # N is number tokens in corpus according to Norvig's book
     N = 1024908267229
     Pw = Pdist(data=datafile(opts.counts1w),N=N,missingfn=avoid_long_words)
+    
     segmenter = Segment(Pw)
     with open(opts.input) as f:
         for line in f:
