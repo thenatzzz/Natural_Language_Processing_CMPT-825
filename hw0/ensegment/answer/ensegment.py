@@ -31,10 +31,10 @@ class Segment:
 
     def splits(self, text, L=20):
         "Return a list of all possible (first, rem) pairs, len(first)<=L."
-        return [(text[:i+1], text[i+1:]) 
+        return [(text[:i+1], text[i+1:])
                 for i in range(min(len(text), L))]
 
-    def Pwords(self, words): 
+    def Pwords(self, words):
         "The Naive Bayes probability of a sequence of words."
         return product(self.Pw(w) for w in words)
 
@@ -51,10 +51,10 @@ class Pdist(dict):
             self[key] = self.get(key, 0) + int(count)
         self.N = float(N or sum(self.values()))
         self.missingfn = missingfn or (lambda k, N: 1./N)
-    def __call__(self, key): 
-        if key in self: return self[key]/self.N  
+    def __call__(self, key):
+        if key in self: return self[key]/self.N
         else: return self.missingfn(key, self.N)
-# add function to deal with uncommon words 
+# add function to deal with uncommon words
 def avoid_long_words(word,N):
     return 10.0/(N*10**len(word))
 
@@ -65,8 +65,12 @@ def datafile(name, sep='\t'):
             (key, value) = line.split(sep)
             yield (key, value)
 
-# we add this function for uncommon long word instead of assigning zero prob.
 def avoid_long_words(word,N):
+    '''
+    -Instead of assigning zero probability, we add this function for uncommon words that are not found in our text corpus.
+    -the assumption is that longer uncommon words are less likely to occur than shorter uncommon ones;
+    hence, we put len(word) in denominator for the probability calculation.
+    '''
     return 10./(N*10**len(word))
 
 if __name__ == '__main__':
@@ -81,14 +85,13 @@ if __name__ == '__main__':
 
     sys.setrecursionlimit(10**6)
 
-
+    ''' the default function'''
     #Pw = Pdist(data=datafile(opts.counts1w))
-    #Pw = Pdist(data=datafile(opts.counts1w),missingfn=avoid_long_words)
-    
+
     # N is number tokens in corpus according to Norvig's book
     N = 1024908267229
     Pw = Pdist(data=datafile(opts.counts1w),N=N,missingfn=avoid_long_words)
-    
+
     segmenter = Segment(Pw)
     with open(opts.input) as f:
         for line in f:
