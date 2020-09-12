@@ -65,6 +65,9 @@ def datafile(name, sep='\t'):
             (key, value) = line.split(sep)
             yield (key, value)
 
+def avoid_long_words(word,N):
+    return 10./(N*10**len(word))
+
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
     optparser.add_option("-c", "--unigramcounts", dest='counts1w', default=os.path.join('data', 'count_1w.txt'), help="unigram counts")
@@ -77,8 +80,14 @@ if __name__ == '__main__':
 
     sys.setrecursionlimit(10**6)
 
+<<<<<<< HEAD
     #Pw = Pdist(data=datafile(opts.counts1w))
     Pw = Pdist(data=datafile(opts.counts1w),missingfn=avoid_long_words)
+=======
+    N = 1024908267229
+
+    Pw = Pdist(data=datafile(opts.counts1w),N=N,missingfn=avoid_long_words)
+>>>>>>> 6406edd10795fe2fa2ca1a9fe275a5de6b2026b1
     segmenter = Segment(Pw)
     with open(opts.input) as f:
         for line in f:
