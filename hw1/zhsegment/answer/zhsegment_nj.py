@@ -56,7 +56,7 @@ def iterative_segment(text,Pw,Pwords):
         # i += 1
 
     '''Iteratively fill in CHART for all i '''
-    chart = []
+    chart = {}
     while heap:
         print('WHILE')
         '''multiply by -1 to get original value back'''
@@ -65,8 +65,11 @@ def iterative_segment(text,Pw,Pwords):
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
         print(entry)
 
+        # check if list is empty, then put the first entry in
+        if not chart:
+            chart[0] = entry
         endindex = len(entry[INDEX_WORD])-1
-
+        print(endindex)
         previous_entry = chart[endindex]
         if previous_entry[INDEX_BACKPOINTER] != None:
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
@@ -77,6 +80,8 @@ def iterative_segment(text,Pw,Pwords):
             chart[endindex] = entry
 
         print(chart)
+
+        
 
         #
         # break
