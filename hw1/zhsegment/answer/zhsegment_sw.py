@@ -12,6 +12,8 @@ class Segment:
         "Return a list of words that is the best segmentation of text."
         if not text: return []
         segmentation = [ w for w in text ] # segment each char into a word
+        segmentation = iterative_segmentation(segmentation)
+
         return segmentation
 
     def Pwords(self, words): 
@@ -19,6 +21,25 @@ class Segment:
         return product(self.Pw(w) for w in words)
 
 #### Support functions (p. 224)
+
+def iterative_segmentation(segmentation):
+    heap = []
+    chart = {}
+    heap.append([segmentation[0],0,log10(segmentation[0]),None])
+    for m in range(0,len(segmentation)):
+        for n in range(m+1,len(segmentation)):
+            w = segmentation[m,n] # it is wrong
+            if len(heap) > 0:
+                entry = heap[-1]
+                endindex = len(entry[0])
+                if endindex in chart:
+                    if chart.get(endindex) < entry[2]:
+                        chart[endindex] = entry[2]
+                else:
+                    chart[endindex] = entry[2]
+
+
+
 
 def product(nums):
     "Return the product of a sequence of numbers."
