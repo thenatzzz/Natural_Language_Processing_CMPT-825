@@ -59,62 +59,74 @@ def iterative_segmentation(text,Pw,Pwords):
 
     '''Iteratively fill in CHART for all i '''
     chart = {}
+    count = 1
     while heap:
-        print('WHILE')
+        print('WHILE: ',count)
+        # print(chart)
+        count += 1
+
         '''multiply by -1 to get original value back'''
 
         ''' get top entry from the heap'''
         entry = heappop_list(heap)
         ''' multiply -1 back to get original value of prob (original = negative log prob)'''
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
-        print(entry, '------------------')
+        print(entry, '<--- Entry')
 
         # check if list is empty, then put the first entry in
         # if not chart:
         #     chart[0] = entry
 
-        ''' Get the endindex-1 based on the length of the word in entry'''
-        endindex = len(entry[INDEX_WORD])-1
-        print("endindex: ", endindex)
+        ''' Get the endindex-1 based on the length of the word in entry
+        chart index is less than endindex in entry by -1
+        note: endindex = length of word'''
+        # endindex = len(entry[INDEX_WORD])-1 # index chart
+        endindex = len(entry[INDEX_WORD]) # index chart
+        chartindex = endindex -1
+
+        print("endindex: ", endindex, " === chartindex: ",chartindex)
 
         # previous_entry = chart[endindex]
         # if chart or previous_entry[INDEX_BACKPOINTER] != None:
         # print(chart)
         # print(entry[INDEX_PROBABILITY])
         '''if chart(dynamica table) is not empty and entry backpointer is not None'''
-        if chart and chart[endindex][INDEX_BACKPOINTER] != None:
-
+        if chart and chart[chartindex-1][INDEX_BACKPOINTER] != None:
+            previous_entry = chart[chartindex]
+            print( entry[INDEX_PROBABILITY], previous_entry[INDEX_PROBABILITY], ' #####')
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
-                chart[endindex] = entry
+                chart[chartindex] = entry
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
                 continue
         else:
-            chart[endindex] = entry
+            chart[chartindex] = entry
 
         # heappush_list(heap, [0,0,5,0], key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-        # print(entry[INDEX_PROBABILITY])
-        # print(chart)
-        # print(heap)
-        for key,value in dict(Pw).items():
+        for pword,value in dict(Pw).items():
             # print(endindex)
-            # print(key, len(key), endindex+1)
-            if len(key) <= endindex+1:
-                continue
+            # print(pword, len(pword), endindex+1)
+            # if len(pword) <= endindex+1:
+                # continue
             # print(key[endindex+1],text[endindex+1])
-            if key[endindex] == text[endindex+1] and len(key)==1:
-                new_entry = [key,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(key))),entry[INDEX_STARTPOS]]
+            # if pword[endindex] == text[endindex+1] and len(pword)==1:
+            if pword[0] == text[endindex]:
+
+                # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+                new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+
         #     # if
-                print(new_entry)
+                print(new_entry, " <-- New Entry")
                 heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-        print(heap)
+        # print(heap)
+        print(chart)
         print('-'*25)
 
         #
         # break
 
     print('=============== END SEGMENTOR =================')
-
-    return [ w+'_Yes' for w in text ]
+    print(chart)
+    return [ w for w in text ]
 
 def product(nums):
     "Return the product of a sequence of numbers."
@@ -162,7 +174,7 @@ if __name__ == '__main__':
             sentence =" ".join(segmenter.segment(line.strip()))
             # print(" ".join(segmenter.segment(line.strip())))
             print(sentence)
-            print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
+            # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
             print('-'*60)
             if i ==1:
                 break
