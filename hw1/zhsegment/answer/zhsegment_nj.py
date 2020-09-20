@@ -3,6 +3,10 @@ from functools import reduce
 from collections import defaultdict
 from math import log10
 
+# additional library
+import operator
+INDEX_PROBABILITY = 2
+
 class Segment:
 
     def __init__(self, Pw):
@@ -26,12 +30,33 @@ class Segment:
 #### Support functions (p. 224)
 def iterative_segment(text,Pw,Pwords):
     print('=============== ITERATIVE SEGMENTOR =================')
-    que = {}
-    i = 0
+
+    def heappush_list(h, item, key=lambda x: x):
+        heapq.heappush(h, (key(item), item))
+    def heappop_list(h):
+        return heapq.heappop(h)[1]
+
+    '''Initialize the HEAP'''
+    heap = []
+    i= 0
     for key,value in dict(Pw).items():
         if text[0] == key[0]:
-            que[i] = [key[0],0,log10(Pwords(key[0])),'0']
-    print(que)
+            '''multiply by -1 to get Max Heap'''
+            entry = [key,0,-1.0*log10(Pwords(key)),'blank']
+            heappush_list(heap, entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+        i += 1
+
+    '''Iteratively fill in CHART for all i '''
+    while heap:
+        print('WHILE')
+        '''multiply by -1 to get original value back'''
+        # max probability
+        top_entry = heappop_list(heap)
+        top_entry[INDEX_PROBABILITY] = -1.0*top_entry[INDEX_PROBABILITY]
+        print(top_entry)
+        break
+    # while heap:
+
     print('=============== END SEGMENTOR =================')
 
     return [ w+'_Yes' for w in text ]
