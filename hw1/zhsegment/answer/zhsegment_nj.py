@@ -7,7 +7,9 @@ from math import log10
 import operator
 INDEX_PROBABILITY = 2
 INDEX_WORD = 0
+INDEX_STARTPOS = 1
 INDEX_BACKPOINTER = 3
+
 class Segment:
 
     def __init__(self, Pw):
@@ -20,7 +22,7 @@ class Segment:
         print('TEXT: ',text[0],self.Pw(text[0]))
         print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
 
-        segmentation = iterative_segment(text,self.Pw,self.Pwords)
+        segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
 
         return segmentation
 
@@ -36,7 +38,7 @@ class Segment:
 #         self.back_pointer= back_pointer
 
 #### Support functions (p. 224)
-def iterative_segment(text,Pw,Pwords):
+def iterative_segmentation(text,Pw,Pwords):
     print('=============== ITERATIVE SEGMENTOR =================')
 
     def heappush_list(h, item, key=lambda x: x):
@@ -46,32 +48,39 @@ def iterative_segment(text,Pw,Pwords):
 
     '''Initialize the HEAP'''
     heap = []
-    # i= 0
     for key,value in dict(Pw).items():
         if text[0] == key[0]:
-            '''multiply by -1 to get Max Heap'''
+            '''multiply by -1 to cast into positive
+            then we can get Min Heap (minimum value at the top of heap) '''
             each_entry = [key,0,-1.0*log10(Pwords(key)),None]
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
             # heappush_list(heap, Entry(key,0,-1.0*log10(Pwords(key)),'blank'), key=operator.itemgetter(log_probability)) # sort by prob
-        # i += 1
 
     '''Iteratively fill in CHART for all i '''
     chart = {}
     while heap:
         print('WHILE')
         '''multiply by -1 to get original value back'''
-        # max probability
+
+        # get top entry from the heap
         entry = heappop_list(heap)
+        # multiply -1 back to get original value of prob (original = negative log prob)
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
-        print(entry)
+        print(entry, '------------------')
 
         # check if list is empty, then put the first entry in
-        if not chart:
-            chart[0] = entry
+        # if not chart:
+        #     chart[0] = entry
         endindex = len(entry[INDEX_WORD])-1
-        print(endindex)
-        previous_entry = chart[endindex]
-        if previous_entry[INDEX_BACKPOINTER] != None:
+        print("endindex: ", endindex)
+
+        # previous_entry = chart[endindex]
+        # if chart or previous_entry[INDEX_BACKPOINTER] != None:
+        # print(chart)
+        # print(entry[INDEX_PROBABILITY])
+
+        if chart and chart[endindex][INDEX_BACKPOINTER] != None:
+
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
                 chart[endindex] = entry
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
@@ -79,9 +88,23 @@ def iterative_segment(text,Pw,Pwords):
         else:
             chart[endindex] = entry
 
-        print(chart)
-
-        
+        # heappush_list(heap, [0,0,5,0], key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+        # print(entry[INDEX_PROBABILITY])
+        # print(chart)
+        # print(heap)
+        for key,value in dict(Pw).items():
+            # print(endindex)
+            # print(key, len(key), endindex+1)
+            if len(key) <= endindex+1:
+                continue
+            # print(key[endindex+1],text[endindex+1])
+            if key[endindex] == text[endindex+1] and len(key)==1:
+                new_entry = [key,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(key))),entry[INDEX_STARTPOS]]
+        #     # if
+                print(new_entry)
+                heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+        print(heap)
+        print('-'*25)
 
         #
         # break
