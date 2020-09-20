@@ -65,14 +65,19 @@ def iterative_segment(text,Pw,Pwords):
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
         print(entry)
 
-        endindex = len(entry[INDEX_WORD])
+        endindex = len(entry[INDEX_WORD])-1
 
-        # if chart[endindex][INDEX_BACKPOINTER] != None:
-        #     return
-        # else:
-        #     chart[endindex] = entry
-        #
-        # for
+        previous_entry = chart[endindex]
+        if previous_entry[INDEX_BACKPOINTER] != None:
+            if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
+                chart[endindex] = entry
+            if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
+                continue
+        else:
+            chart[endindex] = entry
+
+        print(chart)
+
         #
         # break
 
