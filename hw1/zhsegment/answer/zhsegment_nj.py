@@ -12,13 +12,29 @@ class Segment:
         "Return a list of words that is the best segmentation of text."
         if not text: return []
         segmentation = [ w for w in text ] # segment each char into a word
+        print('TEXT: ',text[0],self.Pw(text[0]))
+        print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
+
+        segmentation = iterative_segment(text,self.Pw,self.Pwords)
+
         return segmentation
 
-    def Pwords(self, words): 
+    def Pwords(self, words):
         "The Naive Bayes probability of a sequence of words."
         return product(self.Pw(w) for w in words)
 
 #### Support functions (p. 224)
+def iterative_segment(text,Pw,Pwords):
+    print('=============== ITERATIVE SEGMENTOR =================')
+    que = {}
+    i = 0
+    for key,value in dict(Pw).items():
+        if text[0] == key[0]:
+            que[i] = [key[0],0,log10(Pwords(key[0])),'0']
+    print(que)
+    print('=============== END SEGMENTOR =================')
+
+    return [ w+'_Yes' for w in text ]
 
 def product(nums):
     "Return the product of a sequence of numbers."
@@ -31,13 +47,13 @@ class Pdist(dict):
             self[key] = self.get(key, 0) + int(count)
         self.N = float(N or sum(self.values()))
         self.missingfn = missingfn or (lambda k, N: 1./N)
-    def __call__(self, key): 
-        if key in self: return self[key]/self.N  
+    def __call__(self, key):
+        if key in self: return self[key]/self.N
         else: return self.missingfn(key, self.N)
 
 def datafile(name, sep='\t'):
     "Read key,value pairs from file."
-    with open(name) as fh:
+    with open(name,encoding="utf8") as fh:
         for line in fh:
             (key, value) = line.split(sep)
             yield (key, value)
@@ -54,7 +70,17 @@ if __name__ == '__main__':
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
     Pw = Pdist(data=datafile(opts.counts1w))
+    print("Pw.N: ",Pw.N, '\n\n')
     segmenter = Segment(Pw)
-    with open(opts.input) as f:
+    i = 1
+    with open(opts.input,encoding='utf8') as f:
         for line in f:
-            print(" ".join(segmenter.segment(line.strip())))
+            print(" line: ",i, line)
+            sentence =" ".join(segmenter.segment(line.strip()))
+            # print(" ".join(segmenter.segment(line.strip())))
+            print(sentence)
+            print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
+            print('-'*60)
+            if i ==1:
+                break
+            i += 1
