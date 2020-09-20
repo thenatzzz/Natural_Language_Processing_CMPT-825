@@ -23,6 +23,7 @@ class Segment:
         print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
 
         segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
+        # segmentation = iterative_segmentation(segmentation,self.Pw,self.Pwords)
 
         return segmentation
 
@@ -62,15 +63,17 @@ def iterative_segmentation(text,Pw,Pwords):
         print('WHILE')
         '''multiply by -1 to get original value back'''
 
-        # get top entry from the heap
+        ''' get top entry from the heap'''
         entry = heappop_list(heap)
-        # multiply -1 back to get original value of prob (original = negative log prob)
+        ''' multiply -1 back to get original value of prob (original = negative log prob)'''
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
         print(entry, '------------------')
 
         # check if list is empty, then put the first entry in
         # if not chart:
         #     chart[0] = entry
+
+        ''' Get the endindex-1 based on the length of the word in entry'''
         endindex = len(entry[INDEX_WORD])-1
         print("endindex: ", endindex)
 
@@ -78,7 +81,7 @@ def iterative_segmentation(text,Pw,Pwords):
         # if chart or previous_entry[INDEX_BACKPOINTER] != None:
         # print(chart)
         # print(entry[INDEX_PROBABILITY])
-
+        '''if chart(dynamica table) is not empty and entry backpointer is not None'''
         if chart and chart[endindex][INDEX_BACKPOINTER] != None:
 
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
@@ -152,6 +155,9 @@ if __name__ == '__main__':
     i = 1
     with open(opts.input,encoding='utf8') as f:
         for line in f:
+            # if i == 1:
+                # i += 1
+                # continue
             print(" line: ",i, line)
             sentence =" ".join(segmenter.segment(line.strip()))
             # print(" ".join(segmenter.segment(line.strip())))
