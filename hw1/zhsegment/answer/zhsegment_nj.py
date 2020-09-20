@@ -6,7 +6,8 @@ from math import log10
 # additional library
 import operator
 INDEX_PROBABILITY = 2
-
+INDEX_WORD = 0
+INDEX_BACKPOINTER = 3
 class Segment:
 
     def __init__(self, Pw):
@@ -27,6 +28,13 @@ class Segment:
         "The Naive Bayes probability of a sequence of words."
         return product(self.Pw(w) for w in words)
 
+# class Entry:
+#     def __init__(self,word,start_position,log_probability,back_pointer):
+#         self.word = word
+#         self.start_position = start_position
+#         self.log_probability =log_probability
+#         self.back_pointer= back_pointer
+
 #### Support functions (p. 224)
 def iterative_segment(text,Pw,Pwords):
     print('=============== ITERATIVE SEGMENTOR =================')
@@ -38,24 +46,35 @@ def iterative_segment(text,Pw,Pwords):
 
     '''Initialize the HEAP'''
     heap = []
-    i= 0
+    # i= 0
     for key,value in dict(Pw).items():
         if text[0] == key[0]:
             '''multiply by -1 to get Max Heap'''
-            entry = [key,0,-1.0*log10(Pwords(key)),'blank']
-            heappush_list(heap, entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-        i += 1
+            each_entry = [key,0,-1.0*log10(Pwords(key)),None]
+            heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+            # heappush_list(heap, Entry(key,0,-1.0*log10(Pwords(key)),'blank'), key=operator.itemgetter(log_probability)) # sort by prob
+        # i += 1
 
     '''Iteratively fill in CHART for all i '''
+    chart = []
     while heap:
         print('WHILE')
         '''multiply by -1 to get original value back'''
         # max probability
-        top_entry = heappop_list(heap)
-        top_entry[INDEX_PROBABILITY] = -1.0*top_entry[INDEX_PROBABILITY]
-        print(top_entry)
-        break
-    # while heap:
+        entry = heappop_list(heap)
+        entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
+        print(entry)
+
+        endindex = len(entry[INDEX_WORD])
+
+        # if chart[endindex][INDEX_BACKPOINTER] != None:
+        #     return
+        # else:
+        #     chart[endindex] = entry
+        #
+        # for
+        #
+        # break
 
     print('=============== END SEGMENTOR =================')
 
