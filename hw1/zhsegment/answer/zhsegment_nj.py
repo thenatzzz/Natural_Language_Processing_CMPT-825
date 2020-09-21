@@ -76,6 +76,11 @@ def iterative_segmentation(text,Pw,Pwords):
     '''Iteratively fill in CHART for all i '''
     chart = {}
     count = 0
+    def exist_in_heap(heap,entry):
+        for entry_h in heap:
+            if entry_h[1][INDEX_WORD] == entry[INDEX_WORD]:
+                return True
+        return False
     while heap:
         print('WHILE: ',count)
         # print(chart)
@@ -127,11 +132,17 @@ def iterative_segmentation(text,Pw,Pwords):
                     if pword == entry[INDEX_WORD]:
                         print('$$$$$$$$$$'*5)
                         continue
-                    heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+
+                    if exist_in_heap(heap,new_entry):
+                        continue
+                    else:
+                        heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+
+                    # heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
 
 
                     # print('heap: ',heap)
-                    ## check if heap is empty, then add
+                    # # check if heap is empty, then add
                     # if not heap:
                     #     print('add to empty heap')
                     #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
@@ -142,7 +153,7 @@ def iterative_segmentation(text,Pw,Pwords):
                     #         list_word_heap.append(tuple_heap[1][INDEX_WORD])
                     #         if new_entry[INDEX_WORD] not in list_word_heap:
                     #             heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
-
+                    #
 
         def check_prev_entry(current_entry,chart):
             # print("match_prev_entry function: chart->",word_in_entry,chart,len(chart))
@@ -154,6 +165,7 @@ def iterative_segmentation(text,Pw,Pwords):
                 return True
             return False
         def get_prev_entry(current_entry,chart):
+            # return previous entry if it exists
             if current_entry[INDEX_STARTPOS] in chart:
                 return chart[current_entry[INDEX_STARTPOS]]
             return 'Error'
@@ -253,12 +265,13 @@ if __name__ == '__main__':
     i = 1
     with open(opts.input,encoding='utf8') as f:
         for line in f:
-            # if i == 1:
+            # if i < 5:
                 # i += 1
                 # continue
             print(" line: ",i, line)
             sentence =" ".join(segmenter.segment(line.strip()))
             # print(" ".join(segmenter.segment(line.strip())))
+            print(line)
             print(sentence)
             # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
             print('-'*60)
