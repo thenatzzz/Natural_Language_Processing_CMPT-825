@@ -34,12 +34,10 @@ class Segment:
         "The Naive Bayes probability of a sequence of words."
         return product(self.Pw(w) for w in words)
 
-# class Entry:
-#     def __init__(self,word,start_position,log_probability,back_pointer):
-#         self.word = word
-#         self.start_position = start_position
-#         self.log_probability =log_probability
-#         self.back_pointer= back_pointer
+    def product(nums):
+        "Return the product of a sequence of numbers."
+        return reduce(operator.mul, nums, 1)
+
 
 def recursive_segmentation(segmented_text, Pw):
     if not segmented_text:
@@ -189,9 +187,6 @@ def get_segmented_text(dict_text):
     list_result = list_result[::-1]
     return list_result
 
-def product(nums):
-    "Return the product of a sequence of numbers."
-    return reduce(operator.mul, nums, 1)
 
 class Pdist(dict):
     "A probability distribution estimated from counts in datafile."
