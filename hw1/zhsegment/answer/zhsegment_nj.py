@@ -126,14 +126,7 @@ def iterative_segmentation(text,Pw,Pwords):
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
                 count += 1
 
-                for each_word in entry[INDEX_WORD]:
-                    print(each_word,'$'*50,chart[chartindex-1][INDEX_WORD])
-                    if each_word != chart[chartindex-1][INDEX_WORD]:
-                        chart[chartindex] = entry
-                        print("add to chart ==================")
-
-                print('-'*25,'get previous probability')
-
+                print('\n')
                 continue
             else:
                 chart[chartindex+1] = entry
@@ -146,28 +139,36 @@ def iterative_segmentation(text,Pw,Pwords):
             print(" add to chart table !,: ",entry)
             chart[chartindex] = entry
 
-        # heappush_list(heap, [0,0,5,0], key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
         for pword,value in dict(Pw).items():
-            # print(endindex)
-            # print(pword, len(pword), endindex+1)
-            # if len(pword) <= endindex+1:
-                # continue
-            # print(key[endindex+1],text[endindex+1])
-            # if pword[endindex] == text[endindex+1] and len(pword)==1:
+            # if pword[0] == text[count+1]:
+            # # if pword[0] == text[endindex] and len(pword) ==1:
+            #     # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+            #     new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+            #
+            #     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+            #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
-            # if pword[0] == text[endindex]:
-            if pword[0] == text[count+1]:
+            if pword[0] == text[count+1] and len(pword)==1:
             # if pword[0] == text[endindex] and len(pword) ==1:
-
                 # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
                 new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
 
-        #     # if
                 print(new_entry, log10(Pwords(pword)), " <-- New Entry")
                 heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+
+            if pword[0:2] == text[count+1:count+3] and len(pword)==2:
+            # if pword[0] == text[endindex] and len(pword) ==1:
+                # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+                new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+
+                print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+                heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+
+
+
         # print(heap)
         print(chart)
-        print('-'*25)
+        print('-'*25,'\n')
         count += 1
 
         #
