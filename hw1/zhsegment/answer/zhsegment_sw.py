@@ -127,11 +127,12 @@ def iterative_segmentation(text,Pw,Pwords):
             if pword[0] == text[endindex]:
 
                 # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-                new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+                if pword in text:
+                    new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
 
         #     # if
-                print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-                heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+                    print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+                    heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
         # print(heap)
         print(chart)
         print('-'*25)
