@@ -179,7 +179,21 @@ if __name__ == '__main__':
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
     Pw = Pdist(data=datafile(opts.counts1w))
+    print("Pw.N: ",Pw.N, '\n\n')
     segmenter = Segment(Pw)
-    with open(opts.input) as f:
+    i = 1
+    with open(opts.input,encoding='utf8') as f:
         for line in f:
-            print(" ".join(segmenter.segment(line.strip())))
+            # if i == 1:
+                # i += 1
+                # continue
+            print(" line: ",i, line)
+            sentence =" ".join(segmenter.segment(line.strip()))
+            # print(" ".join(segmenter.segment(line.strip())))
+            print(sentence)
+            # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
+            print('-'*60)
+            if i ==1:
+                break
+            i += 1
+
