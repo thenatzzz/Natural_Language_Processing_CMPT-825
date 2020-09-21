@@ -34,9 +34,9 @@ class Segment:
         "The Naive Bayes probability of a sequence of words."
         return product(self.Pw(w) for w in words)
 
-    def product(nums):
-        "Return the product of a sequence of numbers."
-        return reduce(operator.mul, nums, 1)
+def product(nums):
+    "Return the product of a sequence of numbers."
+    return reduce(operator.mul, nums, 1)
 
 
 def recursive_segmentation(segmented_text, Pw):
