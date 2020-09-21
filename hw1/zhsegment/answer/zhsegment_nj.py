@@ -22,8 +22,10 @@ class Segment:
         print('TEXT: ',text[0],self.Pw(text[0]))
         print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
 
-        segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
+        # segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
         # segmentation = iterative_segmentation(segmentation,self.Pw,self.Pwords)
+        list_keys = list(Pw.keys())
+        segmentation = recursive_segmentation(segmentation,list_keys)
 
         return segmentation
 
@@ -37,6 +39,19 @@ class Segment:
 #         self.start_position = start_position
 #         self.log_probability =log_probability
 #         self.back_pointer= back_pointer
+
+def recursive_segmentation(segmented_text, Pw):
+    if not segmented_text:
+        return ""
+    for i in range(len(segmented_text),-1,-1):
+        first_word = segmented_text[:i]
+        print(first_word)
+        remainder = segmented_text[i:]
+        if first_word in Pw:
+            return first_word + " "+recursive_segmentation(remainder,Pw)
+    first_word = segmented_text[0]
+    remainder= segmented_text[1:]
+    return first_word+recursive_segmentation(remainder,Pw)
 
 #### Support functions (p. 224)
 def iterative_segmentation(text,Pw,Pwords):
@@ -55,7 +70,9 @@ def iterative_segmentation(text,Pw,Pwords):
 
             '''multiply by -1 to cast into positive
             then we can get Min Heap (minimum value at the top of heap) '''
-            each_entry = [key,0,-1.0*log10(Pwords(key)),None]
+            # each_entry = [key,0,-1.0*log10(Pwords(key)),None]
+            each_entry = [key,1,-1.0*log10(Pwords(key)),None]
+
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
             # heappush_list(heap, Entry(key,0,-1.0*log10(Pwords(key)),'blank'), key=operator.itemgetter(log_probability)) # sort by prob
 
