@@ -22,10 +22,10 @@ class Segment:
         print('TEXT: ',text[0],self.Pw(text[0]))
         print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
 
-        # segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
+        segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
         # segmentation = iterative_segmentation(segmentation,self.Pw,self.Pwords)
-        list_keys = list(Pw.keys())
-        segmentation = recursive_segmentation(segmentation,list_keys)
+        # list_keys = list(Pw.keys())
+        # segmentation = recursive_segmentation(segmentation,list_keys)
 
         return segmentation
 
@@ -45,7 +45,6 @@ def recursive_segmentation(segmented_text, Pw):
         return ""
     for i in range(len(segmented_text),-1,-1):
         first_word = segmented_text[:i]
-        print(first_word)
         remainder = segmented_text[i:]
         if first_word in Pw:
             return first_word + " "+recursive_segmentation(remainder,Pw)
@@ -70,8 +69,8 @@ def iterative_segmentation(text,Pw,Pwords):
 
             '''multiply by -1 to cast into positive
             then we can get Min Heap (minimum value at the top of heap) '''
-            # each_entry = [key,0,-1.0*log10(Pwords(key)),None]
-            each_entry = [key,1,-1.0*log10(Pwords(key)),None]
+            each_entry = [key,0,-1.0*log10(Pwords(key)),None]
+            # each_entry = [key,1,-1.0*log10(Pwords(key)),None]
 
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
             # heappush_list(heap, Entry(key,0,-1.0*log10(Pwords(key)),'blank'), key=operator.itemgetter(log_probability)) # sort by prob
@@ -99,11 +98,14 @@ def iterative_segmentation(text,Pw,Pwords):
         chart index is less than endindex in entry by -1
         note: endindex = length of word'''
         # endindex = len(entry[INDEX_WORD]) # index chart
-        endindex = count+len(entry[INDEX_WORD]) # index chart
+        # endindex = count+len(entry[INDEX_WORD]) # index chart
+        endindex = len(chart)
+        # chartindex = endindex -1
+        chartindex = endindex
 
-        chartindex = endindex -1
 
         print("endindex: ", endindex, " === chartindex: ",chartindex)
+        print(heap[:5])
 
         # previous_entry = chart[endindex]
         # if chart or previous_entry[INDEX_BACKPOINTER] != None:
@@ -112,16 +114,26 @@ def iterative_segmentation(text,Pw,Pwords):
         '''if chart(dynamica table) is not empty and entry backpointer is not None'''
         # if chart and chart[chartindex][INDEX_BACKPOINTER] != None:
         # if chart and chart[chartindex-1][INDEX_BACKPOINTER] != None:
-        if chart and chart[entry[INDEX_STARTPOS]-2][INDEX_BACKPOINTER] != None:
 
-
+        # if chart and chart[entry[INDEX_STARTPOS]-2][INDEX_BACKPOINTER] != None:
+        if chart and chart[endindex-1][INDEX_BACKPOINTER] != None:
+            print('GO INSIDE IF-ELSE, has previous entry')
+            print("@@@@@@@@@@@",chart)
             previous_entry = chart[chartindex-1]
             print("current prob: ", entry[INDEX_PROBABILITY]," -- previous prob: ", previous_entry[INDEX_PROBABILITY], ' #####')
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
                 chart[chartindex] = entry
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
                 count += 1
+                print('-'*25,'get previous probability')
                 continue
+            else:
+                chart[chartindex+1] = entry
+                # count += 1
+                # print(chart)
+                # continue
+
+
         else:
             print(" add to chart table !,: ",entry)
             chart[chartindex] = entry
@@ -134,7 +146,10 @@ def iterative_segmentation(text,Pw,Pwords):
                 # continue
             # print(key[endindex+1],text[endindex+1])
             # if pword[endindex] == text[endindex+1] and len(pword)==1:
-            if pword[0] == text[endindex]:
+
+            # if pword[0] == text[endindex]:
+            if pword[0] == text[count+1]:
+            # if pword[0] == text[endindex] and len(pword) ==1:
 
                 # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
                 new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
