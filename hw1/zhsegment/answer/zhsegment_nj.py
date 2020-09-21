@@ -103,7 +103,7 @@ def iterative_segmentation(text,Pw,Pwords):
         # chartindex = endindex -1
         chartindex = endindex
 
-        print("endindex: ", endindex, " === chartindex: ",chartindex)
+        # print("endindex: ", endindex, " === chartindex: ",chartindex)
         print(heap[:5])
         for pword,value in dict(Pw).items():
             if len(chart) == len(text)-1:
@@ -114,17 +114,21 @@ def iterative_segmentation(text,Pw,Pwords):
                     new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                  entry[INDEX_STARTPOS]]
                     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-                    print(pword,value)
+                    # print(pword,value)
+
+                    ''' don't add new word if it is equal to popped word'''
+                    if pword == entry[INDEX_WORD]:
+                        print('$$$$$$$$$$'*5)
+                        continue
                     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
 
 
                     # print('heap: ',heap)
-                    # # check if heap is empty, then add
+                    ## check if heap is empty, then add
                     # if not heap:
                     #     print('add to empty heap')
                     #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
                     # #     print('heap 2: ',heap)
-                    # # #
                     # else:
                     #     list_word_heap = []
                     #     for tuple_heap in heap:
@@ -134,8 +138,11 @@ def iterative_segmentation(text,Pw,Pwords):
 
 
         def match_prev_entry(word_in_entry,chart):
+
             if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
                 return True
+            # if chart[len(chart)-1][INDEX_WORD][-1] == word_in_entry:
+                # return True
             return False
         # if chart and chart[entry[INDEX_STARTPOS]-2][INDEX_BACKPOINTER] != None:
         # if chart and chart[endindex-1][INDEX_BACKPOINTER] != None:
