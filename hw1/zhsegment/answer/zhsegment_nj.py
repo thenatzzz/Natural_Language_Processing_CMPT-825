@@ -97,10 +97,21 @@ def iterative_segmentation(text,Pw,Pwords):
         note: endindex = length of word'''
         # endindex = len(entry[INDEX_WORD]) # index chart
         # endindex = count+len(entry[INDEX_WORD]) # index chart
+
+        def get_word_length(chart,word_entry,text):
+            for each_word in word_entry:
+                return
+                # if each_word
+            return
+
         endindex = len(chart)
-        chartindex = endindex
+        # chartindex = endindex
+
+        chartindex = len(entry[INDEX_WORD]) + entry[INDEX_STARTPOS] -1
+        endindex = chartindex
         # chartindex = endindex -1
-        # chartindex = endindex + len(entry[INDEX_WORD])
+        # if chart:
+            # chartindex = count + len(entry[INDEX_WORD]) -1
 
         print("endindex: ", endindex, " === chartindex: ",chartindex)
         print(heap[:5])
@@ -137,11 +148,15 @@ def iterative_segmentation(text,Pw,Pwords):
 
 
         def match_prev_entry(word_in_entry,chart):
-            print('$'*30,word_in_entry,chart[len(chart)-1][INDEX_WORD])
-            if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
-                return True
+            # print("match_prev_entry function: chart->",chart,len(chart))
+            # print('$'*30,word_in_entry,chart[len(chart)-1][INDEX_WORD])
+            # if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
+                # return True
             # if chart[len(chart)-1][INDEX_WORD][-1] == word_in_entry:
                 # return True
+            if chart[max(list(chart.keys()))] == word_in_entry:
+                return True
+
             return False
         # if chart and chart[entry[INDEX_STARTPOS]-2][INDEX_BACKPOINTER] != None:
         # if chart and chart[endindex-1][INDEX_BACKPOINTER] != None:
