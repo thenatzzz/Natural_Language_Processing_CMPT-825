@@ -70,7 +70,6 @@ def iterative_segmentation(text,Pw,Pwords):
             '''multiply by -1 to cast into positive
             then we can get Min Heap (minimum value at the top of heap) '''
             each_entry = [key,0,-1.0*log10(Pwords(key)),None]
-
             # each_entry = [key,1,-1.0*log10(Pwords(key)),None]
 
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
@@ -98,31 +97,34 @@ def iterative_segmentation(text,Pw,Pwords):
         # endindex = len(entry[INDEX_WORD]) # index chart
         # endindex = count+len(entry[INDEX_WORD]) # index chart
 
-        def get_word_length(chart,word_entry,text):
-            for each_word in word_entry:
-                return
-                # if each_word
-            return
 
-        endindex = len(chart)
+        # endindex = len(chart)
         # chartindex = endindex
 
-        chartindex = len(entry[INDEX_WORD]) + entry[INDEX_STARTPOS] -1
+        # chartindex = len(entry[INDEX_WORD]) + entry[INDEX_STARTPOS] -1
+        chartindex = entry[INDEX_STARTPOS]
         endindex = chartindex
         # chartindex = endindex -1
         # if chart:
             # chartindex = count + len(entry[INDEX_WORD]) -1
 
-        print("endindex: ", endindex, " === chartindex: ",chartindex)
-        print(heap[:5])
+        print("endindex: ", endindex, " === chartindex: ",chartindex, " === len(text):",len(text))
+        print("current heap[:5] ->",heap[:5])
+
         for pword,value in dict(Pw).items():
-            if len(chart) == len(text)-1:
+
+            if endindex+1 == len(text):
                 break
             if pword[0] == text[endindex+1]:
+            # if pword[0] == text[count+len(entry[INDEX_WORD])]:
 
+                # print(text[endindex+1],pword[0],pword)
                 if (pword in text):
-                    new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
-                                 entry[INDEX_STARTPOS]]
+                    # new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
+                                 # entry[INDEX_STARTPOS]]
+                    print(len(pword),pword,' +++++++')
+                    new_entry = [pword, endindex + len(pword), -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
+                                     entry[INDEX_STARTPOS]]
                     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
                     # print(pword,value)
 
@@ -148,13 +150,10 @@ def iterative_segmentation(text,Pw,Pwords):
 
 
         def match_prev_entry(word_in_entry,chart):
-            # print("match_prev_entry function: chart->",chart,len(chart))
-            # print('$'*30,word_in_entry,chart[len(chart)-1][INDEX_WORD])
-            # if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
-                # return True
-            # if chart[len(chart)-1][INDEX_WORD][-1] == word_in_entry:
-                # return True
-            if chart[max(list(chart.keys()))] == word_in_entry:
+            # print("match_prev_entry function: chart->",word_in_entry,chart,len(chart))
+
+            if chart[max(list(chart.keys()))][INDEX_WORD][0] == word_in_entry:
+                print('TRUE???')
                 return True
 
             return False
@@ -189,7 +188,7 @@ def iterative_segmentation(text,Pw,Pwords):
         print('-'*25,'\n')
         count += 1
 
-
+    print(heap)
     print('=============== END SEGMENTOR =================')
     print(chart)
 
