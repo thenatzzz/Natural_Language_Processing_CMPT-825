@@ -64,7 +64,6 @@ def iterative_segmentation(text,Pw,Pwords):
     '''Initialize the HEAP'''
     heap = []
     for key,value in dict(Pw).items():
-        # if text[0] == key[0]:
         if (text[0] == key[0]) and len(key)==1:
 
             '''multiply by -1 to cast into positive
@@ -73,7 +72,6 @@ def iterative_segmentation(text,Pw,Pwords):
             # each_entry = [key,1,-1.0*log10(Pwords(key)),None]
 
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-            # heappush_list(heap, Entry(key,0,-1.0*log10(Pwords(key)),'blank'), key=operator.itemgetter(log_probability)) # sort by prob
 
     '''Iteratively fill in CHART for all i '''
     chart = {}
@@ -90,12 +88,6 @@ def iterative_segmentation(text,Pw,Pwords):
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
         print(entry, '<--- Entry')
 
-
-        ''' Get the endindex-1 based on the length of the word in entry
-        chart index is less than endindex in entry by -1
-        note: endindex = length of word'''
-        # endindex = len(entry[INDEX_WORD]) # index chart
-        # endindex = count+len(entry[INDEX_WORD]) # index chart
 
 
         # endindex = len(chart)
@@ -152,21 +144,26 @@ def iterative_segmentation(text,Pw,Pwords):
                     #             heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
 
 
-        def match_prev_entry(current_entry,chart):
+        def check_prev_entry(current_entry,chart):
             # print("match_prev_entry function: chart->",word_in_entry,chart,len(chart))
-            word_in_entry =  current_entry[INDEX_WORD]
-            if chart[max(list(chart.keys()))][INDEX_WORD][0] == word_in_entry:
-                print('TRUE???')
-                return True
+            # word_in_entry =  current_entry[INDEX_WORD]
+            # if chart[max(list(chart.keys()))][INDEX_WORD][0] == word_in_entry:
+            #     print('TRUE???')
+            #     return True
             if current_entry[INDEX_STARTPOS] in chart:
                 return True
             return False
+        def get_prev_entry(current_entry,chart):
+            if current_entry[INDEX_STARTPOS] in chart:
+                return chart[current_entry[INDEX_STARTPOS]]
+            return 'Error'
 
-        # if chart and chart[entry[INDEX_STARTPOS]-2][INDEX_BACKPOINTER] != None:
-        # if chart and chart[endindex-1][INDEX_BACKPOINTER] != None:
-        if chart and match_prev_entry(entry,chart):
+
+        if chart and check_prev_entry(entry,chart):
             print('GO INSIDE IF-ELSE, has previous entry')
-            previous_entry = chart[chartindex-1]
+            # previous_entry = chart[chartindex-1]
+            previous_entry = get_prev_entry(entry,chart)
+
             print("current prob: ", entry[INDEX_PROBABILITY]," -- previous prob: ", previous_entry[INDEX_PROBABILITY], ' #####')
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
                 chart[chartindex] = entry
@@ -200,7 +197,8 @@ def iterative_segmentation(text,Pw,Pwords):
 
 def get_segmented_text(dict_text):
     ''' Get list of word from Dynamic programming table (chart) '''
-    last_entry = dict_text[len(dict_text)-1]
+    # last_entry = dict_text[len(dict_text)-1]
+    last_entry = dict_text[max(list(dict_text.keys()))]
 
     list_result = []
 
