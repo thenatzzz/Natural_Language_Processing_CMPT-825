@@ -90,9 +90,6 @@ def iterative_segmentation(text,Pw,Pwords):
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
         print(entry, '<--- Entry')
 
-        # check if list is empty, then put the first entry in
-        # if not chart:
-        #     chart[0] = entry
 
         ''' Get the endindex-1 based on the length of the word in entry
         chart index is less than endindex in entry by -1
@@ -103,32 +100,35 @@ def iterative_segmentation(text,Pw,Pwords):
         # chartindex = endindex -1
         chartindex = endindex
 
-
         print("endindex: ", endindex, " === chartindex: ",chartindex)
         print(heap[:5])
 
-        # previous_entry = chart[endindex]
-        # if chart or previous_entry[INDEX_BACKPOINTER] != None:
-        # print(chart)
-        # print(entry[INDEX_PROBABILITY])
-        '''if chart(dynamica table) is not empty and entry backpointer is not None'''
-        # if chart and chart[chartindex][INDEX_BACKPOINTER] != None:
-        # if chart and chart[chartindex-1][INDEX_BACKPOINTER] != None:
         for pword,value in dict(Pw).items():
-            # if pword[0] == text[count+1]:
-            #     new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-            #     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-            #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
-            if pword[0] == text[count+1] and len(pword)==1:
-                new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-                print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-                heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+            if pword[0] == text[endindex+1]:
 
-            if pword[0:2] == text[count+1:count+3] and len(pword)==2:
-                new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-                print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-                heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+                if (pword in text):
+                    new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
+                                 entry[INDEX_STARTPOS]]
+
+                    print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+                    heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+
+
+                    # print('heap: ',heap)
+                    # # check if dict is empty, then add
+                    # if not heap:
+                    #     print('add to empty heap')
+                    #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+                    #     print('heap 2: ',heap)
+                    # #
+                    # else:
+                    #     list_word_heap = []
+                    #     for tuple_heap in heap:
+                    #         list_word_heap.append(tuple_heap[1][INDEX_WORD])
+                    #         if new_entry[INDEX_WORD] not in list_word_heap:
+                    #             heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+
 
         def match_prev_entry(word_in_entry,chart):
             if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
@@ -145,33 +145,12 @@ def iterative_segmentation(text,Pw,Pwords):
                 chart[chartindex] = entry
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
                 count += 1
-
                 print('\n')
-                # if entry[INDEX_WORD] != chart[chartindex-1]:
-                #     chart[chartindex] = entry
-
                 continue
-
 
         else:
             print(" add to chart table !,: ",entry)
             chart[chartindex] = entry
-
-        # for pword,value in dict(Pw).items():
-        #     # if pword[0] == text[count+1]:
-        #     #     new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-        #     #     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-        #     #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-        #
-        #     if pword[0] == text[count+1] and len(pword)==1:
-        #         new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-        #         print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-        #         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-        #
-        #     if pword[0:2] == text[count+1:count+3] and len(pword)==2:
-        #         new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-        #         print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-        #         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
 
 
@@ -180,8 +159,6 @@ def iterative_segmentation(text,Pw,Pwords):
         print('-'*25,'\n')
         count += 1
 
-        #
-        # break
 
     print('=============== END SEGMENTOR =================')
     print(chart)
