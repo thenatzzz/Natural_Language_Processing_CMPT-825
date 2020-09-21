@@ -81,14 +81,20 @@ def iterative_segmentation(text,Pw,Pwords):
     while heap:
         print('WHILE: ',count)
         # print(chart)
+        print("heap is : "+str(heap))
 
         '''multiply by -1 to get original value back'''
+        check_du = []
+        for c in list(chart.values()):
+            check_du.append(c[0])
 
         ''' get top entry from the heap'''
         entry = heappop_list(heap)
         ''' multiply -1 back to get original value of prob (original = negative log prob)'''
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
         print(entry, '<--- Entry')
+        if entry[0] in check_du:
+            entry[INDEX_PROBABILITY] = -100*entry[INDEX_PROBABILITY]
 
         # check if list is empty, then put the first entry in
         # if not chart:
@@ -121,8 +127,7 @@ def iterative_segmentation(text,Pw,Pwords):
             #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
             if pword[0] == text[endindex]:
-                print(pword[0])
-                print("endindex is " + str(endindex))
+
 
                 # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
                 if (pword in text):
@@ -131,7 +136,7 @@ def iterative_segmentation(text,Pw,Pwords):
 
                     #     # if
                     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-                    heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+                    heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
         def match_prev_entry(word_in_entry,chart):
             if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
@@ -211,6 +216,8 @@ def datafile(name, sep='\t'):
         for line in fh:
             (key, value) = line.split(sep)
             yield (key, value)
+
+
 
 
 
