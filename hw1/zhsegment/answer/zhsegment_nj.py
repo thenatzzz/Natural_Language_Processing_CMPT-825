@@ -5,6 +5,7 @@ from math import log10
 
 # additional library
 import operator
+
 INDEX_PROBABILITY = 2
 INDEX_WORD = 0
 INDEX_STARTPOS = 1
@@ -70,6 +71,7 @@ def iterative_segmentation(text,Pw,Pwords):
             '''multiply by -1 to cast into positive
             then we can get Min Heap (minimum value at the top of heap) '''
             each_entry = [key,0,-1.0*log10(Pwords(key)),None]
+
             # each_entry = [key,1,-1.0*log10(Pwords(key)),None]
 
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
@@ -105,14 +107,14 @@ def iterative_segmentation(text,Pw,Pwords):
         print(len(chart), len(text),endindex)
         for pword,value in dict(Pw).items():
             if len(chart) == len(text)-1:
-                break 
+                break
             if pword[0] == text[endindex+1]:
 
                 if (pword in text):
                     new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                  entry[INDEX_STARTPOS]]
-
                     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+
                     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
 
 
@@ -163,7 +165,30 @@ def iterative_segmentation(text,Pw,Pwords):
 
     print('=============== END SEGMENTOR =================')
     print(chart)
+
+    return get_segmented_text(chart)
     return [ w for w in text ]
+
+def get_segmented_text(dict_text):
+    ''' Get list of word from Dynamic programming table (chart) '''
+    last_entry = dict_text[len(dict_text)-1]
+
+    list_result = []
+
+    # get last element
+    list_result.append(last_entry[INDEX_WORD])
+    # get pointer from last element
+    ptr_idx = last_entry[INDEX_BACKPOINTER]
+
+    # loop while backpoint is not None
+    while ptr_idx != None:
+        entry = dict_text[ptr_idx]
+        list_result.append(entry[INDEX_WORD])
+        ptr_idx = entry[INDEX_BACKPOINTER]
+
+    #reverse list
+    list_result = list_result[::-1]
+    return list_result
 
 def product(nums):
     "Return the product of a sequence of numbers."
