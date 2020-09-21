@@ -25,8 +25,6 @@ class Segment:
 
         segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
         # segmentation = iterative_segmentation(segmentation,self.Pw,self.Pwords)
-        # list_keys = list(Pw.keys())
-        # segmentation = recursive_segmentation(segmentation,list_keys)
 
         return segmentation
 
@@ -100,10 +98,11 @@ def iterative_segmentation(text,Pw,Pwords):
         # endindex = len(entry[INDEX_WORD]) # index chart
         # endindex = count+len(entry[INDEX_WORD]) # index chart
         endindex = len(chart)
-        # chartindex = endindex -1
         chartindex = endindex
+        # chartindex = endindex -1
+        # chartindex = endindex + len(entry[INDEX_WORD])
 
-        # print("endindex: ", endindex, " === chartindex: ",chartindex)
+        print("endindex: ", endindex, " === chartindex: ",chartindex)
         print(heap[:5])
         for pword,value in dict(Pw).items():
             if len(chart) == len(text)-1:
@@ -138,7 +137,7 @@ def iterative_segmentation(text,Pw,Pwords):
 
 
         def match_prev_entry(word_in_entry,chart):
-
+            print('$'*30,word_in_entry,chart[len(chart)-1][INDEX_WORD])
             if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
                 return True
             # if chart[len(chart)-1][INDEX_WORD][-1] == word_in_entry:
@@ -160,8 +159,14 @@ def iterative_segmentation(text,Pw,Pwords):
 
         else:
             print(" add to chart table !,: ",entry)
-            chart[chartindex] = entry
 
+            # first index [ zero index]
+            # if not chart:
+                # chart[0] = entry
+            # else:
+                # chart[chartindex] = entry
+
+            chart[chartindex] = entry
 
 
         # print(heap)
