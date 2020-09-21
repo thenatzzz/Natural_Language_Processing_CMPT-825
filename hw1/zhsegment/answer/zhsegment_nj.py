@@ -275,6 +275,6 @@ if __name__ == '__main__':
             print(sentence)
             # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
             print('-'*60)
-            if i ==1:
+            if i ==2:
                 break
             i += 1
