@@ -32,6 +32,9 @@ class Segment:
 
     def Pwords(self, words):
         "The Naive Bayes probability of a sequence of words."
+        # print([(self.Pw(w),w) for w in words], ' ]]]]]]]]]]]]]]]]]]]]]]]')
+
+        return self.Pw(words)
         return product(self.Pw(w) for w in words)
 
 def product(nums):
@@ -39,17 +42,17 @@ def product(nums):
     return reduce(operator.mul, nums, 1)
 
 
-def recursive_segmentation(segmented_text, Pw):
-    if not segmented_text:
-        return ""
-    for i in range(len(segmented_text),-1,-1):
-        first_word = segmented_text[:i]
-        remainder = segmented_text[i:]
-        if first_word in Pw:
-            return first_word + " "+recursive_segmentation(remainder,Pw)
-    first_word = segmented_text[0]
-    remainder= segmented_text[1:]
-    return first_word+recursive_segmentation(remainder,Pw)
+# def recursive_segmentation(segmented_text, Pw):
+#     if not segmented_text:
+#         return ""
+#     for i in range(len(segmented_text),-1,-1):
+#         first_word = segmented_text[:i]
+#         remainder = segmented_text[i:]
+#         if first_word in Pw:
+#             return first_word + " "+recursive_segmentation(remainder,Pw)
+#     first_word = segmented_text[0]
+#     remainder= segmented_text[1:]
+#     return first_word+recursive_segmentation(remainder,Pw)
 
 #### Support functions (p. 224)
 def iterative_segmentation(text,Pw,Pwords):
@@ -116,12 +119,12 @@ def iterative_segmentation(text,Pw,Pwords):
 
 
                     # print('heap: ',heap)
-                    # # check if dict is empty, then add
+                    # # check if heap is empty, then add
                     # if not heap:
                     #     print('add to empty heap')
                     #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
-                    #     print('heap 2: ',heap)
-                    # #
+                    # #     print('heap 2: ',heap)
+                    # # #
                     # else:
                     #     list_word_heap = []
                     #     for tuple_heap in heap:
