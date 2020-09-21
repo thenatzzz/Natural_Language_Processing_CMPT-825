@@ -104,7 +104,6 @@ def iterative_segmentation(text,Pw,Pwords):
 
         print("endindex: ", endindex, " === chartindex: ",chartindex)
         print(heap[:5])
-        print(len(chart), len(text),endindex)
         for pword,value in dict(Pw).items():
             if len(chart) == len(text)-1:
                 break
@@ -114,7 +113,7 @@ def iterative_segmentation(text,Pw,Pwords):
                     new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                  entry[INDEX_STARTPOS]]
                     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-
+                    print(pword,value)
                     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
 
 
