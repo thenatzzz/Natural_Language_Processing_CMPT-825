@@ -102,9 +102,10 @@ def iterative_segmentation(text,Pw,Pwords):
 
         print("endindex: ", endindex, " === chartindex: ",chartindex)
         print(heap[:5])
-
+        print(len(chart), len(text),endindex)
         for pword,value in dict(Pw).items():
-
+            if len(chart) == len(text)-1:
+                break 
             if pword[0] == text[endindex+1]:
 
                 if (pword in text):
