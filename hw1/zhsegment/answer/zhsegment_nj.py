@@ -125,7 +125,15 @@ def iterative_segmentation(text,Pw,Pwords):
                 chart[chartindex] = entry
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
                 count += 1
+
+                for each_word in entry[INDEX_WORD]:
+                    print(each_word,'$'*50,chart[chartindex-1][INDEX_WORD])
+                    if each_word != chart[chartindex-1][INDEX_WORD]:
+                        chart[chartindex] = entry
+                        print("add to chart ==================")
+
                 print('-'*25,'get previous probability')
+
                 continue
             else:
                 chart[chartindex+1] = entry
