@@ -50,7 +50,9 @@ def iterative_segmentation(text,Pw,Pwords):
     '''Initialize the HEAP'''
     heap = []
     for key,value in dict(Pw).items():
-        if text[0] == key[0]:
+        # if text[0] == key[0]:
+        if (text[0] == key[0]) and len(key)==1:
+
             '''multiply by -1 to cast into positive
             then we can get Min Heap (minimum value at the top of heap) '''
             each_entry = [key,0,-1.0*log10(Pwords(key)),None]
@@ -59,11 +61,10 @@ def iterative_segmentation(text,Pw,Pwords):
 
     '''Iteratively fill in CHART for all i '''
     chart = {}
-    count = 1
+    count = 0
     while heap:
         print('WHILE: ',count)
         # print(chart)
-        count += 1
 
         '''multiply by -1 to get original value back'''
 
@@ -80,8 +81,9 @@ def iterative_segmentation(text,Pw,Pwords):
         ''' Get the endindex-1 based on the length of the word in entry
         chart index is less than endindex in entry by -1
         note: endindex = length of word'''
-        # endindex = len(entry[INDEX_WORD])-1 # index chart
-        endindex = len(entry[INDEX_WORD]) # index chart
+        # endindex = len(entry[INDEX_WORD]) # index chart
+        endindex = count+len(entry[INDEX_WORD]) # index chart
+
         chartindex = endindex -1
 
         print("endindex: ", endindex, " === chartindex: ",chartindex)
@@ -91,14 +93,20 @@ def iterative_segmentation(text,Pw,Pwords):
         # print(chart)
         # print(entry[INDEX_PROBABILITY])
         '''if chart(dynamica table) is not empty and entry backpointer is not None'''
-        if chart and chart[chartindex-1][INDEX_BACKPOINTER] != None:
-            previous_entry = chart[chartindex]
-            print( entry[INDEX_PROBABILITY], previous_entry[INDEX_PROBABILITY], ' #####')
+        # if chart and chart[chartindex][INDEX_BACKPOINTER] != None:
+        # if chart and chart[chartindex-1][INDEX_BACKPOINTER] != None:
+        if chart and chart[entry[INDEX_STARTPOS]-2][INDEX_BACKPOINTER] != None:
+
+
+            previous_entry = chart[chartindex-1]
+            print("current prob: ", entry[INDEX_PROBABILITY]," -- previous prob: ", previous_entry[INDEX_PROBABILITY], ' #####')
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
                 chart[chartindex] = entry
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
+                count += 1
                 continue
         else:
+            print(" add to chart table !,: ",entry)
             chart[chartindex] = entry
 
         # heappush_list(heap, [0,0,5,0], key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
@@ -115,11 +123,12 @@ def iterative_segmentation(text,Pw,Pwords):
                 new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
 
         #     # if
-                print(new_entry, " <-- New Entry")
+                print(new_entry, log10(Pwords(pword)), " <-- New Entry")
                 heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
         # print(heap)
         print(chart)
         print('-'*25)
+        count += 1
 
         #
         # break
