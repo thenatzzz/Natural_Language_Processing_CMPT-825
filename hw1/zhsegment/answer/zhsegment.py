@@ -121,7 +121,6 @@ def iterative_segmentation(text,Pw,Pwords):
 
                     # don't add new word if it is equal to popped word
                     if pword == entry[INDEX_WORD]:
-                        # print('$$$$$$$$$$'*5)
                         continue
                     # if word is already in chart, don't add to heap
                     if check_prev_entry(new_entry,chart):
@@ -134,6 +133,14 @@ def iterative_segmentation(text,Pw,Pwords):
                         # print(new_entry, log10(Pwords(pword)), " <-- New Entry")
                         # add new word to heap
                         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+        # How to stop?
+        ''' add smoothing for word that does not appear in dict'''
+        if len(heap) == 0 and endindex < len(text)-1:
+            print("We are here!!!!" + str(heap))
+            smoothing_pro = 1 / len(list(dict(Pw).items()))
+            entry_add = [text[endindex+1], endindex+1, smoothing_pro, endindex]
+            heappush_list(heap, entry_add, key=operator.itemgetter(INDEX_PROBABILITY))
+            print("We are here!!!!" + str(heap))
 
 
         if chart and check_prev_entry(entry,chart):
@@ -230,11 +237,11 @@ if __name__ == '__main__':
     with open(opts.input,encoding='utf8') as f:
     # with open(opts.input) as f:
         for line in f:
-            # print(" line: ",i, line)
+            print(" line: ",i, line)
             sentence =" ".join(segmenter.segment(line.strip()))
             print(sentence)
             # print("segmented sentence:",sentence)
-            # print('-'*50)
+            print('-'*50)
 
             # if i ==3:
                 # break

@@ -135,6 +135,13 @@ def iterative_segmentation(text,Pw,Pwords):
                         # add new word to heap
                         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
 
+        ''' add smoothing for word that does not appear in dict'''
+        if len(heap) == 0 and endindex < len(text)-1:
+            print("We are here!!!!" + str(heap))
+            smoothing_pro = 1 / len(list(dict(Pw).items()))
+            entry_add = [text[endindex+1], endindex+1, smoothing_pro, endindex]
+            heappush_list(heap, entry_add, key=operator.itemgetter(INDEX_PROBABILITY))
+            print("We are here!!!!" + str(heap))
 
         if chart and check_prev_entry(entry,chart):
             print('GO INSIDE IF-ELSE, has previous entry')
@@ -237,6 +244,6 @@ if __name__ == '__main__':
             print(sentence)
             # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
             print('-'*60)
-            # if i ==3:
-                # break
+            if i ==2:
+                break
             i += 1
