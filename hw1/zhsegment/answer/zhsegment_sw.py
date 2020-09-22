@@ -5,6 +5,7 @@ from math import log10
 
 # additional library
 import operator
+
 INDEX_PROBABILITY = 2
 INDEX_WORD = 0
 INDEX_STARTPOS = 1
@@ -22,182 +23,184 @@ class Segment:
         print('TEXT: ',text[0],self.Pw(text[0]))
         print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
 
+        # call iterative_segmentation function
         segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
-        # segmentation = iterative_segmentation(segmentation,self.Pw,self.Pwords)
-        # list_keys = list(Pw.keys())
-        # segmentation = recursive_segmentation(segmentation,list_keys)
 
         return segmentation
 
     def Pwords(self, words):
         "The Naive Bayes probability of a sequence of words."
+
+        return self.Pw(words)
         return product(self.Pw(w) for w in words)
 
-# class Entry:
-#     def __init__(self,word,start_position,log_probability,back_pointer):
-#         self.word = word
-#         self.start_position = start_position
-#         self.log_probability =log_probability
-#         self.back_pointer= back_pointer
-
-def recursive_segmentation(segmented_text, Pw):
-    if not segmented_text:
-        return ""
-    for i in range(len(segmented_text),-1,-1):
-        first_word = segmented_text[:i]
-        remainder = segmented_text[i:]
-        if first_word in Pw:
-            return first_word + " "+recursive_segmentation(remainder,Pw)
-    first_word = segmented_text[0]
-    remainder= segmented_text[1:]
-    return first_word+recursive_segmentation(remainder,Pw)
+def product(nums):
+    "Return the product of a sequence of numbers."
+    return reduce(operator.mul, nums, 1)
 
 #### Support functions (p. 224)
 def iterative_segmentation(text,Pw,Pwords):
+    '''Iterative segmentation function, return list of segmented text'''
     print('=============== ITERATIVE SEGMENTOR =================')
 
     def heappush_list(h, item, key=lambda x: x):
+        '''push entry to heap'''
         heapq.heappush(h, (key(item), item))
     def heappop_list(h):
+        ''' pop out entry from heap'''
         return heapq.heappop(h)[1]
+    def check_prev_entry(current_entry,chart):
+        ''' check whether there is previous entry existing in chart already or not'''
+        if current_entry[INDEX_STARTPOS] in chart:
+            return True
+        return False
+    def get_prev_entry(current_entry,chart):
+        ''' return previous entry if it exists '''
+        if current_entry[INDEX_STARTPOS] in chart:
+            return chart[current_entry[INDEX_STARTPOS]]
+        return 'Error'
+    def exist_in_heap(heap,entry):
+        ''' check whether there is previous entry existing in heap already or not'''
+        for entry_h in heap:
+            if entry_h[1][INDEX_WORD] == entry[INDEX_WORD]:
+                return True
+        return False
 
     '''Initialize the HEAP'''
     heap = []
-    for key,value in dict(Pw).items():
-        # if text[0] == key[0]:
-        if (text[0] == key[0]) and len(key)==1:
+    for pword,value in dict(Pw).items():
 
-            '''multiply by -1 to cast into positive
-            then we can get Min Heap (minimum value at the top of heap) '''
-            each_entry = [key,0,-1.0*log10(Pwords(key)),None]
-            # each_entry = [key,1,-1.0*log10(Pwords(key)),None]
+        # get the first word
+        if (text[0] == pword[0]) and len(pword)==1:
+            # print(key,value, "init")
 
+            # multiply by -1 to cast into positive
+            # then we can get Min Heap (minimum value at the top of heap)
+            each_entry = [pword,0,-1.0*log10(Pwords(pword)),None]
+
+            # push entry into the heap, sorted based on probability
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-            # heappush_list(heap, Entry(key,0,-1.0*log10(Pwords(key)),'blank'), key=operator.itemgetter(log_probability)) # sort by prob
 
     '''Iteratively fill in CHART for all i '''
     chart = {}
     count = 0
     while heap:
         print('WHILE: ',count)
-        # print(chart)
-        print("heap is : "+str(heap))
 
-        '''multiply by -1 to get original value back'''
-        check_du = []
-        for c in list(chart.values()):
-            check_du.append(c[0])
-
-        ''' get top entry from the heap'''
+        # get top entry from the heap
         entry = heappop_list(heap)
-        ''' multiply -1 back to get original value of prob (original = negative log prob)'''
+        # multiply -1 back to get original value of prob (original = negative log prob)
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
+
         print(entry, '<--- Entry')
-        if entry[0] in check_du:
-            entry[INDEX_PROBABILITY] = -100*entry[INDEX_PROBABILITY]
 
-        # check if list is empty, then put the first entry in
-        # if not chart:
-        #     chart[0] = entry
+        # init endindex = entry starting position
+        endindex = entry[INDEX_STARTPOS]
+        print("endindex: ", endindex,  " === len(text):",len(text))
+        print("current heap[:5] ->",heap[:5])
 
-        ''' Get the endindex-1 based on the length of the word in entry
-        chart index is less than endindex in entry by -1
-        note: endindex = length of word'''
-        # endindex = len(entry[INDEX_WORD]) # index chart
-        # endindex = count+len(entry[INDEX_WORD]) # index chart
-        endindex = len(chart)
-        # chartindex = endindex -1
-        chartindex = endindex
-
-
-        print("endindex: ", endindex, " === chartindex: ",chartindex)
-        print(heap[:5])
-
-        # previous_entry = chart[endindex]
-        # if chart or previous_entry[INDEX_BACKPOINTER] != None:
-        # print(chart)
-        # print(entry[INDEX_PROBABILITY])
-        '''if chart(dynamica table) is not empty and entry backpointer is not None'''
-        # if chart and chart[chartindex][INDEX_BACKPOINTER] != None:
-        # if chart and chart[chartindex-1][INDEX_BACKPOINTER] != None:
+        '''iterate and decide whether to add words to heap '''
         for pword,value in dict(Pw).items():
-            # if pword[0] == text[count+1]:
-            #     new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-            #     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-            #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
-            if pword[0] == text[endindex]:
+            # break if there is no more text
+            if endindex+1 >= len(text):
+                break
 
+            # match word from dict based on the first index with new text
+            if pword[0] == text[endindex+1]:
 
-                # new_entry = [pword,endindex+1,(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
+                print("text: ",text[endindex+1],"pword ",pword)
                 if (pword in text):
-                    new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
-                                 entry[INDEX_STARTPOS]]
+                    # print(text[endindex+1],pword[0],pword)
 
-                    #     # if
-                    print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-                    heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+                    # new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
+                                 # entry[INDEX_STARTPOS]]
+                    print(len(pword),pword,' +++++++')
+                    new_entry = [pword, endindex + len(pword), -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
+                                     entry[INDEX_STARTPOS]]
 
-        def match_prev_entry(word_in_entry,chart):
-            if chart[len(chart)-1][INDEX_WORD] == word_in_entry:
-                return True
-            return False
-        # if chart and chart[entry[INDEX_STARTPOS]-2][INDEX_BACKPOINTER] != None:
-        # if chart and chart[endindex-1][INDEX_BACKPOINTER] != None:
-        if chart and match_prev_entry(entry[INDEX_WORD],chart):
+                    # don't add new word if it is equal to popped word
+                    if pword == entry[INDEX_WORD]:
+                        print('$$$$$$$$$$'*5)
+                        continue
+                    # if word is already in chart, don't add to heap
+                    if check_prev_entry(new_entry,chart):
+                        continue
+                    # if word is in heap already, don't add
+                    if exist_in_heap(heap,new_entry):
+                        print('already EXIST in heap: ',new_entry[INDEX_WORD])
+                        continue
+                    else:
+                        print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+                        # add new word to heap
+                        heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
+
+        # How to stop?
+        if len(heap) == 0 and endindex < len(text)-1:
+            print("We are here!!!!" + str(heap))
+            smoothing_pro = 1 / len(list(dict(Pw).items()))
+            entry_add = [text[endindex+1], endindex+1, smoothing_pro, endindex]
+            heappush_list(heap, entry_add, key=operator.itemgetter(INDEX_PROBABILITY))
+            print("We are here!!!!" + str(heap))
+
+
+        if chart and check_prev_entry(entry,chart):
             print('GO INSIDE IF-ELSE, has previous entry')
-            print("@@@@@@@@@@@",chart)
-            previous_entry = chart[chartindex-1]
+            # get previous entry
+            previous_entry = get_prev_entry(entry,chart)
             print("current prob: ", entry[INDEX_PROBABILITY]," -- previous prob: ", previous_entry[INDEX_PROBABILITY], ' #####')
+
+            # if assign popped entry to chart belonging to previous entry
+            # if popped entry probability > previous entry probability
             if entry[INDEX_PROBABILITY] > previous_entry[INDEX_PROBABILITY]:
-                chart[chartindex] = entry
+                chart[endindex] = entry
+
+            # if popped entry probability <= previous entry probability, do nothing
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
                 count += 1
-
                 print('\n')
-                # if entry[INDEX_WORD] != chart[chartindex-1]:
-                #     chart[chartindex] = entry
-
                 continue
 
-
         else:
-            print(" add to chart table !,: ",entry)
-            chart[chartindex] = entry
+            print("ADD new word to Chart table !!,: ",entry)
+            # add popped word to chart
+            chart[endindex] = entry
 
-        # for pword,value in dict(Pw).items():
-        #     # if pword[0] == text[count+1]:
-        #     #     new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-        #     #     print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-        #     #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-        #
-        #     if pword[0] == text[count+1] and len(pword)==1:
-        #         new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-        #         print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-        #         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-        #
-        #     if pword[0:2] == text[count+1:count+3] and len(pword)==2:
-        #         new_entry = [pword,endindex+1,-1.0*(entry[INDEX_PROBABILITY]+log10(Pwords(pword))),entry[INDEX_STARTPOS]]
-        #         print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-        #         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-
-
-
-        # print(heap)
         print(chart)
         print('-'*25,'\n')
         count += 1
 
-        #
-        # break
-
     print('=============== END SEGMENTOR =================')
-    print(chart)
-    return [ w for w in text ]
+    print(chart,'\n')
 
-def product(nums):
-    "Return the product of a sequence of numbers."
-    return reduce(operator.mul, nums, 1)
+    return get_segmented_text(chart)
+
+def get_segmented_text(dict_text):
+    ''' Get list of word from Dynamic programming table (chart) '''
+    # if dict_text is empty, we return empty list
+    if len(dict_text) < 1:
+        return []
+
+
+    last_entry = dict_text[max(list(dict_text.keys()))]
+
+    list_result = []
+
+    # get last element
+    list_result.append(last_entry[INDEX_WORD])
+    # get pointer from last element
+    ptr_idx = last_entry[INDEX_BACKPOINTER]
+
+    # loop while backpoint is not None
+    while ptr_idx != None:
+        entry = dict_text[ptr_idx]
+        list_result.append(entry[INDEX_WORD])
+        ptr_idx = entry[INDEX_BACKPOINTER]
+
+    #reverse list
+    list_result = list_result[::-1]
+    return list_result
+
 
 class Pdist(dict):
     "A probability distribution estimated from counts in datafile."
@@ -213,6 +216,7 @@ class Pdist(dict):
 def datafile(name, sep='\t'):
     "Read key,value pairs from file."
     with open(name,encoding="utf8") as fh:
+    # with open(name) as fh:
         for line in fh:
             (key, value) = line.split(sep)
             yield (key, value)
