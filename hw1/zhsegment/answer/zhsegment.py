@@ -102,7 +102,9 @@ def iterative_segmentation(text,Pw,Pwords):
             # match word from dict based on the first index with new text
             if pword[0] == text[endindex+1]:
 
-                if (pword in text):
+                # if (pword in text):
+                if (pword in text[endindex+1:]):
+
                     new_entry = [pword, endindex + len(pword), -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                      entry[INDEX_STARTPOS]]
 

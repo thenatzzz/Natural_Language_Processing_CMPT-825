@@ -56,6 +56,7 @@ def iterative_segmentation(text,Pw,Pwords):
         return False
     def get_prev_entry(current_entry,chart):
         ''' return previous entry if it exists '''
+        print(current_entry[INDEX_STARTPOS],'------')
         if current_entry[INDEX_STARTPOS] in chart:
             return chart[current_entry[INDEX_STARTPOS]]
         return 'Error'
@@ -110,7 +111,9 @@ def iterative_segmentation(text,Pw,Pwords):
             if pword[0] == text[endindex+1]:
 
                 print("text: ",text[endindex+1],"pword ",pword)
-                if (pword in text):
+                if (pword in text[endindex+1:]):
+                # if (pword in text):
+
                     # print(text[endindex+1],pword[0],pword)
 
                     # new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
@@ -237,13 +240,19 @@ if __name__ == '__main__':
     with open(opts.input,encoding='utf8') as f:
     # with open(opts.input) as f:
         for line in f:
-            print(" line: ",i, line)
+            # print(" line: ",i, line)
+            # if i < 12:
+                # i += 1
+                # continue
             sentence =" ".join(segmenter.segment(line.strip()))
             # print(" ".join(segmenter.segment(line.strip())))
             print(line)
             print(sentence)
             # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
             print('-'*60)
-            if i ==2:
+            print(" line: ",i, line)
+
+            if i == 3:
                 break
+
             i += 1
