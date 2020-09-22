@@ -72,8 +72,10 @@ def iterative_segmentation(text,Pw,Pwords):
     for pword,value in dict(Pw).items():
 
         # get the first word
+        # print(pword,value, "init")
+
         if (text[0] == pword[0]) and len(pword)==1:
-            # print(key,value, "init")
+            print(pword,value, "init")
 
             # multiply by -1 to cast into positive
             # then we can get Min Heap (minimum value at the top of heap)
@@ -81,6 +83,14 @@ def iterative_segmentation(text,Pw,Pwords):
 
             # push entry into the heap, sorted based on probability
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+
+    print("HEAP __>",heap)
+    if len(heap) == 0 :
+        print("We are here!!!!" + str(heap))
+        smoothing_pro = 1 / len(list(dict(Pw).items()))
+        entry_add = [text[0], 0, smoothing_pro, None]
+        heappush_list(heap, entry_add, key=operator.itemgetter(INDEX_PROBABILITY))
+        print("We are here!!!!" + str(heap))
 
     '''Iteratively fill in CHART for all i '''
     chart = {}
@@ -241,9 +251,9 @@ if __name__ == '__main__':
     # with open(opts.input) as f:
         for line in f:
             # print(" line: ",i, line)
-            # if i < 12:
-                # i += 1
-                # continue
+            if i < 16:
+                i += 1
+                continue
             sentence =" ".join(segmenter.segment(line.strip()))
             # print(" ".join(segmenter.segment(line.strip())))
             print(line)
@@ -252,7 +262,7 @@ if __name__ == '__main__':
             print('-'*60)
             print(" line: ",i, line)
 
-            if i == 3:
+            if i == 16:
                 break
 
             i += 1

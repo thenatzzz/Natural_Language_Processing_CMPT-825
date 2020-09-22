@@ -78,6 +78,12 @@ def iterative_segmentation(text,Pw,Pwords):
             # push entry into the heap, sorted based on probability
             heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
+    '''if HEAP is still empty, we add smoothing '''
+    if len(heap) == 0 :
+        smoothing_pro = 1 / len(list(dict(Pw).items()))
+        entry_add = [text[0], 0, smoothing_pro, None]
+        heappush_list(heap, entry_add, key=operator.itemgetter(INDEX_PROBABILITY))
+
     '''Iteratively fill in CHART for all i '''
     chart = {}
     count = 0
