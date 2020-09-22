@@ -103,7 +103,7 @@ def iterative_segmentation(text,Pw,Pwords):
         for pword,value in dict(Pw).items():
 
             # break if there is no more text
-            if endindex+1 == len(text):
+            if endindex+1 >= len(text):
                 break
 
             # match word from dict based on the first index with new text
@@ -169,6 +169,11 @@ def iterative_segmentation(text,Pw,Pwords):
 
 def get_segmented_text(dict_text):
     ''' Get list of word from Dynamic programming table (chart) '''
+    # if dict_text is empty, we return empty list
+    if len(dict_text) < 1:
+        return []
+
+
     last_entry = dict_text[max(list(dict_text.keys()))]
 
     list_result = []
@@ -232,6 +237,6 @@ if __name__ == '__main__':
             print(sentence)
             # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
             print('-'*60)
-            if i ==3:
-                break
+            # if i ==3:
+                # break
             i += 1
