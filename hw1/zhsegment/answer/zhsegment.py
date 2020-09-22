@@ -20,8 +20,8 @@ class Segment:
         "Return a list of words that is the best segmentation of text."
         if not text: return []
         segmentation = [ w for w in text ] # segment each char into a word
-        print('TEXT: ',text[0],self.Pw(text[0]))
-        print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
+        # print('TEXT: ',text[0],self.Pw(text[0]))
+        # print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
 
         # call iterative_segmentation function
         segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
@@ -41,7 +41,7 @@ def product(nums):
 #### Support functions (p. 224)
 def iterative_segmentation(text,Pw,Pwords):
     '''Iterative segmentation function, return list of segmented text'''
-    print('=============== ITERATIVE SEGMENTOR =================')
+    # print('=============== ITERATIVE SEGMENTOR =================')
 
     def heappush_list(h, item, key=lambda x: x):
         '''push entry to heap'''
@@ -69,11 +69,10 @@ def iterative_segmentation(text,Pw,Pwords):
     '''Initialize the HEAP'''
     heap = []
     for pword,value in dict(Pw).items():
-        # print(pword,value, "init")
 
         # get the first word
         if (text[0] == pword[0]) and len(pword)==1:
-            print(pword,value, "init")
+            # print(key,value, "init")
 
             # multiply by -1 to cast into positive
             # then we can get Min Heap (minimum value at the top of heap)
@@ -86,62 +85,62 @@ def iterative_segmentation(text,Pw,Pwords):
     chart = {}
     count = 0
     while heap:
-        print('WHILE: ',count)
+        # print('WHILE: ',count)
 
         # get top entry from the heap
         entry = heappop_list(heap)
         # multiply -1 back to get original value of prob (original = negative log prob)
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
 
-        print(entry, '<--- Entry')
+        # print(entry, '<--- Entry')
 
         # init endindex = entry starting position
         endindex = entry[INDEX_STARTPOS]
-        print("endindex: ", endindex,  " === len(text):",len(text))
-        print("current heap[:5] ->",heap[:5])
+        # print("endindex: ", endindex,  " === len(text):",len(text))
+        # print("current heap[:5] ->",heap[:5])
 
         '''iterate and decide whether to add words to heap '''
         for pword,value in dict(Pw).items():
 
             # break if there is no more text
-            if endindex+1 == len(text):
+            if endindex+1 >= len(text):
                 break
 
             # match word from dict based on the first index with new text
             if pword[0] == text[endindex+1]:
 
-                print("text: ",text[endindex+1],"pword ",pword)
+                # print("text: ",text[endindex+1],"pword ",pword)
                 if (pword in text):
                     # print(text[endindex+1],pword[0],pword)
 
                     # new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                  # entry[INDEX_STARTPOS]]
-                    print(len(pword),pword,' +++++++')
+                    # print(len(pword),pword,' +++++++')
                     new_entry = [pword, endindex + len(pword), -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                      entry[INDEX_STARTPOS]]
 
                     # don't add new word if it is equal to popped word
                     if pword == entry[INDEX_WORD]:
-                        print('$$$$$$$$$$'*5)
+                        # print('$$$$$$$$$$'*5)
                         continue
                     # if word is already in chart, don't add to heap
                     if check_prev_entry(new_entry,chart):
                         continue
                     # if word is in heap already, don't add
                     if exist_in_heap(heap,new_entry):
-                        print('already EXIST in heap: ',new_entry[INDEX_WORD])
+                        # print('already EXIST in heap: ',new_entry[INDEX_WORD])
                         continue
                     else:
-                        print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+                        # print(new_entry, log10(Pwords(pword)), " <-- New Entry")
                         # add new word to heap
                         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
 
 
         if chart and check_prev_entry(entry,chart):
-            print('GO INSIDE IF-ELSE, has previous entry')
+            # print('GO INSIDE IF-ELSE, has previous entry')
             # get previous entry
             previous_entry = get_prev_entry(entry,chart)
-            print("current prob: ", entry[INDEX_PROBABILITY]," -- previous prob: ", previous_entry[INDEX_PROBABILITY], ' #####')
+            # print("current prob: ", entry[INDEX_PROBABILITY]," -- previous prob: ", previous_entry[INDEX_PROBABILITY], ' #####')
 
             # if assign popped entry to chart belonging to previous entry
             # if popped entry probability > previous entry probability
@@ -151,25 +150,30 @@ def iterative_segmentation(text,Pw,Pwords):
             # if popped entry probability <= previous entry probability, do nothing
             if entry[INDEX_PROBABILITY] <= previous_entry[INDEX_PROBABILITY]:
                 count += 1
-                print('\n')
+                # print('\n')
                 continue
 
         else:
-            print("ADD new word to Chart table !!,: ",entry)
+            # print("ADD new word to Chart table !!,: ",entry)
             # add popped word to chart
             chart[endindex] = entry
 
-        print(chart)
-        print('-'*25,'\n')
+        # print(chart)
+        # print('-'*25,'\n')
         count += 1
 
-    print('=============== END SEGMENTOR =================')
-    print(chart,'\n')
+    # print('=============== END SEGMENTOR =================')
+    # print(chart,'\n')
 
     return get_segmented_text(chart)
 
 def get_segmented_text(dict_text):
     ''' Get list of word from Dynamic programming table (chart) '''
+    # if dict_text is empty, we return empty list
+    if len(dict_text) < 1:
+        return []
+
+
     last_entry = dict_text[max(list(dict_text.keys()))]
 
     list_result = []
@@ -226,13 +230,12 @@ if __name__ == '__main__':
     with open(opts.input,encoding='utf8') as f:
     # with open(opts.input) as f:
         for line in f:
-            print(" line: ",i, line)
+            # print(" line: ",i, line)
             sentence =" ".join(segmenter.segment(line.strip()))
-            # print(" ".join(segmenter.segment(line.strip())))
-            print(line)
             print(sentence)
-            # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
-            print('-'*60)
-            if i ==8:
-                break
+            # print("segmented sentence:",sentence)
+            # print('-'*50)
+
+            # if i ==3:
+                # break
             i += 1
