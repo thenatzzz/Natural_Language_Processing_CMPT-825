@@ -60,6 +60,21 @@ def iterative_segmentation(text,Pw,Pwords):
         heapq.heappush(h, (key(item), item))
     def heappop_list(h):
         return heapq.heappop(h)[1]
+    def check_prev_entry(current_entry,chart):
+        # check whether there is previous entry existing in chart already or not
+        if current_entry[INDEX_STARTPOS] in chart:
+            return True
+        return False
+    def get_prev_entry(current_entry,chart):
+        # return previous entry if it exists
+        if current_entry[INDEX_STARTPOS] in chart:
+            return chart[current_entry[INDEX_STARTPOS]]
+        return 'Error'
+    def exist_in_heap(heap,entry):
+        for entry_h in heap:
+            if entry_h[1][INDEX_WORD] == entry[INDEX_WORD]:
+                return True
+        return False
 
     '''Initialize the HEAP'''
     heap = []
@@ -76,14 +91,9 @@ def iterative_segmentation(text,Pw,Pwords):
     '''Iteratively fill in CHART for all i '''
     chart = {}
     count = 0
-    def exist_in_heap(heap,entry):
-        for entry_h in heap:
-            if entry_h[1][INDEX_WORD] == entry[INDEX_WORD]:
-                return True
-        return False
+
     while heap:
         print('WHILE: ',count)
-        # print(chart)
 
         '''multiply by -1 to get original value back'''
 
@@ -93,17 +103,8 @@ def iterative_segmentation(text,Pw,Pwords):
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
         print(entry, '<--- Entry')
 
-
-
-        # endindex = len(chart)
-        # chartindex = endindex
-
-        # chartindex = len(entry[INDEX_WORD]) + entry[INDEX_STARTPOS] -1
         chartindex = entry[INDEX_STARTPOS]
         endindex = chartindex
-        # chartindex = endindex -1
-        # if chart:
-            # chartindex = count + len(entry[INDEX_WORD]) -1
 
         print("endindex: ", endindex, " === chartindex: ",chartindex, " === len(text):",len(text))
         print("current heap[:5] ->",heap[:5])
@@ -118,57 +119,36 @@ def iterative_segmentation(text,Pw,Pwords):
             if pword[0] == text[endindex+1]:
             # if pword[0] == text[count+len(entry[INDEX_WORD])]:
 
-                # print(text[endindex+1],pword[0],pword)
+                print("text: ",text[endindex+1],"pword ",pword)
+                # print(text)
                 if (pword in text):
+                    # print(text[endindex+1],pword[0],pword)
+
                     # new_entry = [pword, endindex + 1, -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                  # entry[INDEX_STARTPOS]]
-                    # print(len(pword),pword,' +++++++')
+                    print(len(pword),pword,' +++++++')
                     new_entry = [pword, endindex + len(pword), -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                      entry[INDEX_STARTPOS]]
-                    print(new_entry, log10(Pwords(pword)), " <-- New Entry")
-                    # print(pword,value)
+                    # print(new_entry, log10(Pwords(pword)), " <-- New Entry")
 
                     ''' don't add new word if it is equal to popped word'''
                     if pword == entry[INDEX_WORD]:
                         print('$$$$$$$$$$'*5)
                         continue
 
+                    if check_prev_entry(new_entry,chart):
+                        # if word is already in chart, don't add to heap
+                        print('0'*77)
+                        continue
                     if exist_in_heap(heap,new_entry):
+                        print('0'*77)
+
+                        print('already EXIST in heap: ',new_entry[INDEX_WORD])
                         continue
                     else:
+                        print(new_entry, log10(Pwords(pword)), " <-- New Entry")
+
                         heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
-
-                    # heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
-
-
-                    # print('heap: ',heap)
-                    # # check if heap is empty, then add
-                    # if not heap:
-                    #     print('add to empty heap')
-                    #     heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
-                    # #     print('heap 2: ',heap)
-                    # else:
-                    #     list_word_heap = []
-                    #     for tuple_heap in heap:
-                    #         list_word_heap.append(tuple_heap[1][INDEX_WORD])
-                    #         if new_entry[INDEX_WORD] not in list_word_heap:
-                    #             heappush_list(heap, new_entry, key=operator.itemgetter(INDEX_PROBABILITY))  # sort by prob
-                    #
-
-        def check_prev_entry(current_entry,chart):
-            # print("match_prev_entry function: chart->",word_in_entry,chart,len(chart))
-            # word_in_entry =  current_entry[INDEX_WORD]
-            # if chart[max(list(chart.keys()))][INDEX_WORD][0] == word_in_entry:
-            #     print('TRUE???')
-            #     return True
-            if current_entry[INDEX_STARTPOS] in chart:
-                return True
-            return False
-        def get_prev_entry(current_entry,chart):
-            # return previous entry if it exists
-            if current_entry[INDEX_STARTPOS] in chart:
-                return chart[current_entry[INDEX_STARTPOS]]
-            return 'Error'
 
 
         if chart and check_prev_entry(entry,chart):
@@ -185,18 +165,9 @@ def iterative_segmentation(text,Pw,Pwords):
                 continue
 
         else:
-            print(" add to chart table !,: ",entry)
-
-            # first index [ zero index]
-            # if not chart:
-                # chart[0] = entry
-            # else:
-                # chart[chartindex] = entry
-
+            print("ADD new word to Chart table !!,: ",entry)
             chart[chartindex] = entry
 
-
-        # print(heap)
         print(chart)
         print('-'*25,'\n')
         count += 1
@@ -209,7 +180,6 @@ def iterative_segmentation(text,Pw,Pwords):
 
 def get_segmented_text(dict_text):
     ''' Get list of word from Dynamic programming table (chart) '''
-    # last_entry = dict_text[len(dict_text)-1]
     last_entry = dict_text[max(list(dict_text.keys()))]
 
     list_result = []
