@@ -216,6 +216,7 @@ class Pdist(dict):
 def datafile(name, sep='\t'):
     "Read key,value pairs from file."
     with open(name,encoding="utf8") as fh:
+    # with open(name) as fh:
         for line in fh:
             (key, value) = line.split(sep)
             yield (key, value)
@@ -236,6 +237,7 @@ if __name__ == '__main__':
     segmenter = Segment(Pw)
     i = 1
     with open(opts.input,encoding='utf8') as f:
+    # with open(opts.input) as f:
         for line in f:
             # if i < 5:
                 # i += 1
