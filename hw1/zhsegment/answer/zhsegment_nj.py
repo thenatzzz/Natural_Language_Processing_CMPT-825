@@ -121,7 +121,9 @@ def iterative_segmentation(text,Pw,Pwords):
             if pword[0] == text[endindex+1]:
 
                 print("text: ",text[endindex+1],"pword ",pword)
-                if (pword in text[endindex+1:]):
+                # if (pword in text[endindex+1:]):
+                if (pword in text[endindex+1:endindex+1+len(pword)]):
+
                 # if (pword in text):
 
                     # print(text[endindex+1],pword[0],pword)
@@ -251,7 +253,7 @@ if __name__ == '__main__':
     # with open(opts.input) as f:
         for line in f:
             # print(" line: ",i, line)
-            if i < 16:
+            if i < 9:
                 i += 1
                 continue
             sentence =" ".join(segmenter.segment(line.strip()))
@@ -262,7 +264,7 @@ if __name__ == '__main__':
             print('-'*60)
             print(" line: ",i, line)
 
-            if i == 16:
+            if i == 9:
                 break
 
             i += 1
