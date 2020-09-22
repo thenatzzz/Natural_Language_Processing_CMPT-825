@@ -6,9 +6,9 @@ from math import log10
 # additional library
 import operator
 
-INDEX_PROBABILITY = 2
 INDEX_WORD = 0
 INDEX_STARTPOS = 1
+INDEX_PROBABILITY = 2
 INDEX_BACKPOINTER = 3
 
 class Segment:
@@ -19,9 +19,7 @@ class Segment:
     def segment(self, text):
         "Return a list of words that is the best segmentation of text."
         if not text: return []
-        segmentation = [ w for w in text ] # segment each char into a word
-        # print('TEXT: ',text[0],self.Pw(text[0]))
-        # print(segmentation, len(self.Pw),Pw.N,self.Pwords(text[0]))
+        # segmentation = [ w for w in text ] # segment each char into a word
 
         # call iterative_segmentation function
         segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
@@ -45,19 +43,23 @@ def iterative_segmentation(text,Pw,Pwords):
     def heappush_list(h, item, key=lambda x: x):
         '''push entry to heap'''
         heapq.heappush(h, (key(item), item))
+
     def heappop_list(h):
         ''' pop out entry from heap'''
         return heapq.heappop(h)[1]
+
     def check_prev_entry(current_entry,chart):
         ''' check whether there is previous entry existing in chart already or not'''
         if current_entry[INDEX_STARTPOS] in chart:
             return True
         return False
+
     def get_prev_entry(current_entry,chart):
         ''' return previous entry if it exists '''
         if current_entry[INDEX_STARTPOS] in chart:
             return chart[current_entry[INDEX_STARTPOS]]
         return 'Error'
+
     def exist_in_heap(heap,entry):
         ''' check whether there is previous entry existing in heap already or not'''
         for entry_h in heap:
@@ -79,32 +81,25 @@ def iterative_segmentation(text,Pw,Pwords):
                 # push entry into the heap, sorted based on probability
                 heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
-        #  # get the first word
-        # if (text[0] == pword[0]) and pword in text:
-        #     # multiply by -1 to cast into positive
-        #     # then we can get Min Heap (minimum value at the top of heap)
-        #     each_entry = [pword,len(pword)-1,-1.0*log10(Pwords(pword)),None]
-        #
-        #     # push entry into the heap, sorted based on probability
-        #     heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
-
-
     '''if HEAP is still empty, we add smoothing '''
     if len(heap) == 0 :
+        # smoothing 1/size of dictionary
         smoothing_pro = 1 / len(list(dict(Pw).items()))
+        # smoothing_pro = 1 / Pw.N
+
         entry_add = [text[0], 0, smoothing_pro, None]
         heappush_list(heap, entry_add, key=operator.itemgetter(INDEX_PROBABILITY))
 
     '''Iteratively fill in CHART for all i '''
     chart = {}
     count = 0
+
     while heap:
 
         # get top entry from the heap
         entry = heappop_list(heap)
         # multiply -1 back to get original value of prob (original = negative log prob)
         entry[INDEX_PROBABILITY] = -1.0*entry[INDEX_PROBABILITY]
-
 
         # init endindex = entry starting position
         endindex = entry[INDEX_STARTPOS]
@@ -122,7 +117,6 @@ def iterative_segmentation(text,Pw,Pwords):
                 # if (pword in text):
                 # if (pword in text[endindex+1:]):
                 if (pword in text[endindex+1:endindex+1+len(pword)]):
-
 
                     new_entry = [pword, endindex + len(pword), -1.0 * (entry[INDEX_PROBABILITY] + log10(Pwords(pword))),
                                      entry[INDEX_STARTPOS]]
@@ -146,7 +140,7 @@ def iterative_segmentation(text,Pw,Pwords):
             entry_add = [text[endindex+1], endindex+1, smoothing_pro, endindex]
             heappush_list(heap, entry_add, key=operator.itemgetter(INDEX_PROBABILITY))
 
-
+        '''check if chart is empty and whether word related to popped entry is in chart already or not'''
         if chart and check_prev_entry(entry,chart):
             # get previous entry
             previous_entry = get_prev_entry(entry,chart)
@@ -175,12 +169,10 @@ def get_segmented_text(dict_text):
     if len(dict_text) < 1:
         return []
 
-
     last_entry = dict_text[max(list(dict_text.keys()))]
 
-    list_result = []
-
     # get last element
+    list_result = []
     list_result.append(last_entry[INDEX_WORD])
     # get pointer from last element
     ptr_idx = last_entry[INDEX_BACKPOINTER]
@@ -193,8 +185,8 @@ def get_segmented_text(dict_text):
 
     #reverse list
     list_result = list_result[::-1]
-    return list_result
 
+    return list_result
 
 class Pdist(dict):
     "A probability distribution estimated from counts in datafile."

@@ -7,3 +7,7 @@ output.zip
 source.zip
 answer/test_heap.py
 test_log.txt
+
+
+output_bayes.zip
+output_prob.zip
