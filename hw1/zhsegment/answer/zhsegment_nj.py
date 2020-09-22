@@ -80,9 +80,11 @@ def iterative_segmentation(text,Pw,Pwords):
     heap = []
     for key,value in dict(Pw).items():
         if (text[0] == key[0]) and len(key)==1:
+            # print(key,value, "init")
 
             '''multiply by -1 to cast into positive
             then we can get Min Heap (minimum value at the top of heap) '''
+            print(key)
             each_entry = [key,0,-1.0*log10(Pwords(key)),None]
             # each_entry = [key,1,-1.0*log10(Pwords(key)),None]
 
@@ -245,6 +247,6 @@ if __name__ == '__main__':
             print(sentence)
             # print(sentence[0],' ***** ', Pw[sentence[0]]/Pw.N)
             print('-'*60)
-            if i ==2:
+            if i ==1:
                 break
             i += 1
