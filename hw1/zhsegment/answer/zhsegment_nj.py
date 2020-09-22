@@ -139,8 +139,8 @@ def iterative_segmentation(text,Pw,Pwords):
                         print('$$$$$$$$$$'*5)
                         continue
                     # if word is already in chart, don't add to heap
-                    if check_prev_entry(new_entry,chart):
-                        continue
+                    # if check_prev_entry(new_entry,chart):
+                        # continue
                     # if word is in heap already, don't add
                     if exist_in_heap(heap,new_entry):
                         print('already EXIST in heap: ',new_entry[INDEX_WORD])
