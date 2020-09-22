@@ -38,14 +38,14 @@ class ZipOutput:
         and returns lists of lines from stdout and stderr.
         """
 
-        # create the output files 
+        # create the output files
         if output_path is not None:
             stdout_path = os.path.join(output_path, "{}.out".format(base))
             stderr_path = os.path.join(output_path, "{}.err".format(base))
 
             # existing files are erased!
-            stdout_file = open(stdout_path, 'w')
-            stderr_file = open(stderr_path, 'w')
+            stdout_file = open(stdout_path, 'w', encoding="utf-8")
+            stderr_file = open(stderr_path, 'w', encoding="utf-8")
             status_path = os.path.join(output_path, "{}.ret".format(base))
         else:
             stdout_file, stdout_path = tempfile.mkstemp("stdout")
@@ -63,7 +63,7 @@ class ZipOutput:
             else:
                 raise ValueError("Could not run {} {}".format(self.python_bin, self.run_program_path))
 
-        stdin_file = open(filename, 'r')
+        stdin_file = open(filename, 'r', encoding="utf-8")
         try:
             try:
                 prog = subprocess.Popen(argv, stdin=stdin_file or subprocess.PIPE, stdout=stdout_file, stderr=stderr_file)
@@ -78,11 +78,11 @@ class ZipOutput:
                     os.close(stdout_file)
                     os.close(stderr_file)
             if status_path is not None:
-                with open(status_path, 'w') as status_file:
+                with open(status_path, 'w', encoding="utf-8") as status_file:
                   print(prog.returncode, file=status_file)
-            with open(stdout_path) as stdout_input:
+            with open(stdout_path, encoding="utf-8") as stdout_input:
                 stdout_lines = list(stdout_input)
-            with open(stderr_path) as stderr_input:
+            with open(stderr_path, encoding="utf-8") as stderr_input:
                 stderr_lines = list(stderr_input)
             if prog.stdin != None:
                 prog.stdin.close()
@@ -158,4 +158,3 @@ if __name__ == '__main__':
     else:
         logging.error("problem in creating output zip file")
         sys.exit(1)
-

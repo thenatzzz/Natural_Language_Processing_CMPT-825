@@ -69,14 +69,25 @@ def iterative_segmentation(text,Pw,Pwords):
     heap = []
     for pword,value in dict(Pw).items():
 
-        # get the first word
-        if (text[0] == pword[0]) and len(pword)==1:
-            # multiply by -1 to cast into positive
-            # then we can get Min Heap (minimum value at the top of heap)
-            each_entry = [pword,0,-1.0*log10(Pwords(pword)),None]
+        MAX_WORD_LENGTH = 8
+        for word_length in range(1,MAX_WORD_LENGTH):
+            # get the first word
+            if (text[:word_length] == pword[0:word_length]) and len(pword)==word_length:
+                # multiply by -1 to cast into positive
+                # then we can get Min Heap (minimum value at the top of heap)
+                each_entry = [pword,word_length-1,-1.0*log10(Pwords(pword)),None]
+                # push entry into the heap, sorted based on probability
+                heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
 
-            # push entry into the heap, sorted based on probability
-            heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+        #  # get the first word
+        # if (text[0] == pword[0]) and pword in text:
+        #     # multiply by -1 to cast into positive
+        #     # then we can get Min Heap (minimum value at the top of heap)
+        #     each_entry = [pword,len(pword)-1,-1.0*log10(Pwords(pword)),None]
+        #
+        #     # push entry into the heap, sorted based on probability
+        #     heappush_list(heap, each_entry, key=operator.itemgetter(INDEX_PROBABILITY)) # sort by prob
+
 
     '''if HEAP is still empty, we add smoothing '''
     if len(heap) == 0 :
@@ -219,11 +230,11 @@ if __name__ == '__main__':
     with open(opts.input,encoding='utf8') as f:
     # with open(opts.input) as f:
         for line in f:
-            print(" line: ",i, line)
+            # print(" line: ",i, line)
             sentence =" ".join(segmenter.segment(line.strip()))
             print(sentence)
             # print("segmented sentence:",sentence)
-            print('-'*50)
+            # print('-'*50)
 
             # if i ==3:
                 # break
