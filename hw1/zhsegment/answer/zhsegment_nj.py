@@ -99,6 +99,7 @@ def iterative_segmentation(text,Pw,Pwords):
         print("endindex: ", endindex,  " === len(text):",len(text))
         print("current heap[:5] ->",heap[:5])
 
+        '''iterate and decide whether to add words to heap '''
         for pword,value in dict(Pw).items():
 
             # break if there is no more text
