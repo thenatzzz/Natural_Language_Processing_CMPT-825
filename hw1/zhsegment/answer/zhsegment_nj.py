@@ -227,6 +227,9 @@ class Pdist(dict):
         if key in self: return self[key]/self.N
         else: return self.missingfn(key, self.N)
 
+def punish_long_words(key, Pw):
+    return (1. / Pw.N) ** len(key)
+
 def datafile(name, sep='\t'):
     "Read key,value pairs from file."
     with open(name,encoding="utf8") as fh:
@@ -246,7 +249,7 @@ if __name__ == '__main__':
     if opts.logfile is not None:
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
-    Pw = Pdist(data=datafile(opts.counts1w))
+    Pw = Pdist(data=datafile(opts.counts1w),missingfn=punish_long_words)
     segmenter = Segment(Pw)
     i = 1
     with open(opts.input,encoding='utf8') as f:

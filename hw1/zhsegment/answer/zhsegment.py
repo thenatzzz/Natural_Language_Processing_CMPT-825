@@ -30,7 +30,7 @@ class Segment:
         "The Naive Bayes probability of a sequence of words."
 
         return self.Pw(words)
-        return product(self.Pw(w) for w in words)
+        # return product(self.Pw(w) for w in words)
 
 def product(nums):
     "Return the product of a sequence of numbers."
@@ -207,6 +207,9 @@ def datafile(name, sep='\t'):
             (key, value) = line.split(sep)
             yield (key, value)
 
+def punish_long_words(key, Pw):
+    return (1. / Pw.N) ** len(key)
+
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
     optparser.add_option("-c", "--unigramcounts", dest='counts1w', default=os.path.join('data', 'count_1w.txt'), help="unigram counts [default: data/count_1w.txt]")
@@ -218,7 +221,7 @@ if __name__ == '__main__':
     if opts.logfile is not None:
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
-    Pw = Pdist(data=datafile(opts.counts1w))
+    Pw = Pdist(data=datafile(opts.counts1w),missingfn=punish_long_words)
     segmenter = Segment(Pw)
     i = 1
     with open(opts.input,encoding='utf8') as f:
