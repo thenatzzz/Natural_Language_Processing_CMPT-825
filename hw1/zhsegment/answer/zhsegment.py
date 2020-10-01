@@ -232,7 +232,6 @@ def get_segmented_text(dict_text):
 
     #reverse list
     list_result = list_result[::-1]
-
     return list_result
 
 class Pdist(dict):
@@ -248,7 +247,6 @@ class Pdist(dict):
             return self[key]/self.N
         else:
             return self.missingfn(key, self.N)
-
 
 def datafile(name, sep='\t'):
     "Read key,value pairs from file."
