@@ -28,6 +28,7 @@ class Segment:
 
     def segment_old(self, text):
         "Return a list of words that is the best segmentation of text."
+        '''Dev score = 0.86 and took long time to run, implementaion using Heap'''
         if not text: return []
 
         # call iterative_segmentation function
@@ -36,6 +37,9 @@ class Segment:
         return segmentation
 
     def segment(self,text):
+        "Return a list of words that is the best segmentation of text."
+        '''Dev score = 0.93 and took long time to run, implementaion using normal Dict'''
+
         ''' dictionary as dynamic programming table'''
         chart = {}
 
@@ -66,7 +70,7 @@ class Segment:
                 updated_prob = prob + prev_prob
                 '''check if text in chart or not OR updated probability is more than current probability,
                   update chart with updated probability if the condition is True'''
-                if idx_text not in chart or (updated_prob) > chart[idx_text][IDX_PROBABILITY]:
+                if (idx_text not in chart) or (updated_prob > chart[idx_text][IDX_PROBABILITY]):
                     chart[idx_text] = [word, prev_prob + prob]
 
         ''' Get the best segmented text by iterate from the end index of our chart'''
