@@ -6,35 +6,81 @@ from math import log10
 # additional library
 import operator
 
+'''these indexes are for iterative_segmentation function'''
 INDEX_WORD = 0
 INDEX_STARTPOS = 1
 INDEX_PROBABILITY = 2
 INDEX_BACKPOINTER = 3
+
+'''these indexes are for default segmentation function'''
+IDX_WORD = 0
+IDX_PROBABILITY = 1
+MAX_WORD_LENGTH =15
 
 class Segment:
 
     def __init__(self, Pw):
         self.Pw = Pw
 
-    def segment(self, text):
+    def Pwords(self, words):
+        "The Probability of words."
+        return self.Pw(words)
+
+    def segment_old(self, text):
         "Return a list of words that is the best segmentation of text."
         if not text: return []
-        # segmentation = [ w for w in text ] # segment each char into a word
 
         # call iterative_segmentation function
         segmentation = iterative_segmentation(text,self.Pw,self.Pwords)
 
         return segmentation
 
-    def Pwords(self, words):
-        "The Naive Bayes probability of a sequence of words."
+    def segment(self,text):
+        ''' dictionary as dynamic programming table'''
+        chart = {}
 
-        return self.Pw(words)
-        # return product(self.Pw(w) for w in words)
+        '''iterate through line of text'''
+        for idx_text in range(len(text)):
 
-def product(nums):
-    "Return the product of a sequence of numbers."
-    return reduce(operator.mul, nums, 1)
+            '''iterate and decide whether to add words to chart '''
+            for idx_word in range(1, MAX_WORD_LENGTH + 1):
+
+                '''continue if word length goes out of text length'''
+                if (idx_text - idx_word + 1) < 0:
+                    continue
+
+                '''get word from text'''
+                word = text[idx_text-idx_word+1:idx_text+1]
+
+                '''get probability of current word'''
+                prob = math.log(self.Pwords(word))
+
+                ''' check for previous word probability,
+                 if it exists we get probability of previous word, else we assign it to zero '''
+                if (idx_text - idx_word) >= 0:
+                    prev_prob = chart[idx_text - idx_word][IDX_PROBABILITY]
+                else:
+                    prev_prob = 0
+
+                '''dynamically update new prob'''
+                updated_prob = prob + prev_prob
+                '''check if text in chart or not OR updated probability is more than current probability,
+                  update chart with updated probability if the condition is True'''
+                if idx_text not in chart or (updated_prob) > chart[idx_text][IDX_PROBABILITY]:
+                    chart[idx_text] = [word, prev_prob + prob]
+
+        ''' Get the best segmented text by iterate from the end index of our chart'''
+        endindex = len(text) - 1
+        segmented_text = []
+
+        while endindex >= 0:
+            word, prob = chart[endindex]
+            segmented_text.append(word)
+            endindex = endindex- len(word)
+
+        # return from end of array
+        return segmented_text[::-1]
+
 
 #### Support functions (p. 224)
 def iterative_segmentation(text,Pw,Pwords):
@@ -124,9 +170,6 @@ def iterative_segmentation(text,Pw,Pwords):
                     # don't add new word if it is equal to popped word
                     if pword == entry[INDEX_WORD]:
                         continue
-                    # if word is already in chart, don't add to heap
-                    # if check_prev_entry(new_entry,chart):
-                        # continue
                     # if word is in heap already, don't add
                     if exist_in_heap(heap,new_entry):
                         continue
@@ -195,9 +238,13 @@ class Pdist(dict):
             self[key] = self.get(key, 0) + int(count)
         self.N = float(N or sum(self.values()))
         self.missingfn = missingfn or (lambda k, N: 1./N)
+
     def __call__(self, key):
-        if key in self: return self[key]/self.N
-        else: return self.missingfn(key, self.N)
+        if key in self:
+            return self[key]/self.N
+        else:
+            return self.missingfn(key, self.N)
+
 
 def datafile(name, sep='\t'):
     "Read key,value pairs from file."
@@ -207,8 +254,11 @@ def datafile(name, sep='\t'):
             (key, value) = line.split(sep)
             yield (key, value)
 
-def punish_long_words(key, Pw):
-    return (1. / Pw.N) ** len(key)
+def punish_long_words(key, N,lambda_=0.03):
+    '''Function to assign probability to based on length of word
+    we can define lambda (hyperparameter) (default=0.03)'''
+    prob = (1.0/N) if len(key) <=1 else 1e-200+ pow(1.0/( lambda_*N), len(key))
+    return prob
 
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
@@ -225,11 +275,11 @@ if __name__ == '__main__':
     segmenter = Segment(Pw)
     i = 1
     with open(opts.input,encoding='utf8') as f:
-    # with open(opts.input) as f:
         for line in f:
             # print(" line: ",i, line)
             sentence =" ".join(segmenter.segment(line.strip()))
             print(sentence)
+
             # print("segmented sentence:",sentence)
             # print('-'*50)
 
