@@ -29,5 +29,8 @@ if __name__ == '__main__':
     num_lines = sum(1 for line in open(opts.input,'r'))
     with open(opts.input) as f:
         for line in tqdm.tqdm(f, total=num_lines):
+        # for line in f:
+
             fields = line.strip().split('\t')
             print(" ".join(lexsub.substitutes(int(fields[0].strip()), fields[1].strip().split())))
+            # print('\n\n\n')
