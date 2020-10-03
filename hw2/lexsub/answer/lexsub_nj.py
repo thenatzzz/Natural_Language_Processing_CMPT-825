@@ -10,6 +10,11 @@ class LexSub:
 
     def substitutes(self, index, sentence):
         "Return ten guesses that are appropriate lexical substitutions for the word at sentence[index]."
+        print("word: ",sentence[index])
+        # print(len(self.wvecs))
+        # print(self.wvecs.dim)
+        # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
+        # print(self.wvecs.query(sentence[index]))
         return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
 
@@ -28,10 +33,16 @@ if __name__ == '__main__':
     # lexsub = LexSub('answer/data/glove.6B.100d.magnitude', int(opts.topn))
 
     num_lines = sum(1 for line in open(opts.input,'r'))
-    with open(opts.input) as f:
-        for line in tqdm.tqdm(f, total=num_lines):
-        # for line in f:
 
+    i = 0
+    with open(opts.input) as f:
+        # for line in tqdm.tqdm(f, total=num_lines):
+        for line in f:
+            # print("line: ",line)
             fields = line.strip().split('\t')
+            print(fields)
             print(" ".join(lexsub.substitutes(int(fields[0].strip()), fields[1].strip().split())))
-            # print('\n\n\n')
+            print('\n')
+            if i==3:
+                break
+            i += 1
