@@ -1,3 +1,8 @@
-Put your answer files here.
+Group: Oasis
+1. Siyu Wu, swa246
+2. Nattapat Juthaprachakul, njuthapr
 
-Remember to put your README.username in this directory as well.
+
+main file:
+lexsub.py
+lexsub.ipynb
