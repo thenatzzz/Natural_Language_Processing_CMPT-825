@@ -24,6 +24,8 @@ if __name__ == '__main__':
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
     lexsub = LexSub(opts.wordvecfile, int(opts.topn))
+    # lexsub = LexSub('answer/data/glove.6B.100d.magnitude', int(opts.topn))
+
     num_lines = sum(1 for line in open(opts.input,'r'))
     with open(opts.input) as f:
         for line in tqdm.tqdm(f, total=num_lines):
