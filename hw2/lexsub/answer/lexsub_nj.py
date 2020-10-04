@@ -3,7 +3,9 @@ import tqdm
 import pymagnitude
 
 import re
-from copy import deepcopy
+# from copy import deepcopy
+from numpy import dot
+from numpy.linalg import norm
 
 class LexSub:
 
@@ -14,13 +16,11 @@ class LexSub:
 
     def substitutes(self, index, sentence):
         "Return ten guesses that are appropriate lexical substitutions for the word at sentence[index]."
-        print("word: ",sentence[index])
-        # print(len(self.wvecs))
+        # print("word: ",sentence[index])
         # print(self.wvecs.dim)
         # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
-        # print(self.wvecs.query(sentence[index]))
         # print(self.lexicon[sentence[index]],'-------')
-        print("default: ",list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
+        # print("default: ",list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
         new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
 
         return new_wvecs
@@ -33,7 +33,7 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
 
     # wvec_dict = set(new_wvecs.keys())
     # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=2000)))
-    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=200)))
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
 
     loop_dict = wvec_dict.intersection(set(lexicon.keys()))
 
@@ -53,10 +53,8 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
                 new_vec += new_wvecs.query(pp_word)
             result[word]=new_vec/(2*num_neighbours)
     # print(pymagnitude.Magnitude(result))
-    print(len(result))
+    # print(len(result))
 
-    from numpy import dot
-    from numpy.linalg import norm
 
     vector_mainWord = wvecs.query(word)
     dict_similarity_result= {}
@@ -69,7 +67,7 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
     dict_similarity_result={k: v for k, v in sorted(dict_similarity_result.items(), key=lambda item: item[1],reverse=True)}
     n_items = list(dict_similarity_result.keys())[:10]
 
-    print(n_items)
+    # print(n_items)
     return n_items
 ''' Read the PPDB word relations as a dictionary '''
 isNumber = re.compile(r'\d+.*')
@@ -110,14 +108,13 @@ if __name__ == '__main__':
 
     i = 0
     with open(opts.input) as f:
-        # for line in tqdm.tqdm(f, total=num_lines):
-        for line in f:
-            # print("line: ",line)
-            print("line number: ",i)
+        for line in tqdm.tqdm(f, total=num_lines):
+        # for line in f:
+            # print("line number: ",i)
             fields = line.strip().split('\t')
-            print(fields)
+            # print(fields)
             print(" ".join(lexsub.substitutes(int(fields[0].strip()), fields[1].strip().split())))
-            print('\n')
-            if i==12:
-                break
+            # print('\n')
+            # if i==25:
+                # break
             i += 1
