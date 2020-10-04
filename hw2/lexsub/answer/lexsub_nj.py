@@ -103,7 +103,7 @@ if __name__ == '__main__':
     optparser.add_option("-w", "--wordvecfile", dest="wordvecfile", default=os.path.join('data', 'glove.6B.100d.magnitude'), help="word vectors file")
     optparser.add_option("-n", "--topn", dest="topn", default=10, help="produce these many guesses")
     optparser.add_option("-l", "--logfile", dest="logfile", default=None, help="log file for debugging")
-    optparser.add_option("-L", "--lexiconfile", dest="lexicon", default=os.path.join('data', 'lexicon','fragment.txt'), help="lexicon file")
+    optparser.add_option("-L", "--lexiconfile", dest="lexicon", default=os.path.join('data', 'lexicons','wordnet-synonym.txt'), help="lexicon file")
 
     (opts, _) = optparser.parse_args()
 
