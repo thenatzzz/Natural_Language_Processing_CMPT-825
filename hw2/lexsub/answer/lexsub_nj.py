@@ -3,6 +3,7 @@ import tqdm
 import pymagnitude
 
 import re
+from copy import deepcopy
 
 class LexSub:
 
@@ -14,33 +15,52 @@ class LexSub:
     def substitutes(self, index, sentence):
         "Return ten guesses that are appropriate lexical substitutions for the word at sentence[index]."
         print("word: ",sentence[index])
-        print(len(self.wvecs))
+        # print(len(self.wvecs))
         # print(self.wvecs.dim)
         # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
-        print(self.wvecs.query(sentence[index]))
-        new_wvecs = self.retrofit(sentence[index],num_iters=10)
+        # print(self.wvecs.query(sentence[index]))
+        print(self.lexicon[sentence[index]],'-------')
+        print(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
+        new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
         return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
-    def retrofit(self,num_iters=10):
-        new_wvecs = deepcopy(self.wvecs)
-        wvec_dict = set(new_wvecs.keys())
-        loopVocab = wvec_dict.intersection(set(self.lexicon.keys()))
-        for iter in range(num_iters):
-            # loop through every node also in ontology (else just use data estimate)
-            for word in loopVocab:
-                wordNeighbours = set(self.lexicon[word]).intersection(wvec_dict)
-                numNeighbours = len(wordNeighbours)
-                #no neighbours, pass - use data estimate
-                if numNeighbours == 0:
-                    continue
-                # the weight of the data estimate if the number of neighbours
-                newVec = numNeighbours * self.wvecs[word]
-                # loop over neighbours and add to new vector (currently with weight 1)
-                for ppWord in wordNeighbours:
-                    newVec += newWordVecs[ppWord]
-        new_wvecs[word] = newVec/(2*numNeighbours)
-        return new_wvecs
 '''Helper function'''
+def retrofit(wvecs,lexicon,word,num_iters=10):
+    # new_wvecs = deepcopy(wvecs)
+    new_wvecs = wvecs
+
+    # wvec_dict = set(new_wvecs.keys())
+    # wvec_dict = new_wvecs.query(word)
+    # wvec_dict = word
+
+    # print(wvec_dict)
+    # print(len(set(lexicon.keys())))
+    # print(len(lexicon.keys()))
+    print(wvecs.query(word))
+
+    # loop_dict = wvec_dict.intersection(set(lexicon.keys()))
+    loop_dict = []
+    for lexicon_key in set(lexicon.keys()):
+        # if lexicon_key in wvecs.most_similar(word, 20):
+        if lexicon_key in wvecs:
+
+            loop_dict.append(lexicon_key)
+    print(loop_dict,' ++++++++++')
+    for iter in range(num_iters):
+        # loop through every node also in ontology (else just use data estimate)
+        for word in loop_dict:
+            word_neighbours = set(lexicon[word]).intersection(wvec_dict)
+            num_neighbours = len(word_neighbours)
+            #no neighbours, pass - use data estimate
+            if num_neighbours == 0:
+                continue
+            # the weight of the data estimate if the number of neighbours
+            new_vec = num_neighbours * wvecs[word]
+            # loop over neighbours and add to new vector (currently with weight 1)
+            for pp_word in word_neighbours:
+                new_vec += newWordVecs[pp_word]
+                new_wvecs[word] = new_vec/(2*num_neighbours)
+    return new_wvecs
 ''' Read the PPDB word relations as a dictionary '''
 isNumber = re.compile(r'\d+.*')
 def norm_word(word):
@@ -72,7 +92,7 @@ if __name__ == '__main__':
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
     lexicon = read_lexicon(opts.lexicon)
-    print(lexicon['side'])
+    # print(lexicon['side'])
     lexsub = LexSub(opts.wordvecfile, int(opts.topn),lexicon)
     # lexsub = LexSub('answer/data/glove.6B.100d.magnitude', int(opts.topn))
 
