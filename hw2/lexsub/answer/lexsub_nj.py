@@ -20,32 +20,34 @@ class LexSub:
         # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
         # print(self.wvecs.query(sentence[index]))
         print(self.lexicon[sentence[index]],'-------')
-        print(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
+        # print(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=1000))))
         new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
         return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
 '''Helper function'''
 def retrofit(wvecs,lexicon,word,num_iters=10):
     # new_wvecs = deepcopy(wvecs)
+    # words_similar
+
     new_wvecs = wvecs
 
     # wvec_dict = set(new_wvecs.keys())
     # wvec_dict = new_wvecs.query(word)
-    # wvec_dict = word
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=1000)))
 
     # print(wvec_dict)
     # print(len(set(lexicon.keys())))
     # print(len(lexicon.keys()))
-    print(wvecs.query(word))
+    # print(wvecs.query(word))
 
-    # loop_dict = wvec_dict.intersection(set(lexicon.keys()))
-    loop_dict = []
-    for lexicon_key in set(lexicon.keys()):
+    loop_dict = wvec_dict.intersection(set(lexicon.keys()))
+    # loop_dict = []
+    # for lexicon_key in set(lexicon.keys()):
         # if lexicon_key in wvecs.most_similar(word, 20):
-        if lexicon_key in wvecs:
+        # if lexicon_key in wvecs:
 
-            loop_dict.append(lexicon_key)
-    print(loop_dict,' ++++++++++')
+            # loop_dict.append(lexicon_key)
+    # print(loop_dict,' ++++++++++')
     for iter in range(num_iters):
         # loop through every node also in ontology (else just use data estimate)
         for word in loop_dict:
@@ -55,11 +57,11 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
             if num_neighbours == 0:
                 continue
             # the weight of the data estimate if the number of neighbours
-            new_vec = num_neighbours * wvecs[word]
+            new_vec = num_neighbours * wvecs.query(word)
             # loop over neighbours and add to new vector (currently with weight 1)
             for pp_word in word_neighbours:
-                new_vec += newWordVecs[pp_word]
-                new_wvecs[word] = new_vec/(2*num_neighbours)
+                new_vec += new_wvecs.query(pp_word)
+            new_wvecs.query(word) = new_vec/(2*num_neighbours)
     return new_wvecs
 ''' Read the PPDB word relations as a dictionary '''
 isNumber = re.compile(r'\d+.*')
