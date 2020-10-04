@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     with open(opts.ref, 'rt') as refh:
         ref_data = [str(x).strip() for x in refh.read().splitlines()]
-    # with open(opts.output, 'rt') as outh:
+
     with open(opts.output, 'rt',encoding='utf-8') as outh:
 
         out_data = [str(x).strip() for x in outh.read().splitlines()]

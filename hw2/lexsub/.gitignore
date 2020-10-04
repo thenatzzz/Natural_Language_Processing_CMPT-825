@@ -16,3 +16,5 @@ answer/.ipyb_checkpoints
 answer/data/glove.6B.100d.magnitude
 output.txt
 data/glove.6B.100d.magnitude
+answer/data/glove.6B.100d.txt
+data/glove.6B.100d.txt
