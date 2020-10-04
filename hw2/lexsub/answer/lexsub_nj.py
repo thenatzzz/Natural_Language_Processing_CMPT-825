@@ -67,7 +67,7 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
 
     '''get word vector of interested word in text'''
     vector_mainWord = wvecs.query(word)
-    '''create dict to find similarity between new word vector with interested word vector '''
+    '''create new dict that stores calculated cosine similarity between new word vector with interested word vector '''
     dict_similarity_result= {}
     for word,vector in result.items():
         cos_sim = dot(vector_mainWord, vector)/(norm(vector_mainWord)*norm(vector))
