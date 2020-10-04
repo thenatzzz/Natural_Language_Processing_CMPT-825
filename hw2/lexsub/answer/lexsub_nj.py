@@ -19,35 +19,25 @@ class LexSub:
         # print(self.wvecs.dim)
         # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
         # print(self.wvecs.query(sentence[index]))
-        print(self.lexicon[sentence[index]],'-------')
-        # print(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=1000))))
+        # print(self.lexicon[sentence[index]],'-------')
+        print("default: ",list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
         new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
-        return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
+
+        return new_wvecs
+        # return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
 '''Helper function'''
 def retrofit(wvecs,lexicon,word,num_iters=10):
     # new_wvecs = deepcopy(wvecs)
-    # words_similar
-
     new_wvecs = wvecs
 
     # wvec_dict = set(new_wvecs.keys())
-    # wvec_dict = new_wvecs.query(word)
-    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=1000)))
-
-    # print(wvec_dict)
-    # print(len(set(lexicon.keys())))
-    # print(len(lexicon.keys()))
-    # print(wvecs.query(word))
+    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=2000)))
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=200)))
 
     loop_dict = wvec_dict.intersection(set(lexicon.keys()))
-    # loop_dict = []
-    # for lexicon_key in set(lexicon.keys()):
-        # if lexicon_key in wvecs.most_similar(word, 20):
-        # if lexicon_key in wvecs:
 
-            # loop_dict.append(lexicon_key)
-    # print(loop_dict,' ++++++++++')
+    result={}
     for iter in range(num_iters):
         # loop through every node also in ontology (else just use data estimate)
         for word in loop_dict:
@@ -61,8 +51,26 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
             # loop over neighbours and add to new vector (currently with weight 1)
             for pp_word in word_neighbours:
                 new_vec += new_wvecs.query(pp_word)
-            new_wvecs.query(word) = new_vec/(2*num_neighbours)
-    return new_wvecs
+            result[word]=new_vec/(2*num_neighbours)
+    # print(pymagnitude.Magnitude(result))
+    print(len(result))
+
+    from numpy import dot
+    from numpy.linalg import norm
+
+    vector_mainWord = wvecs.query(word)
+    dict_similarity_result= {}
+    for word,vector in result.items():
+
+        cos_sim = dot(vector_mainWord, vector)/(norm(vector_mainWord)*norm(vector))
+        dict_similarity_result[word] = cos_sim
+        # print(cos_sim)
+    # sort dict by val
+    dict_similarity_result={k: v for k, v in sorted(dict_similarity_result.items(), key=lambda item: item[1],reverse=True)}
+    n_items = list(dict_similarity_result.keys())[:10]
+
+    print(n_items)
+    return n_items
 ''' Read the PPDB word relations as a dictionary '''
 isNumber = re.compile(r'\d+.*')
 def norm_word(word):
@@ -110,6 +118,6 @@ if __name__ == '__main__':
             print(fields)
             print(" ".join(lexsub.substitutes(int(fields[0].strip()), fields[1].strip().split())))
             print('\n')
-            if i==2:
+            if i==12:
                 break
             i += 1
