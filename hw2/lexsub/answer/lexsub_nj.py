@@ -23,11 +23,11 @@ class LexSub:
         # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
         # print(self.lexicon[sentence[index]],'-------')
         # print("default: ",list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
-        # wvecs = read_glove(self.wvecfile)
-        # print(wvecs)
         new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
 
-        return new_wvecs
+
+
+        return new_wvecs[:self.topn]
         # return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
 
@@ -45,42 +45,70 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
     loop_dict = wvec_dict.intersection(set(lexicon.keys()))
 
     '''dict to store words as key and new vectors as value'''
-    result={}
+    result_vector={}
 
     ''' iterate based on number of time we want to update'''
     for iter in range(num_iters):
         '''loop through every node also in ontology (else just use data estimate)'''
-        for word in loop_dict:
+        for word_sub in loop_dict:
             '''get list of neighbor words (from Lexicon) that match the top N most similar word'''
-            word_neighbours = set(lexicon[word]).intersection(wvec_dict)
+            word_neighbours = set(lexicon[word_sub]).intersection(wvec_dict)
 
             num_neighbours = len(word_neighbours)
             '''if words in list of mutual word do not have neighbor word, we just use estimate (no retrofit)'''
             if num_neighbours == 0:
                 continue
             # the weight of the data estimate if the number of neighbours
-            new_vec = num_neighbours * wvecs.query(word)
+            new_vec = num_neighbours * wvecs.query(word_sub)
             # loop over neighbours and add to new vector (currently with weight 1)
             for pp_word in word_neighbours:
                 new_vec += new_wvecs.query(pp_word)
-            result[word]=new_vec/(2*num_neighbours)
+            result_vector[word_sub]=new_vec/(2*num_neighbours)
+    # print(result_vector, ' ===========================')
+
+    '''
+    #Lexical substitutions
+    dict_similarity_result = {}
+    # set of Context word(c)
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=200)))
+    # Target (t)
+    vector_target = wvecs.query(word)
+    # lexicon (sub)
+    for word_sub in loop_dict:
+        # vector of lexicon (sub=substitute)
+        vector_sub = wvecs.query(word_sub)
+        cos_sim = calculate_cosine_sim(vector_sub, vector_target)
+
+        # number of context word
+        num_context = 0
+        # iterate context word
+        for word_context in wvec_dict:
+            vector_context= wvecs.query(word_context)
+            cos_sim +=  calculate_cosine_sim(vector_sub, vector_context)
+
+            num_context += 1
+        dict_similarity_result[word_sub] = cos_sim/(num_context+1)
+    '''
 
     '''get word vector of interested word in text'''
     vector_mainWord = wvecs.query(word)
     '''create new dict that stores calculated cosine similarity between new word vector with interested word vector '''
     dict_similarity_result= {}
-    for word,vector in result.items():
-        cos_sim = dot(vector_mainWord, vector)/(norm(vector_mainWord)*norm(vector))
-        dict_similarity_result[word] = cos_sim
-        # print(cos_sim)
+    for word,vector in result_vector.items():
+        dict_similarity_result[word] = calculate_cosine_sim(vector_mainWord, vector)
+
     '''sort result dict by similarity'''
     dict_similarity_result={k: v for k, v in sorted(dict_similarity_result.items(), key=lambda item: item[1],reverse=True)}
 
-    '''return to X most similar word'''
-    n_items = list(dict_similarity_result.keys())[:10]
-    return n_items
+    '''return to list of the most similar word'''
+    list_most_similar_word = list(dict_similarity_result.keys())
 
-''' Read the PPDB word relations as a dictionary '''
+    return list_most_similar_word
+
+def calculate_cosine_sim(vect1,vect2):
+    return dot(vect1, vect2)/(norm(vect1)*norm(vect2))
+
+''' Read the Lexicon (word relations) as a dictionary '''
 isNumber = re.compile(r'\d+.*')
 def norm_word(word):
     if isNumber.search(word.lower()):
@@ -121,11 +149,12 @@ if __name__ == '__main__':
     with open(opts.input) as f:
         for line in tqdm.tqdm(f, total=num_lines):
         # for line in f:
-            # print("line number: ",i)
+            # print("-----------------line number----------------------: ",i)
             fields = line.strip().split('\t')
-            # print(fields)
+
+            # print("fields: ", fields)
             print(" ".join(lexsub.substitutes(int(fields[0].strip()), fields[1].strip().split())))
             # print('\n')
-            # if i==25:
+            # if i==5:
                 # break
             i += 1
