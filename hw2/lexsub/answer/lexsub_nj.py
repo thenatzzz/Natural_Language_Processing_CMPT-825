@@ -70,7 +70,7 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
     #Lexical substitutions
     dict_similarity_result = {}
     # set of Context word(c)
-    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=200)))
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=50)))
     # Target (t)
     vector_target = wvecs.query(word)
     # lexicon (sub)
