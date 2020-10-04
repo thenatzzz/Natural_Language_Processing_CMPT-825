@@ -6,11 +6,13 @@ import re
 # from copy import deepcopy
 from numpy import dot
 from numpy.linalg import norm
+import pandas as pd
 
 class LexSub:
 
     def __init__(self, wvec_file, topn=10,lexicon=None):
         self.wvecs = pymagnitude.Magnitude(wvec_file)
+        # self.wvecfile = wvec_file
         self.topn = topn
         self.lexicon = lexicon
 
@@ -21,29 +23,39 @@ class LexSub:
         # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
         # print(self.lexicon[sentence[index]],'-------')
         # print("default: ",list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
+        # wvecs = read_glove(self.wvecfile)
+        # print(wvecs)
         new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
 
         return new_wvecs
         # return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
+
 '''Helper function'''
 def retrofit(wvecs,lexicon,word,num_iters=10):
     # new_wvecs = deepcopy(wvecs)
+    '''initialize new word vector'''
     new_wvecs = wvecs
 
     # wvec_dict = set(new_wvecs.keys())
-    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=2000)))
+    '''get top N words from GloVe that are most similar to word from text '''
     wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
 
+    '''get list of mutual/intersected word between Lexicon and the N most similar words'''
     loop_dict = wvec_dict.intersection(set(lexicon.keys()))
 
+    '''dict to store words as key and new vectors as value'''
     result={}
+
+    ''' iterate based on number of time we want to update'''
     for iter in range(num_iters):
-        # loop through every node also in ontology (else just use data estimate)
+        '''loop through every node also in ontology (else just use data estimate)'''
         for word in loop_dict:
+            '''get list of neighbor words (from Lexicon) that match the top N most similar word'''
             word_neighbours = set(lexicon[word]).intersection(wvec_dict)
+
             num_neighbours = len(word_neighbours)
-            #no neighbours, pass - use data estimate
+            '''if words in list of mutual word do not have neighbor word, we just use estimate (no retrofit)'''
             if num_neighbours == 0:
                 continue
             # the weight of the data estimate if the number of neighbours
@@ -52,23 +64,22 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
             for pp_word in word_neighbours:
                 new_vec += new_wvecs.query(pp_word)
             result[word]=new_vec/(2*num_neighbours)
-    # print(pymagnitude.Magnitude(result))
-    # print(len(result))
 
-
+    '''get word vector of interested word in text'''
     vector_mainWord = wvecs.query(word)
+    '''create dict to find similarity between new word vector with interested word vector '''
     dict_similarity_result= {}
     for word,vector in result.items():
-
         cos_sim = dot(vector_mainWord, vector)/(norm(vector_mainWord)*norm(vector))
         dict_similarity_result[word] = cos_sim
         # print(cos_sim)
-    # sort dict by val
+    '''sort result dict by similarity'''
     dict_similarity_result={k: v for k, v in sorted(dict_similarity_result.items(), key=lambda item: item[1],reverse=True)}
-    n_items = list(dict_similarity_result.keys())[:10]
 
-    # print(n_items)
+    '''return to X most similar word'''
+    n_items = list(dict_similarity_result.keys())[:10]
     return n_items
+
 ''' Read the PPDB word relations as a dictionary '''
 isNumber = re.compile(r'\d+.*')
 def norm_word(word):
@@ -100,9 +111,9 @@ if __name__ == '__main__':
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
     lexicon = read_lexicon(opts.lexicon)
-    # print(lexicon['side'])
+    # wvecs = read_glove(opts.wordvecfile)
+    # print(wvecs)
     lexsub = LexSub(opts.wordvecfile, int(opts.topn),lexicon)
-    # lexsub = LexSub('answer/data/glove.6B.100d.magnitude', int(opts.topn))
 
     num_lines = sum(1 for line in open(opts.input,'r'))
 
