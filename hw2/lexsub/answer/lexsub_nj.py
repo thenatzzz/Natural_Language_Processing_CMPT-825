@@ -16,47 +16,53 @@ class LexSub:
         self.topn = topn
         self.lexicon = lexicon
 
+        # list_wvec_dictkey = []
+        # for key,val in self.wvecs:
+        #     list_wvec_dictkey.append(key)
+        #
+        # self.wvecDict = set(list_wvec_dictkey)
+
     def substitutes(self, index, sentence):
         "Return ten guesses that are appropriate lexical substitutions for the word at sentence[index]."
         # print("word: ",sentence[index])
-        # print(self.wvecs.dim)
-        # print(self.wvecs.most_similar(sentence[index], topn=self.topn))
-        # print(self.lexicon[sentence[index]],'-------')
-        # print("default: ",list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
         new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
-
-
+        # new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10,wvecDict=self.wvecDict)
 
         return new_wvecs[:self.topn]
         # return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
 
 '''Helper function'''
+# def retrofit(wvecs,lexicon,word,num_iters=10,wvecDict=None):
 def retrofit(wvecs,lexicon,word,num_iters=10):
+
     # new_wvecs = deepcopy(wvecs)
     '''initialize new word vector'''
     new_wvecs = wvecs
 
     # wvec_dict = set(new_wvecs.keys())
     '''get top N words from GloVe that are most similar to word from text '''
-    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
-    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=1500)))
-    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=500)))
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
+    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=500)))
 
+
+    # wvec_dict = wvecDict
 
     '''get list of mutual/intersected word between Lexicon and the N most similar words'''
     loop_dict = wvec_dict.intersection(set(lexicon.keys()))
-
+    # print(len(loop_dict))
     '''dict to store words as key and new vectors as value'''
     result_vector={}
 
     ''' iterate based on number of time we want to update'''
     for iter in range(num_iters):
+        # print("iter:",iter)
         '''loop through every node also in ontology (else just use data estimate)'''
         for word_sub in loop_dict:
+            # print('iter: ',iter,word_sub)
             '''get list of neighbor words (from Lexicon) that match the top N most similar word'''
             word_neighbours = set(lexicon[word_sub]).intersection(wvec_dict)
-
+            # print(len(word_neighbours), " num_neighbours")
             num_neighbours = len(word_neighbours)
             '''if words in list of mutual word do not have neighbor word, we just use estimate (no retrofit)'''
             if num_neighbours == 0:
@@ -136,7 +142,7 @@ if __name__ == '__main__':
     optparser.add_option("-w", "--wordvecfile", dest="wordvecfile", default=os.path.join('data', 'glove.6B.100d.magnitude'), help="word vectors file")
     optparser.add_option("-n", "--topn", dest="topn", default=10, help="produce these many guesses")
     optparser.add_option("-l", "--logfile", dest="logfile", default=None, help="log file for debugging")
-    optparser.add_option("-L", "--lexiconfile", dest="lexicon", default=os.path.join('data', 'lexicons','wordnet-synonym.txt'), help="lexicon file")
+    optparser.add_option("-L", "--lexiconfile", dest="lexicon", default=os.path.join('data', 'lexicons','wordnet-synonyms.txt'), help="lexicon file")
 
     (opts, _) = optparser.parse_args()
 
