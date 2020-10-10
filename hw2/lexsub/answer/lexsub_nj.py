@@ -40,6 +40,8 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
     # wvec_dict = set(new_wvecs.keys())
     '''get top N words from GloVe that are most similar to word from text '''
     wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
+    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=1500)))
+
 
     '''get list of mutual/intersected word between Lexicon and the N most similar words'''
     loop_dict = wvec_dict.intersection(set(lexicon.keys()))
@@ -64,7 +66,9 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
             for pp_word in word_neighbours:
                 new_vec += new_wvecs.query(pp_word)
             result_vector[word_sub]=new_vec/(2*num_neighbours)
-    # print(result_vector, ' ===========================')
+                # new_vec += calculate_cosine_sim(new_wvecs.query(pp_word), new_wvecs.query(word_sub))
+            # result_vector[word_sub] = (num_neighbours * calculate_cosine_sim(new_wvecs.query(word),
+            #                                                    new_wvecs.query(word_sub)) + new_vec) / 2 * num_neighbours
 
     '''
     #Lexical substitutions
