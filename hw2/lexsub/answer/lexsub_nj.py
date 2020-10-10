@@ -26,6 +26,8 @@ class LexSub:
         "Return ten guesses that are appropriate lexical substitutions for the word at sentence[index]."
         # print("word: ",sentence[index])
         new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
+        # new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=5)
+
         # new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10,wvecDict=self.wvecDict)
 
         return new_wvecs[:self.topn]
@@ -42,8 +44,8 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
 
     # wvec_dict = set(new_wvecs.keys())
     '''get top N words from GloVe that are most similar to word from text '''
-    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
-    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=500)))
+    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=500)))
 
 
     # wvec_dict = wvecDict
@@ -138,7 +140,9 @@ def read_lexicon(filename):
 
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
-    optparser.add_option("-i", "--inputfile", dest="input", default=os.path.join('data', 'input', 'dev.txt'), help="input file with target word in context")
+    # optparser.add_option("-i", "--inputfile", dest="input", default=os.path.join('data', 'input', 'dev.txt'), help="input file with target word in context")
+    optparser.add_option("-i", "--inputfile", dest="input", default=os.path.join('data', 'input', 'test.txt'), help="input file with target word in context")
+
     optparser.add_option("-w", "--wordvecfile", dest="wordvecfile", default=os.path.join('data', 'glove.6B.100d.magnitude'), help="word vectors file")
     optparser.add_option("-n", "--topn", dest="topn", default=10, help="produce these many guesses")
     optparser.add_option("-l", "--logfile", dest="logfile", default=None, help="log file for debugging")

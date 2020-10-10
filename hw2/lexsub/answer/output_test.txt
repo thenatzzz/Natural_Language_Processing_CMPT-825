@@ -1,0 +1,634 @@
+[0m[0KD:\Coding\SFU_CA\CMPT-825\nlpclass-1207-g-oasis\hw2\lexsub\venv\lib\site-packag[0Ke[?25l
+s\numpy\_distributor_init.py:32: UserWarning: loaded more than 1 DLL from .libs[0K:
+[0K
+D:\Coding\SFU_CA\CMPT-825\nlpclass-1207-g-oasis\hw2\lexsub\venv\lib\site-packag[0Ke
+s\numpy\.libs\libopenblas.NOIJJG62EMASZI6NYURL6JBKM4EVBGM7.gfortran-win_amd64.d[0Kl
+l[0K
+D:\Coding\SFU_CA\CMPT-825\nlpclass-1207-g-oasis\hw2\lexsub\venv\lib\site-packag[0Ke
+s\numpy\.libs\libopenblas.PYQHXLVVQ7VESDPUVUADXEVJOBGHJPAY.gfortran-win_amd64.d[0Kl
+l[0K
+  stacklevel=1)[0K
+[0K[?25h  0%|                                                  | 0/300 [00:00<?, ?it/s][0K[0Kb[?25l
+lue dark black bluish light shine glow dim shade colored[0K
+  0%|▏                                         | 1/300 [00:00<04:10,  1.19it/s][0K[?25h[0Kd[?25l
+im bright bleak faint dimmed shine brightly glow light gloomy[0K
+  1%|▎                                         | 2/300 [00:01<03:26,  1.44it/s][0K[?25h[0Kb[?25l
+lue dark black bluish light shine glow dim shade colored[0K
+  1%|▍                                         | 3/300 [00:01<03:25,  1.45it/s][0K[?25h[0Kb[?25l
+lue dark black bluish light shine glow dim shade colored[0K
+  1%|▌                                         | 4/300 [00:02<03:25,  1.44it/s][0K[?25h[0Ks[?25l
+hine star bright shining stellar dazzling glaring promising hotshot twinkle[0K
+  2%|▋                                         | 5/300 [00:02<02:47,  1.76it/s][0K[?25h[0Ks[?25l
+hine star bright shining stellar dazzling glaring promising hotshot twinkle[0K
+  2%|▊                                         | 6/300 [00:03<02:15,  2.17it/s][0K[?25h[0Kb[?25l
+lue dark black bluish light shine glow dim shade colored[0K
+  2%|▉                                         | 7/300 [00:03<02:36,  1.87it/s][0K[?25h[0Kb[?25l
+lue dark black bluish light shine glow dim shade colored[0K
+  3%|█                                         | 8/300 [00:04<02:51,  1.71it/s][0K[?25h[0Kb[?25l
+lue dark black bluish light shine glow dim shade colored[0K
+  3%|█▎                                        | 9/300 [00:05<02:59,  1.62it/s][0K[?25h[0Kb[?25l
+lue dark black bluish light shine glow dim shade colored[0K
+  3%|█▎                                       | 10/300 [00:05<03:06,  1.56it/s][0K[?25h[0Kf[?25l
+ilm cinema movie flick picture animation starring star video show[0K
+  4%|█▌                                       | 11/300 [00:06<02:31,  1.90it/s][0K[?25h[0Km[?25l
+ovie flick picture starring star drama animation cinematography filming life[0K
+  4%|█▋                                       | 12/300 [00:06<02:23,  2.00it/s][0K[?25h[0Km[?25l
+ovie flick picture starring star drama animation cinematography filming life[0K
+  4%|█▊                                       | 13/300 [00:06<02:05,  2.29it/s][0K[?25h[0Km[?25l
+ovie flick picture starring star drama animation cinematography filming life[0K
+  5%|█▉                                       | 14/300 [00:07<01:52,  2.55it/s][0K[?25h[0Km[?25l
+ovie flick picture starring star drama animation cinematography filming life[0K
+  5%|██                                       | 15/300 [00:07<01:43,  2.76it/s][0K[?25h[0Km[?25l
+ovie flick picture starring star drama animation cinematography filming life[0K
+  5%|██▏                                      | 16/300 [00:07<01:36,  2.93it/s][0K[?25h[0Kf[?25l
+ilm cinema movie flick picture animation starring star video show[0K
+  6%|██▎                                      | 17/300 [00:07<01:23,  3.38it/s][0K[?25h[0Km[?25l
+ovie flick picture starring star drama animation cinematography filming life[0K
+  6%|██▍                                      | 18/300 [00:08<01:23,  3.39it/s][0K[?25h[0Km[?25l
+ovie flick picture starring star drama animation cinematography filming life[0K
+  6%|██▌                                      | 19/300 [00:08<01:22,  3.40it/s][0K[?25h[0Kf[?25l
+ilm cinema movie flick picture animation starring star video show[0K
+  7%|██▋                                      | 20/300 [00:08<01:13,  3.81it/s][0K[?25h[0Kt[?25l
+ake going leaving giving away before stop part off direct[0K
+  7%|██▊                                      | 21/300 [00:09<01:53,  2.46it/s][0K[?25h[0Kl[?25l
+ast back second turned after winning taking ended over finally[0K
+  7%|███                                      | 22/300 [00:09<02:06,  2.20it/s][0K[?25h[0Kg[?25l
+ive make go leave get will hold come do bring[0K
+  8%|███▏                                     | 23/300 [00:10<02:47,  1.65it/s][0K[?25h[0Kt[?25l
+ake turn choose way bring place go give work get[0K
+  8%|███▎                                     | 24/300 [00:11<02:59,  1.54it/s][0K[?25h[0Kg[?25l
+ive make go leave get will hold come do bring[0K
+  8%|███▍                                     | 25/300 [00:12<03:17,  1.39it/s][0K[?25h[0Kg[?25l
+ive make go leave get will hold come do bring[0K
+  9%|███▌                                     | 26/300 [00:13<03:29,  1.31it/s][0K[?25h[0Kl[?25l
+ast back second turned after winning taking ended over finally[0K
+  9%|███▋                                     | 27/300 [00:13<03:07,  1.46it/s][0K[?25h[0Kg[?25l
+ive make go leave get will hold come do bring[0K
+  9%|███▊                                     | 28/300 [00:14<03:21,  1.35it/s][0K[?25h[0Kg[?25l
+ive make go leave get will hold come do bring[0K
+ 10%|███▉                                     | 29/300 [00:15<03:31,  1.28it/s][0K[?25h[0Kl[?25l
+ast back second turned after winning taking ended over finally[0K
+ 10%|████                                     | 30/300 [00:16<03:08,  1.43it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 10%|████▏                                    | 31/300 [00:17<03:17,  1.36it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 11%|████▎                                    | 32/300 [00:17<03:17,  1.36it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 11%|████▌                                    | 33/300 [00:18<03:17,  1.35it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 11%|████▋                                    | 34/300 [00:19<03:17,  1.35it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 12%|████▊                                    | 35/300 [00:20<03:17,  1.34it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 12%|████▉                                    | 36/300 [00:20<03:16,  1.34it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 12%|█████                                    | 37/300 [00:21<03:16,  1.34it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 13%|█████▏                                   | 38/300 [00:22<03:15,  1.34it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K[?25h[?25l
+ 13%|█████▎                                   | 39/300 [00:23<03:14,  1.34it/s][0K[?25h[0Kl[?25l
+oose slack stiff grip slow tough leash behind thin steady[0K
+ 13%|█████▍                                   | 40/300 [00:23<03:14,  1.34it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 14%|█████▌                                   | 41/300 [00:24<03:05,  1.40it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 14%|█████▋                                   | 42/300 [00:24<02:52,  1.49it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 14%|█████▉                                   | 43/300 [00:25<02:43,  1.57it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 15%|██████                                   | 44/300 [00:26<02:37,  1.62it/s][0K[?25h[0Ko[?25l
+utdoor outside stop block forbidden glass smoke prohibited place shoes[0K
+ 15%|██████▏                                  | 45/300 [00:26<02:12,  1.93it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 15%|██████▎                                  | 46/300 [00:26<02:15,  1.88it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 16%|██████▍                                  | 47/300 [00:27<02:18,  1.82it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 16%|██████▌                                  | 48/300 [00:28<02:19,  1.80it/s][0K[?25h[0Ko[?25l
+utdoor outside stop block forbidden glass smoke prohibited place shoes[0K
+ 16%|██████▋                                  | 49/300 [00:28<01:54,  2.19it/s][0K[?25h[0Kt[?25l
+able club board room lobby hall outside entrance entry tip[0K
+ 17%|██████▊                                  | 50/300 [00:28<02:02,  2.04it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 17%|██████▉                                  | 51/300 [00:29<02:27,  1.69it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 17%|███████                                  | 52/300 [00:30<02:35,  1.59it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 18%|███████▏                                 | 53/300 [00:31<02:40,  1.54it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 18%|███████▍                                 | 54/300 [00:31<02:44,  1.50it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 18%|███████▌                                 | 55/300 [00:32<02:46,  1.47it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 19%|███████▋                                 | 56/300 [00:33<02:48,  1.45it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 19%|███████▊                                 | 57/300 [00:33<02:49,  1.43it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 19%|███████▉                                 | 58/300 [00:34<02:49,  1.43it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 20%|████████                                 | 59/300 [00:35<02:49,  1.42it/s][0K[?25h[0Kh[?25l
+ead direct path line pass along on heading header blood[0K
+ 20%|████████▏                                | 60/300 [00:36<02:48,  1.42it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 20%|████████▎                                | 61/300 [00:36<02:46,  1.44it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 21%|████████▍                                | 62/300 [00:37<02:40,  1.49it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 21%|████████▌                                | 63/300 [00:38<02:35,  1.52it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 21%|████████▋                                | 64/300 [00:38<02:32,  1.55it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 22%|████████▉                                | 65/300 [00:39<02:29,  1.57it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 22%|█████████                                | 66/300 [00:39<02:28,  1.58it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 22%|█████████▏                               | 67/300 [00:40<02:26,  1.59it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 23%|█████████▎                               | 68/300 [00:41<02:24,  1.60it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 23%|█████████▍                               | 69/300 [00:41<02:24,  1.60it/s][0K[?25h[0Kt[?25l
+hen immediately soon after later subsequently shortly realized completed now[0K
+ 23%|█████████▌                               | 70/300 [00:42<02:35,  1.48it/s][0K[?25h[0Kd[?25l
+iscovered observed case have discovery origin still however near most[0K
+ 24%|█████████▋                               | 71/300 [00:43<02:23,  1.59it/s][0K[?25h[0Kg[?25l
+et learn search see discover look need come make retrieve[0K
+ 24%|█████████▊                               | 72/300 [00:43<02:42,  1.40it/s][0K[?25h[0Kd[?25l
+iscovered observed case have discovery origin still however near most[0K
+ 24%|█████████▉                               | 73/300 [00:44<02:23,  1.58it/s][0K[?25h[0Kg[?25l
+et learn search see discover look need come make retrieve[0K
+ 25%|██████████                               | 74/300 [00:45<02:35,  1.45it/s][0K[?25h[0Kd[?25l
+iscovered observed case have discovery origin still however near most[0K
+ 25%|██████████▎                              | 75/300 [00:45<02:18,  1.63it/s][0K[?25h[0Kg[?25l
+et learn search see discover look need come make retrieve[0K
+ 25%|██████████▍                              | 76/300 [00:46<02:31,  1.48it/s][0K[?25h[0Kg[?25l
+et learn search see discover look need come make retrieve[0K
+ 26%|██████████▌                              | 77/300 [00:47<02:40,  1.39it/s][0K[?25h[0Kg[?25l
+et learn search see discover look need come make retrieve[0K
+ 26%|██████████▋                              | 78/300 [00:48<02:46,  1.33it/s][0K[?25h[0Kf[?25l
+ind discovery protagonist retrieve discover mother unknown search story evidenc[0Ke
+[0K
+ 26%|██████████▊                              | 79/300 [00:48<02:34,  1.43it/s][0K[?25h[0Kd[?25l
+iscovered observed case have discovery origin still however near most[0K
+ 27%|██████████▉                              | 80/300 [00:49<02:16,  1.61it/s][0K[?25h[0Kr[?25l
+epair fixing correct rectify repeat check amend restore duplicate remedy[0K
+ 27%|███████████                              | 81/300 [00:49<02:30,  1.46it/s][0K[?25h[0Kr[?25l
+epair fixing correct rectify repeat check amend restore duplicate remedy[0K
+ 27%|███████████▏                             | 82/300 [00:50<02:33,  1.42it/s][0K[?25h[0Kf[?25l
+ix graft bribery repair cheating dirty repetition investigating charge repeat[0K
+ 28%|███████████▎                             | 83/300 [00:51<02:06,  1.71it/s][0K[?25h[0Kr[?25l
+epair fixing correct rectify repeat check amend restore duplicate remedy[0K
+ 28%|███████████▍                             | 84/300 [00:51<02:17,  1.58it/s][0K[?25h[0Kv[?25l
+alue rate price stock exchange standard terms cost switch be[0K
+ 28%|███████████▌                             | 85/300 [00:52<02:14,  1.60it/s][0K[?25h[0Kr[?25l
+epair fixing correct rectify repeat check amend restore duplicate remedy[0K
+ 29%|███████████▊                             | 86/300 [00:53<02:22,  1.50it/s][0K[?25h[0Kv[?25l
+alue rate price stock exchange standard terms cost switch be[0K
+ 29%|███████████▉                             | 87/300 [00:53<02:12,  1.61it/s][0K[?25h[0Kv[?25l
+alue rate price stock exchange standard terms cost switch be[0K
+ 29%|████████████                             | 88/300 [00:54<02:04,  1.70it/s][0K[?25h[0Kr[?25l
+epair fixing correct rectify repeat check amend restore duplicate remedy[0K
+ 30%|████████████▏                            | 89/300 [00:54<02:14,  1.57it/s][0K[?25h[0Kv[?25l
+alue rate price stock exchange standard terms cost switch be[0K
+ 30%|████████████▎                            | 90/300 [00:55<02:06,  1.66it/s][0K[?25h[?25l[0Km[80G[?25h[?25l
+anage run care escape operate play break put well lead[0K
+ 30%|████████████▍                            | 91/300 [00:56<02:16,  1.53it/s][0K[?25h[0Km[?25l
+anage run care escape operate play break put well lead[0K
+ 31%|████████████▌                            | 92/300 [00:56<02:18,  1.50it/s][0K[?25h[0Km[?25l
+anager director principal chief head administrator executive manage oversee bus[0Ki
+ness[0K
+ 31%|████████████▋                            | 93/300 [00:57<01:54,  1.80it/s][0K[?25h[?25l[0Kh[80G[?25h[?25l
+andle acquire develop assume sustain invest maintain establish operate keep[0K
+ 31%|████████████▊                            | 94/300 [00:58<02:31,  1.36it/s][0K[?25h[0Kh[?25l
+andle acquire develop assume sustain invest maintain establish operate keep[0K
+ 32%|████████████▉                            | 95/300 [00:59<02:51,  1.20it/s][0K[?25h[0Kh[?25l
+andle acquire develop assume sustain invest maintain establish operate keep[0K
+ 32%|█████████████                            | 96/300 [01:00<03:05,  1.10it/s][0K[?25h[0Kh[?25l
+andle acquire develop assume sustain invest maintain establish operate keep[0K
+ 32%|█████████████▎                           | 97/300 [01:01<03:14,  1.04it/s][0K[?25h[0Km[?25l
+anage run care escape operate play break put well lead[0K
+ 33%|█████████████▍                           | 98/300 [01:02<02:58,  1.13it/s][0K[?25h[0Kh[?25l
+andle acquire develop assume sustain invest maintain establish operate keep[0K
+ 33%|█████████████▌                           | 99/300 [01:03<03:08,  1.06it/s][0K[?25h[0Km[?25l
+anage run care escape operate play break put well lead[0K
+ 33%|█████████████▎                          | 100/300 [01:04<02:53,  1.15it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 34%|█████████████▍                          | 101/300 [01:04<02:43,  1.22it/s][0K[?25h[0Kg[?25l
+oddamned goddamn idiotic imbecilic cockamamie whacky archetypical prototypical [0Kg
+randness enormousness[0K
+[0K[?25hpalatable toothsome smidgen smidge seemly decorous cost-effective cost-efficien[0Kt[?25l
+ gratifyingly satisfyingly[0K
+ 34%|█████████████▋                          | 103/300 [01:05<01:59,  1.64it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 35%|█████████████▊                          | 104/300 [01:05<01:59,  1.65it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 35%|██████████████                          | 105/300 [01:06<01:58,  1.65it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 35%|██████████████▏                         | 106/300 [01:06<01:58,  1.64it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 36%|██████████████▎                         | 107/300 [01:07<01:57,  1.64it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 36%|██████████████▍                         | 108/300 [01:08<01:57,  1.63it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 36%|██████████████▌                         | 109/300 [01:08<01:57,  1.63it/s][0K[?25h[0Kt[?25l
+idy snappy easy delightful elegant graceful tall respectable lovely adorable[0K
+ 37%|██████████████▋                         | 110/300 [01:09<01:56,  1.63it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 37%|██████████████▊                         | 111/300 [01:09<01:54,  1.66it/s][0K[1G[?25h[80G[?25l 37%|██████████████▊                         | 111/300 [01:09<01:54,  1.66it/s][0Kb
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 37%|██████████████▉                         | 112/300 [01:10<01:48,  1.74it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 38%|███████████████                         | 113/300 [01:10<01:44,  1.79it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 38%|███████████████▏                        | 114/300 [01:11<01:41,  1.83it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 38%|███████████████▎                        | 115/300 [01:11<01:39,  1.87it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 39%|███████████████▍                        | 116/300 [01:12<01:37,  1.89it/s][0K[?25h[0Kr[?25l
+ich plentiful healthier fitter prosperous comfortable well-off productive under[0Kd
+eveloped developing[0K
+ 39%|███████████████▌                        | 117/300 [01:12<01:22,  2.21it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 39%|███████████████▋                        | 118/300 [01:13<01:25,  2.12it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 40%|███████████████▊                        | 119/300 [01:13<01:27,  2.06it/s][0K[?25h[0Kb[?25l
+ig handsome especially particularly grown giving large raw natural easy[0K
+ 40%|████████████████                        | 120/300 [01:14<01:28,  2.04it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 40%|████████████████▏                       | 121/300 [01:14<01:25,  2.08it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 41%|████████████████▎                       | 122/300 [01:15<01:19,  2.25it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 41%|████████████████▍                       | 123/300 [01:15<01:14,  2.38it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 41%|████████████████▌                       | 124/300 [01:15<01:11,  2.47it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 42%|████████████████▋                       | 125/300 [01:16<01:08,  2.54it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 42%|████████████████▊                       | 126/300 [01:16<01:06,  2.60it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 42%|████████████████▉                       | 127/300 [01:16<01:05,  2.64it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 43%|█████████████████                       | 128/300 [01:17<01:04,  2.67it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 43%|█████████████████▏                      | 129/300 [01:17<01:03,  2.70it/s][0K[?25h[0Ks[?25l
+eriously badly gravely hurt weakened poorly ill damage wounded suffering[0K
+ 43%|█████████████████▎                      | 130/300 [01:18<01:02,  2.70it/s][0K[?25h[0Kf[?25l
+ace lay hold fit put front stay ready go position[0K
+ 44%|█████████████████▍                      | 131/300 [01:18<01:32,  1.83it/s][0K[?25h[0Kf[?25l
+ace lay hold fit put front stay ready go position[0K
+ 44%|█████████████████▌                      | 132/300 [01:19<01:48,  1.55it/s][0K[?25h[0Kf[?25l
+ace lay hold fit put front stay ready go position[0K
+ 44%|█████████████████▋                      | 133/300 [01:20<01:59,  1.40it/s][0K[?25h[0Ks[?25l
+tand pedestal square today now situated placed base located front[0K
+ 45%|█████████████████▊                      | 134/300 [01:21<01:55,  1.43it/s][0K[?25h[0Ks[?25l
+tand pedestal square today now situated placed base located front[0K
+ 45%|██████████████████                      | 135/300 [01:21<01:50,  1.50it/s][0K[?25h[0Ks[?25l
+tand pedestal square today now situated placed base located front[0K
+ 45%|██████████████████▏                     | 136/300 [01:22<01:45,  1.55it/s][0K[?25h[0Ks[?25l
+tand pedestal square today now situated placed base located front[0K
+ 46%|██████████████████▎                     | 137/300 [01:23<01:42,  1.59it/s][0K[?25h[0Kf[?25l
+ace lay hold fit put front stay ready go position[0K
+ 46%|██████████████████▍                     | 138/300 [01:24<01:54,  1.42it/s][0K[?25h[0Kf[?25l
+ace lay hold fit put front stay ready go position[0K
+ 46%|██████████████████▌                     | 139/300 [01:24<02:01,  1.32it/s][0K[?25h[0Kf[?25l
+ace lay hold fit put front stay ready go position[0K
+ 47%|██████████████████▋                     | 140/300 [01:25<02:06,  1.26it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 47%|██████████████████▊                     | 141/300 [01:26<02:03,  1.28it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 47%|██████████████████▉                     | 142/300 [01:27<01:57,  1.34it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 48%|███████████████████                     | 143/300 [01:27<01:53,  1.39it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 48%|███████████████████▏                    | 144/300 [01:28<01:50,  1.42it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 48%|███████████████████▎                    | 145/300 [01:29<01:47,  1.45it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 49%|███████████████████▍                    | 146/300 [01:29<01:45,  1.46it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 49%|███████████████████▌                    | 147/300 [01:30<01:44,  1.46it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 49%|███████████████████▋                    | 148/300 [01:31<01:42,  1.48it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 50%|███████████████████▊                    | 149/300 [01:31<01:41,  1.49it/s][0K[?25h[0Ka[?25l
+lso too work same much have like even besides so[0K
+ 50%|████████████████████                    | 150/300 [01:32<01:40,  1.49it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 50%|████████████████████▏                   | 151/300 [01:33<01:33,  1.59it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 51%|████████████████████▎                   | 152/300 [01:33<01:25,  1.73it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 51%|████████████████████▍                   | 153/300 [01:33<01:19,  1.85it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 51%|████████████████████▌                   | 154/300 [01:34<01:15,  1.94it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 52%|████████████████████▋                   | 155/300 [01:34<01:12,  2.01it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 52%|████████████████████▊                   | 156/300 [01:35<01:09,  2.06it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 52%|████████████████████▉                   | 157/300 [01:35<01:08,  2.09it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 53%|█████████████████████                   | 158/300 [01:36<01:06,  2.12it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 53%|█████████████████████▏                  | 159/300 [01:36<01:05,  2.15it/s][0K[?25h[0Ka[?25l
+nimal fauna common chase dog beast bird creature alien exotic[0K
+ 53%|█████████████████████▎                  | 160/300 [01:37<01:04,  2.16it/s][0K[?25h[0Kd[?25l
+o be come get have make let go find need[0K
+ 54%|█████████████████████▍                  | 161/300 [01:38<01:28,  1.56it/s][0K[?25h[0Kd[?25l
+o be come get have make let go find need[0K
+ 54%|█████████████████████▌                  | 162/300 [01:39<01:42,  1.34it/s][0K[?25h[0Kg[?25l
+lass trash garbage scraps pot pile piles drink tons mint[0K
+ 54%|█████████████████████▋                  | 163/300 [01:39<01:23,  1.65it/s][0K[?25h[0Kg[?25l
+lass trash garbage scraps pot pile piles drink tons mint[0K
+ 55%|█████████████████████▊                  | 164/300 [01:39<01:05,  2.07it/s][0K[?25h[0Kg[?25l
+lass trash garbage scraps pot pile piles drink tons mint[0K
+ 55%|██████████████████████                  | 165/300 [01:39<00:53,  2.52it/s][0K[?25h[0Kg[?25l
+lass trash garbage scraps pot pile piles drink tons mint[0K
+ 55%|██████████████████████▏                 | 166/300 [01:40<00:45,  2.97it/s][0K[?25h[0Kg[?25l
+lass trash garbage scraps pot pile piles drink tons mint[0K
+ 56%|██████████████████████▎                 | 167/300 [01:40<00:39,  3.40it/s][0K[?25h[0Kg[?25l
+lass trash garbage scraps pot pile piles drink tons mint[0K
+ 56%|██████████████████████▍                 | 168/300 [01:40<00:34,  3.78it/s][0K[?25h[0Kg[?25l
+lass trash garbage scraps pot pile piles drink tons mint[0K
+ 56%|██████████████████████▌                 | 169/300 [01:40<00:31,  4.12it/s][0K[?25h[0Kd[?25l
+o be come get have make let go find need[0K
+ 57%|██████████████████████▋                 | 170/300 [01:41<01:00,  2.14it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 57%|██████████████████████▊                 | 171/300 [01:42<01:09,  1.85it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 57%|██████████████████████▉                 | 172/300 [01:43<01:13,  1.75it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 58%|███████████████████████                 | 173/300 [01:43<01:15,  1.67it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 58%|███████████████████████▏                | 174/300 [01:44<01:16,  1.64it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 58%|███████████████████████▎                | 175/300 [01:44<01:17,  1.62it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 59%|███████████████████████▍                | 176/300 [01:45<01:17,  1.60it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 59%|███████████████████████▌                | 177/300 [01:46<01:19,  1.55it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 59%|███████████████████████▋                | 178/300 [01:46<01:18,  1.55it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 60%|███████████████████████▊                | 179/300 [01:47<01:17,  1.56it/s][0K[?25h[0Kb[?25l
+lack blue shade bright light shadow sinister gray ghost dense[0K
+ 60%|████████████████████████                | 180/300 [01:48<01:17,  1.56it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 60%|████████████████████████▏               | 181/300 [01:48<01:09,  1.70it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 61%|████████████████████████▎               | 182/300 [01:49<01:02,  1.90it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 61%|████████████████████████▍               | 183/300 [01:49<00:56,  2.07it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 61%|████████████████████████▌               | 184/300 [01:49<00:52,  2.22it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 62%|████████████████████████▋               | 185/300 [01:50<00:48,  2.35it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 62%|████████████████████████▊               | 186/300 [01:50<00:46,  2.43it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 62%|████████████████████████▉               | 187/300 [01:50<00:45,  2.50it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 63%|█████████████████████████               | 188/300 [01:51<00:44,  2.54it/s][0K[?25h[0Ke[?25l
+xam test examine inquiry inspection study review enquiry research assessment[0K
+ 63%|█████████████████████████▏              | 189/300 [01:51<00:42,  2.58it/s][0K[?25h[0Ke[?25l
+xam examination testing test scrutiny matric matriculation certificate certific[0Ka
+tion syllabus[0K
+ 63%|█████████████████████████▎              | 190/300 [01:51<00:39,  2.81it/s][0K[?25h[0Kh[?25l
+urt have wounded cause seriously risk danger badly fear suffering[0K
+ 64%|█████████████████████████▍              | 191/300 [01:52<00:38,  2.80it/s][0K[?25h[0Kf[?25l
+ear avert avoid prevent retaliation prompting revenge concern forestall warn[0K
+ 64%|█████████████████████████▌              | 192/300 [01:52<00:38,  2.77it/s][0K[?25h[0Kf[?25l
+ear concern ease worry interest terror allay uncertainty panic affected[0K
+ 64%|█████████████████████████▋              | 193/300 [01:53<00:38,  2.79it/s][0K[?25h[0Kf[?25l
+ear concern ease worry interest terror allay uncertainty panic affected[0K
+ 65%|█████████████████████████▊              | 194/300 [01:53<00:35,  2.97it/s][0K[?25h[0Kh[?25l
+urt have wounded cause seriously risk danger badly fear suffering[0K
+ 65%|██████████████████████████              | 195/300 [01:53<00:33,  3.10it/s][0K[?25h[?25l[0Kh[80G[?25h[?25l
+urt have wounded cause seriously risk danger badly fear suffering[0K
+ 65%|██████████████████████████▏             | 196/300 [01:53<00:32,  3.21it/s][0K[?25h[0Kw[?25l
+orry terror concern panic risk danger reason trouble lack doubt[0K
+ 66%|██████████████████████████▎             | 197/300 [01:54<00:41,  2.50it/s][0K[?25h[0Kh[?25l
+urt have wounded cause seriously risk danger badly fear suffering[0K
+ 66%|██████████████████████████▍             | 198/300 [01:54<00:37,  2.74it/s][0K[?25h[0Kh[?25l
+urt have wounded cause seriously risk danger badly fear suffering[0K
+ 66%|██████████████████████████▌             | 199/300 [01:55<00:34,  2.93it/s][0K[?25h[0Kw[?25l
+orry terror concern panic risk danger reason trouble lack doubt[0K
+ 67%|██████████████████████████▋             | 200/300 [01:55<00:40,  2.49it/s][0K[?25h[0Kr[?25l
+emember imagine pretend know love hear wish understand think guess[0K
+ 67%|██████████████████████████▊             | 201/300 [01:56<00:48,  2.04it/s][0K[?25h[0Kf[?25l
+orever ruined always neglected ignored beloved undone lost doomed wanted[0K
+ 67%|██████████████████████████▉             | 202/300 [01:56<00:48,  2.01it/s][0K[?25h[0Kr[?25l
+emember imagine pretend know love hear wish understand think guess[0K
+ 68%|███████████████████████████             | 203/300 [01:57<00:52,  1.85it/s][0K[?25h[0Kr[?25l
+emember imagine pretend know love hear wish understand think guess[0K
+ 68%|███████████████████████████▏            | 204/300 [01:58<00:54,  1.76it/s][0K[?25h[0Kp[?25l
+retend guess know recite tell imagine learned knowing remember someone[0K
+ 68%|███████████████████████████▎            | 205/300 [01:58<00:48,  1.96it/s][0K[?25h[0Kr[?25l
+emember imagine pretend know love hear wish understand think guess[0K
+ 69%|███████████████████████████▍            | 206/300 [01:59<00:51,  1.83it/s][0K[?25h[0Kf[?25l
+orever ruined always neglected ignored beloved undone lost doomed wanted[0K
+ 69%|███████████████████████████▌            | 207/300 [01:59<00:48,  1.93it/s][0K[?25h[0Kf[?25l
+orever ruined always neglected ignored beloved undone lost doomed wanted[0K
+ 69%|███████████████████████████▋            | 208/300 [02:00<00:45,  2.01it/s][0K[?25h[0Kp[?25l
+retend guess know recite tell imagine learned knowing remember someone[0K
+ 70%|███████████████████████████▊            | 209/300 [02:00<00:40,  2.27it/s][0K[?25h[0Kr[?25l
+emember imagine pretend know love hear wish understand think guess[0K
+ 70%|████████████████████████████            | 210/300 [02:00<00:44,  2.01it/s][0K[?25h[0Ki[?25l
+ntestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K
+ 70%|████████████████████████████▏           | 211/300 [02:01<00:34,  2.56it/s][0K[?25h[0Ki[?25l
+ntestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K
+[0K[?25hintestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K[?25l
+ 71%|████████████████████████████▍           | 213/300 [02:01<00:26,  3.34it/s][0K[?25h[0Ki[?25l
+ntestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K
+[0K[?25hirk gall bothersome galling enclose envelop leaf foliage doubtlessly doubtless[0K[?25l
+ 72%|████████████████████████████▋           | 215/300 [02:01<00:20,  4.20it/s][0K[?25h[0Ki[?25l
+ntestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K
+[0K[?25hintestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K[?25l
+ 72%|████████████████████████████▉           | 217/300 [02:01<00:15,  5.19it/s][0K[?25h[0Ki[?25l
+ntestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K
+[0K[?25hirk gall bothersome galling enclose envelop leaf foliage doubtlessly doubtless[0K[?25l
+ 73%|█████████████████████████████▏          | 219/300 [02:01<00:12,  6.41it/s][0K[?25h[0Ki[?25l
+ntestine bowel stomach mortification gangrene toenail toe tummy ointment balm[0K
+[0K[?25hbleak stark gloomy dismal glum dreary dire dour dark downcast[0K[?25l
+ 74%|█████████████████████████████▍          | 221/300 [02:02<00:17,  4.43it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 74%|█████████████████████████████▌          | 222/300 [02:03<00:26,  2.98it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 74%|█████████████████████████████▋          | 223/300 [02:03<00:32,  2.40it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 75%|█████████████████████████████▊          | 224/300 [02:04<00:35,  2.13it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 75%|██████████████████████████████          | 225/300 [02:04<00:38,  1.95it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 75%|██████████████████████████████▏         | 226/300 [02:05<00:39,  1.86it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 76%|██████████████████████████████▎         | 227/300 [02:06<00:40,  1.80it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 76%|██████████████████████████████▍         | 228/300 [02:06<00:41,  1.75it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 76%|██████████████████████████████▌         | 229/300 [02:07<00:41,  1.73it/s][0K[?25h[0Kb[?25l
+leak stark gloomy dismal glum dreary dire dour dark downcast[0K
+ 77%|██████████████████████████████▋         | 230/300 [02:07<00:41,  1.70it/s][0K[?25h[0Kb[?25l
+elong lay behind can go plain exist sit lot side[0K
+ 77%|██████████████████████████████▊         | 231/300 [02:08<00:45,  1.51it/s][0K[?25h[0Kl[?25l
+ocated situated rest north-east southwest south-west south-east north-west edge[0K
+part[0K
+ 77%|██████████████████████████████▉         | 232/300 [02:09<00:41,  1.65it/s][0K[?25h[0Kb[?25l
+elong lay behind can go plain exist sit lot side[0K
+ 78%|███████████████████████████████         | 233/300 [02:10<00:43,  1.53it/s][0K[?25h[0Kl[?25l
+aid rest aside face apart cut turn question head groundwork[0K
+ 78%|███████████████████████████████▏        | 234/300 [02:10<00:42,  1.54it/s][0K[?25h[0Kl[?25l
+ocated situated rest north-east southwest south-west south-east north-west edge[0K
+part[0K
+ 78%|███████████████████████████████▎        | 235/300 [02:11<00:37,  1.73it/s][0K[?25h[0Kb[?25l
+elong lay behind can go plain exist sit lot side[0K
+ 79%|███████████████████████████████▍        | 236/300 [02:11<00:40,  1.58it/s][0K[?25h[0Kl[?25l
+aid rest aside face apart cut turn question head groundwork[0K
+ 79%|███████████████████████████████▌        | 237/300 [02:12<00:38,  1.63it/s][0K[?25h[0Km[?25l
+otionless still plain posing sitting pile rest apparently barren flat[0K
+ 79%|███████████████████████████████▋        | 238/300 [02:12<00:34,  1.82it/s][0K[?25h[0Km[?25l
+otionless still plain posing sitting pile rest apparently barren flat[0K
+ 80%|███████████████████████████████▊        | 239/300 [02:13<00:29,  2.05it/s][0K[?25h[0Km[?25l
+otionless still plain posing sitting pile rest apparently barren flat[0K
+ 80%|████████████████████████████████        | 240/300 [02:13<00:26,  2.26it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 80%|████████████████████████████████▏       | 241/300 [02:14<00:33,  1.77it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 81%|████████████████████████████████▎       | 242/300 [02:15<00:35,  1.61it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 81%|████████████████████████████████▍       | 243/300 [02:15<00:37,  1.52it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 81%|████████████████████████████████▌       | 244/300 [02:16<00:38,  1.46it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 82%|████████████████████████████████▋       | 245/300 [02:17<00:38,  1.42it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 82%|████████████████████████████████▊       | 246/300 [02:18<00:38,  1.39it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 82%|████████████████████████████████▉       | 247/300 [02:18<00:38,  1.37it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 83%|█████████████████████████████████       | 248/300 [02:19<00:38,  1.36it/s][0K[?25h[0Ku[?25l
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 83%|█████████████████████████████████▏      | 249/300 [02:20<00:37,  1.36it/s][0K[1G[?25h[80G[?25l 83%|█████████████████████████████████▏      | 249/300 [02:20<00:37,  1.36it/s][0Ku
+gly embarrassing dirty sticky awkward vicious foul slimy bitter wicked[0K
+ 83%|█████████████████████████████████▎      | 250/300 [02:21<00:36,  1.35it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 84%|█████████████████████████████████▍      | 251/300 [02:21<00:30,  1.59it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 84%|█████████████████████████████████▌      | 252/300 [02:21<00:25,  1.89it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 84%|█████████████████████████████████▋      | 253/300 [02:22<00:21,  2.16it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 85%|█████████████████████████████████▊      | 254/300 [02:22<00:19,  2.40it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 85%|██████████████████████████████████      | 255/300 [02:22<00:17,  2.62it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 85%|██████████████████████████████████▏     | 256/300 [02:22<00:15,  2.78it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 86%|██████████████████████████████████▎     | 257/300 [02:23<00:14,  2.92it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 86%|██████████████████████████████████▍     | 258/300 [02:23<00:13,  3.03it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 86%|██████████████████████████████████▌     | 259/300 [02:23<00:13,  3.10it/s][0K[?25h[0Ka[?25l
+lmost virtually roughly about some most approximately around total entire[0K
+ 87%|██████████████████████████████████▋     | 260/300 [02:24<00:12,  3.16it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 87%|██████████████████████████████████▊     | 261/300 [02:24<00:12,  3.11it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 87%|██████████████████████████████████▉     | 262/300 [02:24<00:11,  3.30it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 88%|███████████████████████████████████     | 263/300 [02:25<00:10,  3.44it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 88%|███████████████████████████████████▏    | 264/300 [02:25<00:10,  3.54it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 88%|███████████████████████████████████▎    | 265/300 [02:25<00:09,  3.60it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 89%|███████████████████████████████████▍    | 266/300 [02:25<00:09,  3.67it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 89%|███████████████████████████████████▌    | 267/300 [02:26<00:08,  3.72it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 89%|███████████████████████████████████▋    | 268/300 [02:26<00:08,  3.75it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 90%|███████████████████████████████████▊    | 269/300 [02:26<00:08,  3.77it/s][0K[?25h[0Ko[?25l
+utdoors outside open recreational amateur arena pavilion marquee fountain sprin[0Kg
+[0K
+ 90%|████████████████████████████████████    | 270/300 [02:26<00:07,  3.80it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 90%|████████████████████████████████████▏   | 271/300 [02:27<00:11,  2.55it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 91%|████████████████████████████████████▎   | 272/300 [02:28<00:12,  2.19it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 91%|████████████████████████████████████▍   | 273/300 [02:28<00:13,  1.98it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 91%|████████████████████████████████████▌   | 274/300 [02:29<00:13,  1.86it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 92%|████████████████████████████████████▋   | 275/300 [02:30<00:14,  1.78it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 92%|████████████████████████████████████▊   | 276/300 [02:30<00:13,  1.72it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 92%|████████████████████████████████████▉   | 277/300 [02:31<00:13,  1.69it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 93%|█████████████████████████████████████   | 278/300 [02:31<00:13,  1.66it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 93%|█████████████████████████████████████▏  | 279/300 [02:32<00:12,  1.65it/s][0K[?25h[0Ka[?25l
+dequate acceptable satisfactory tolerable logical reasonably decent enough fair[0K
+consistent[0K
+ 93%|█████████████████████████████████████▎  | 280/300 [02:33<00:12,  1.64it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 94%|█████████████████████████████████████▍  | 281/300 [02:33<00:12,  1.49it/s][0K[?25h[?25l[0Kr[80G[?25h[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 94%|█████████████████████████████████████▌  | 282/300 [02:34<00:12,  1.44it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 94%|█████████████████████████████████████▋  | 283/300 [02:35<00:12,  1.41it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 95%|█████████████████████████████████████▊  | 284/300 [02:36<00:11,  1.39it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 95%|██████████████████████████████████████  | 285/300 [02:36<00:10,  1.37it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 95%|██████████████████████████████████████▏ | 286/300 [02:37<00:10,  1.36it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 96%|██████████████████████████████████████▎ | 287/300 [02:38<00:09,  1.36it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 96%|██████████████████████████████████████▍ | 288/300 [02:39<00:08,  1.35it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 96%|██████████████████████████████████████▌ | 289/300 [02:39<00:08,  1.34it/s][0K[?25h[0Kr[?25l
+ugged wet tricky tough slippery slick tight loose sloppy straight[0K
+ 97%|██████████████████████████████████████▋ | 290/300 [02:40<00:07,  1.33it/s][0K[?25h[0Kr[?25l
+unning go working back second lead start home break last[0K
+ 97%|██████████████████████████████████████▊ | 291/300 [02:41<00:06,  1.30it/s][0K[?25h[0Kr[?25l
+un race course line going behind start directly speed move[0K
+ 97%|██████████████████████████████████████▉ | 292/300 [02:42<00:06,  1.33it/s][0K[?25h[0Kr[?25l
+unning run working race turned campaign off back second away[0K
+ 98%|███████████████████████████████████████ | 293/300 [02:42<00:04,  1.51it/s][0K[?25h[0Kr[?25l
+unning go working back second lead start home break last[0K
+ 98%|███████████████████████████████████████▏| 294/300 [02:43<00:04,  1.45it/s][0K[?25h[0Kr[?25l
+unning go working back second lead start home break last[0K
+ 98%|███████████████████████████████████████▎| 295/300 [02:44<00:03,  1.42it/s][0K[?25h[0Kr[?25l
+un race course line going behind start directly speed move[0K
+ 99%|███████████████████████████████████████▍| 296/300 [02:44<00:02,  1.45it/s][0K[?25h[0Kr[?25l
+unning run working race turned campaign off back second away[0K
+ 99%|███████████████████████████████████████▌| 297/300 [02:45<00:01,  1.67it/s][0K[?25h[0Ks[?25l
+treak run running play hit course score hour hr home[0K
+ 99%|███████████████████████████████████████▋| 298/300 [02:45<00:01,  1.93it/s][0K[?25h[0Ks[?25l
+treak run running play hit course score hour hr home[0K
+100%|███████████████████████████████████████▊| 299/300 [02:45<00:00,  2.25it/s][0K[?25h[0Kr[?25l
+unning go working back second lead start home break last[0K
+100%|████████████████████████████████████████| 300/300 [02:46<00:00,  1.80it/s][0K
+[0K[?25h
