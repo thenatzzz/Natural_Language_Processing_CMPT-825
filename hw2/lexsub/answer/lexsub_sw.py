@@ -1,5 +1,4 @@
-import os, sys, optparse
-import tqdm
+
 import os, sys, optparse
 import tqdm
 import numpy
