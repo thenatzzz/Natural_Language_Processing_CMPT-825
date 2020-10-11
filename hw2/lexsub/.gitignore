@@ -18,3 +18,14 @@ output.txt
 data/glove.6B.100d.magnitude
 answer/data/glove.6B.100d.txt
 data/glove.6B.100d.txt
+answer/pymagnitude
+old_zipout.py
+output_zip
+
+answer/dev.out
+answer/dev_33.txt
+answer/dev_36.txt
+answer/output_lexsub_41.txt
+answer/output_test.zip
+output_359366.zip
+answer/output_test.txt

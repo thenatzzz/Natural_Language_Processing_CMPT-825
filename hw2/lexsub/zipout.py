@@ -38,7 +38,7 @@ class ZipOutput:
         and returns lists of lines from stdout and stderr.
         """
 
-        # create the output files 
+        # create the output files
         if output_path is not None:
             stdout_path = os.path.join(output_path, "{}.out".format(base))
             stderr_path = os.path.join(output_path, "{}.err".format(base))
@@ -82,7 +82,7 @@ class ZipOutput:
                   print(prog.returncode, file=status_file)
             with open(stdout_path) as stdout_input:
                 stdout_lines = list(stdout_input)
-            with open(stderr_path) as stderr_input:
+            with open(stderr_path,encoding='utf-8') as stderr_input:
                 stderr_lines = list(stderr_input)
             if prog.stdin != None:
                 prog.stdin.close()
@@ -158,4 +158,3 @@ if __name__ == '__main__':
     else:
         logging.error("problem in creating output zip file")
         sys.exit(1)
-

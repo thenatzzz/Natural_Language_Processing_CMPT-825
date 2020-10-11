@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, sys, optparse
 import tqdm
 import pymagnitude
@@ -25,7 +27,13 @@ class LexSub:
     def substitutes(self, index, sentence):
         "Return ten guesses that are appropriate lexical substitutions for the word at sentence[index]."
         # print("word: ",sentence[index])
-        new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10)
+        word = sentence[index]
+
+        WINDOW = 5
+        # print(sentence,': sentence ',len(sentence))
+        list_context = get_context_word(sentence,index,window=5)
+        # print(list_context, '==================')
+        new_wvecs = retrofit(self.wvecs,self.lexicon,word,list_context,num_iters=10)
         # new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=5)
 
         # new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=10,wvecDict=self.wvecDict)
@@ -33,10 +41,30 @@ class LexSub:
         return new_wvecs[:self.topn]
         # return(list(map(lambda k: k[0], self.wvecs.most_similar(sentence[index], topn=self.topn))))
 
+def get_context_word(sentence,index,window=5):
+    # check index at starting sentence
+    if index-window < 0:
+        str_idx = 0
+    else:
+        str_idx = index-window
+
+    # check index at ending sentence
+    if index+window >= len(sentence):
+        end_idx =len(sentence)-1
+    else:
+        end_idx = index+window
+
+    list_context = []
+    for idx in range(str_idx,end_idx+1):
+        if idx == index:
+            continue
+        list_context.append(sentence[idx])
+    return list_context
+
 
 '''Helper function'''
 # def retrofit(wvecs,lexicon,word,num_iters=10,wvecDict=None):
-def retrofit(wvecs,lexicon,word,num_iters=10):
+def retrofit(wvecs,lexicon,word,list_context,num_iters=10):
 
     # new_wvecs = deepcopy(wvecs)
     '''initialize new word vector'''
@@ -44,8 +72,8 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
 
     # wvec_dict = set(new_wvecs.keys())
     '''get top N words from GloVe that are most similar to word from text '''
-    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
-    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=500)))
+    wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=150)))
+    # wvec_dict = set(map(lambda k: k[0], wvecs.most_similar(word, topn=500)))
 
 
     # wvec_dict = wvecDict
@@ -71,13 +99,29 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
                 continue
             # the weight of the data estimate if the number of neighbours
             new_vec = num_neighbours * wvecs.query(word_sub)
+
             # loop over neighbours and add to new vector (currently with weight 1)
-            for pp_word in word_neighbours:
-                new_vec += new_wvecs.query(pp_word)
-            result_vector[word_sub]=new_vec/(2*num_neighbours)
+            # for pp_word in word_neighbours: # lexical synonym
+                # new_vec += new_wvecs.query(pp_word)
+            # result_vector[word_sub]=new_vec/(2*num_neighbours)
+
                 # new_vec += calculate_cosine_sim(new_wvecs.query(pp_word), new_wvecs.query(word_sub))
             # result_vector[word_sub] = (num_neighbours * calculate_cosine_sim(new_wvecs.query(word),
                                                                # new_wvecs.query(word_sub)) + new_vec) / 2 * num_neighbours
+            sum_context_lexcicalSyn = 0
+            num_context_word = len(list_context)
+
+            lexical_adjustment = 0 # BalAdd
+            for pp_word in word_neighbours: # lexical synonym
+                new_vec += new_wvecs.query(pp_word)
+
+                lexical_adjustment =num_context_word * calculate_cosine_sim(new_wvecs.query(pp_word),new_wvecs.query(word_sub))
+                for context_word in list_context:
+                    sum_context_lexcicalSyn += calculate_cosine_sim(new_wvecs.query(pp_word),new_wvecs.query(context_word))
+                lexical_adjustment = (lexical_adjustment+ sum_context_lexcicalSyn)/(2*num_context_word)
+
+            # first eq is retrofitting, second is lexical adjustment
+            result_vector[word_sub]=(new_vec/(2*num_neighbours)) + lexical_adjustment
 
     '''
     #Lexical substitutions
@@ -110,6 +154,7 @@ def retrofit(wvecs,lexicon,word,num_iters=10):
     for word,vector in result_vector.items():
         dict_similarity_result[word] = calculate_cosine_sim(vector_mainWord, vector)
 
+
     '''sort result dict by similarity'''
     dict_similarity_result={k: v for k, v in sorted(dict_similarity_result.items(), key=lambda item: item[1],reverse=True)}
 
@@ -140,8 +185,8 @@ def read_lexicon(filename):
 
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
-    # optparser.add_option("-i", "--inputfile", dest="input", default=os.path.join('data', 'input', 'dev.txt'), help="input file with target word in context")
-    optparser.add_option("-i", "--inputfile", dest="input", default=os.path.join('data', 'input', 'test.txt'), help="input file with target word in context")
+    optparser.add_option("-i", "--inputfile", dest="input", default=os.path.join('data', 'input', 'dev.txt'), help="input file with target word in context")
+    # optparser.add_option("-i", "--inputfile", dest="input", default=os.path.join('data', 'input', 'test.txt'), help="input file with target word in context")
 
     optparser.add_option("-w", "--wordvecfile", dest="wordvecfile", default=os.path.join('data', 'glove.6B.100d.magnitude'), help="word vectors file")
     optparser.add_option("-n", "--topn", dest="topn", default=10, help="produce these many guesses")
@@ -154,8 +199,6 @@ if __name__ == '__main__':
         logging.basicConfig(filename=opts.logfile, filemode='w', level=logging.DEBUG)
 
     lexicon = read_lexicon(opts.lexicon)
-    # wvecs = read_glove(opts.wordvecfile)
-    # print(wvecs)
     lexsub = LexSub(opts.wordvecfile, int(opts.topn),lexicon)
 
     num_lines = sum(1 for line in open(opts.input,'r'))
@@ -169,7 +212,7 @@ if __name__ == '__main__':
 
             # print("fields: ", fields)
             print(" ".join(lexsub.substitutes(int(fields[0].strip()), fields[1].strip().split())))
-            # print('\n')
+            print('\n')
             # if i==5:
                 # break
             i += 1
