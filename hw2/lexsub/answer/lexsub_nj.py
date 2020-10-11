@@ -31,7 +31,7 @@ class LexSub:
 
         WINDOW = 5
         # print(sentence,': sentence ',len(sentence))
-        list_context = get_context_word(sentence,index,window=5)
+        list_context = get_context_word(sentence,index,window=WINDOW)
         # print(list_context, '==================')
         new_wvecs = retrofit(self.wvecs,self.lexicon,word,list_context,num_iters=10)
         # new_wvecs = retrofit(self.wvecs,self.lexicon,sentence[index],num_iters=5)
