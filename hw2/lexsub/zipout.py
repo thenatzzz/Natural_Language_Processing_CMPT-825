@@ -41,7 +41,9 @@ class ZipOutput:
         # create the output files
         if output_path is not None:
             stdout_path = os.path.join(output_path, "{}.out".format(base))
-            stderr_path = os.path.join(output_path, "{}.err".format(base))
+            # stderr_path = os.path.join(output_path, "{}.err".format(base))
+            stderr_path = os.path.join(output_path, "{}00.out".format(base))
+
 
             # existing files are erased!
             stdout_file = open(stdout_path, 'w')
