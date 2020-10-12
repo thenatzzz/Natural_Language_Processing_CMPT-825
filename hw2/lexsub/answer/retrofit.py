@@ -90,7 +90,7 @@ def retrofit(wordVecs, lexicon, numIters):
             # loop over neighbours and add to new vector (currently with weight 1)
             for ppWord in wordNeighbours:
                 dis = calculate_cosine_sim(newWordVecs[ppWord], wordVecs[word])
-                newVec += (dis+0.6)*newWordVecs[ppWord]
+                newVec += (dis+0.8)*newWordVecs[ppWord]
             newWordVecs[word] = newVec/(2*numNeighbours)
     return newWordVecs
 
