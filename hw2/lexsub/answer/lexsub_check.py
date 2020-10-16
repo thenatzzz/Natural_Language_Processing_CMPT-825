@@ -6,12 +6,12 @@ def precision(ref_data, output_data):
     for (ref, output) in zip(ref_data, output_data):
         truth = set(ref.split('\t')[1].split())
         output_candidates = set(output.split()[:10])
-        print(truth)
-        print(output_candidates)
-        print('----')
+        # print(truth)
+        # print(output_candidates)
+        # print('----')
         if truth & output_candidates:
             tp += 1.
-            print('TRUEE !!')
+            # print('TRUEE !!')
         else:
             fp += 1.
     print("True positive: ",tp, " False positive:",fp)
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
 
         out_data = [str(x).strip() for x in outh.read().splitlines()]
-        print(out_data)
+        # print(out_data)
         output_data = out_data[:len(ref_data)]
         if len(ref_data) == len(output_data):
             print("Score={:.4f}".format(100*precision(ref_data, output_data)))
