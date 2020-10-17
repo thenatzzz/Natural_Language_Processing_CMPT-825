@@ -107,6 +107,8 @@ class LSTMTagger:
         loss = float("inf")
         for epoch in range(self.epochs):
             for sentence, tags in tqdm.tqdm(self.training_data):
+            # for sentence, tags in (self.training_data):
+
                 # Step 1. Remember that Pytorch accumulates gradients.
                 # We need to clear them out before each instance
                 self.model.zero_grad()
@@ -165,6 +167,8 @@ class LSTMTagger:
         self.model.eval()
         decoder_output = []
         for sent in tqdm.tqdm(input_data):
+        # for sent in (input_data):
+
             decoder_output.append(self.argmax(sent))
         return decoder_output
 
@@ -178,6 +182,8 @@ if __name__ == '__main__':
     optparser.add_option("-u", "--unknowntoken", dest="unk", default='[UNK]', help="unknown word token")
     optparser.add_option("-f", "--force", dest="force", action="store_true", default=False, help="force training phase (warning: can be slow)")
     optparser.add_option("-l", "--logfile", dest="logfile", default=None, help="log file for debugging")
+    optparser.add_option("-o", "--outputfile", dest="outputfile", default='output.txt', help="print result to output file")
+
     (opts, _) = optparser.parse_args()
 
     if opts.logfile is not None:
@@ -196,3 +202,11 @@ if __name__ == '__main__':
         decoder_output = chunker.decode(opts.inputfile)
 
     print("\n\n".join([ "\n".join(output) for output in decoder_output ]))
+
+    ''' Print out to file instead of using python ... > ... '''
+    original_stdout = sys.stdout
+    with open(opts.outputfile, 'w') as f:
+
+        sys.stdout = f # Change the standard output to the file we created.
+        print("\n\n".join([ "\n".join(output) for output in decoder_output ]),flush=True)
+        sys.stdout = original_stdout #
