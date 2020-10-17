@@ -10,11 +10,11 @@ We are going to implement Text summarization based on different algorithms and c
 ## Project scope:
 Only English texts will be used in this project.
 
-## Dataset:
+## Datasets:
 These are the datasets we will use in our project:
 1. CNN and Daily Mail news dataset, which can be downloaded online (https://cs.nyu.edu/~kcho/DMQA/)
 2. DUC 2001, 2002, 2003, 2004 dataset, which can be obtained by emailing NIST (https://www-nlpir.nist.gov/projects/duc/guidelines/2002.html)
 
-## Additional dataset:
+## Additional datasets:
 3. X-Sum is the dataset for abstractive models, which can be downloaded online (https://github.com/EdinburghNLP/XSum/tree/master/XSum-Dataset)
 4. Gigaword is a sentence summarization/headline generation task with short input documents, which can be downloaded online (https://github.com/eecrazy/ConstructingNEEG_IJCAI_2018, https://www.tensorflow.org/datasets/catalog/gigaword)
