@@ -1,8 +1,8 @@
-### Group name: Oasis
-
-### Team members: Nattapat Juthaprachakul (njuthapr); Siyu Wu (swa246)
-
 # Project Title: Text summarization from basic to advanced approaches.
+
+#### Group name: Oasis
+
+#### Team members: Nattapat Juthaprachakul (njuthapr); Siyu Wu (swa246)
 
 ## Abstract:
 We are going to implement Text summarization based on different algorithms and compare their performances on the same evaluation metrics. The techniques we are going to implement include basic approaches such as a count-based model and advanced approaches like Deeplearning. The main metric for model evaluation is ROUGE score (R-1, R-2, and R-L). Also, we will try both extractive and abstractive techniques.
