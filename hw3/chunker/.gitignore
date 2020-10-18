@@ -13,4 +13,5 @@ source.zip
 output.zip
 data/chunker.tar
 
-answer/data/chunker.tar
+answer/data/*.tar
+data/*.tar
