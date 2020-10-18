@@ -39,7 +39,7 @@ class LSTMTaggerModel(nn.Module):
         torch.manual_seed(1)
         super(LSTMTaggerModel, self).__init__()
         self.hidden_dim = hidden_dim
-
+        print(vocab_size,'vocab_size')
         self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
 
         # The LSTM takes word embeddings as inputs, and outputs hidden states
@@ -137,21 +137,25 @@ class LSTMTagger:
                 # Tensors of word indices.
                 # sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk)
                 sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk).cuda()
-                print(len(sentence_in),sentence)
+                print("len input:",len(sentence_in),sentence)
                 print(sentence_in)
-                print('-'*50,'\n')
+                # print(tags)
+
                 # targets = prepare_sequence(tags, self.tag_to_ix, self.unk)
                 targets = prepare_sequence(tags, self.tag_to_ix, self.unk).cuda()
-
+                print("len targets: ",len(targets))
+                print(targets)
                 # Step 3. Run our forward pass.
                 tag_scores = self.model(sentence_in)
-
+                print("len tag scores: ",len(tag_scores))
+                print(tag_scores)
                 # Step 4. Compute the loss, gradients, and update the parameters by
                 #  calling optimizer.step()
                 loss = loss_function(tag_scores, targets)
                 loss.backward()
                 self.optimizer.step()
 
+                print('-'*50,'\n')
             if epoch == self.epochs-1:
                 epoch_str = '' # last epoch so do not use epoch number in model filename
             else:
