@@ -55,7 +55,23 @@ class LSTMTaggerModel(nn.Module):
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
         tag_scores = F.log_softmax(tag_space, dim=1)
         return tag_scores
+# Find letter index from all_letters, e.g. "a" = 0
+def letterToIndex(letter):
+    return all_letters.find(letter)
 
+# Just for demonstration, turn a letter into a <1 x n_letters> Tensor
+def letterToTensor(letter):
+    tensor = torch.zeros(1, n_letters)
+    tensor[0][letterToIndex(letter)] = 1
+    return tensor
+
+# Turn a line into a <line_length x 1 x n_letters>,
+# or an array of one-hot letter vectors
+def lineToTensor(line):
+    tensor = torch.zeros(len(line), 1, n_letters)
+    for li, letter in enumerate(line):
+        tensor[li][0][letterToIndex(letter)] = 1
+    return tensor
 class LSTMTagger:
 
     def __init__(self, trainfile, modelfile, modelsuffix, unk="[UNK]", epochs=10, embedding_dim=128, hidden_dim=64):
@@ -121,7 +137,9 @@ class LSTMTagger:
                 # Tensors of word indices.
                 # sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk)
                 sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk).cuda()
-
+                print(len(sentence_in),sentence)
+                print(sentence_in)
+                print('-'*50,'\n')
                 # targets = prepare_sequence(tags, self.tag_to_ix, self.unk)
                 targets = prepare_sequence(tags, self.tag_to_ix, self.unk).cuda()
 
