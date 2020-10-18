@@ -1,11 +1,13 @@
 # Code adapted from original code by Robert Guthrie
-
 import os, sys, optparse, gzip, re, logging
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import tqdm
+
+# dtype = torch.cuda.FloatTensor
+torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 def read_conll(handle, input_idx=0, label_idx=2):
     conll_data = []
@@ -88,7 +90,9 @@ class LSTMTagger:
         logging.info("tag_to_ix:", self.tag_to_ix)
         logging.info("ix_to_tag:", self.ix_to_tag)
 
-        self.model = LSTMTaggerModel(self.embedding_dim, self.hidden_dim, len(self.word_to_ix), len(self.tag_to_ix))
+        # self.model = LSTMTaggerModel(self.embedding_dim, self.hidden_dim, len(self.word_to_ix), len(self.tag_to_ix))
+        self.model = LSTMTaggerModel(self.embedding_dim, self.hidden_dim, len(self.word_to_ix), len(self.tag_to_ix)).cuda()
+
         self.optimizer = optim.SGD(self.model.parameters(), lr=0.01)
 
     def argmax(self, seq):
@@ -115,8 +119,11 @@ class LSTMTagger:
 
                 # Step 2. Get our inputs ready for the network, that is, turn them into
                 # Tensors of word indices.
-                sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk)
-                targets = prepare_sequence(tags, self.tag_to_ix, self.unk)
+                # sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk)
+                sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk).cuda()
+
+                # targets = prepare_sequence(tags, self.tag_to_ix, self.unk)
+                targets = prepare_sequence(tags, self.tag_to_ix, self.unk).cuda()
 
                 # Step 3. Run our forward pass.
                 tag_scores = self.model(sentence_in)
