@@ -6,6 +6,11 @@ import torch.nn.functional as F
 import torch.optim as optim
 import tqdm
 
+import string
+import numpy as np
+
+INDEX_BEG = 0
+
 # dtype = torch.cuda.FloatTensor
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
@@ -49,8 +54,11 @@ class LSTMTaggerModel(nn.Module):
         # The linear layer that maps from hidden state space to tag space
         self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
 
-    def forward(self, sentence):
+    def forward(self, sentence,h):
+        print(sentence.shape, ' sentence shape')
         embeds = self.word_embeddings(sentence)
+        print(embeds.shape, " embed shape ,",h)
+        print(embeds.view(len(sentence), 1, -1).shape)
         lstm_out, _ = self.lstm(embeds.view(len(sentence), 1, -1))
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
         tag_scores = F.log_softmax(tag_space, dim=1)
@@ -125,9 +133,14 @@ class LSTMTagger:
 
         self.model.train()
         loss = float("inf")
+        i = 0
         for epoch in range(self.epochs):
+            if i == 4:
+                break
             for sentence, tags in tqdm.tqdm(self.training_data):
-            # for sentence, tags in (self.training_data):
+                i+= 1
+                if i == 4:
+                    break
 
                 # Step 1. Remember that Pytorch accumulates gradients.
                 # We need to clear them out before each instance
@@ -138,17 +151,55 @@ class LSTMTagger:
                 # sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk)
                 sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk).cuda()
                 print("len input:",len(sentence_in),sentence)
-                print(sentence_in)
+                # print(sentence_in)
                 # print(tags)
 
                 # targets = prepare_sequence(tags, self.tag_to_ix, self.unk)
                 targets = prepare_sequence(tags, self.tag_to_ix, self.unk).cuda()
                 print("len targets: ",len(targets))
-                print(targets)
+                # print(targets)
                 # Step 3. Run our forward pass.
-                tag_scores = self.model(sentence_in)
+
+                def encode_one_char(sentence,vector_2d,first_char=True):
+                    ''' vector size = string.printable == 100
+                     one-hot encoding only the first/last letter of word '''
+
+                    '''if word exists in string.printable, use 1; otherwise, 0'''
+                    # iterate word by word in the sentence
+                    for word,vector in zip(sentence,vector_2d):
+                        if word == '[UNK]':
+                            continue
+
+                        if first_char:
+                            index_word = INDEX_BEG
+                        else:
+                            index_word = len(word)-1
+
+                        letter = word[index_word]
+                        index_strPrintable= string.printable.find(letter) # letter to index
+                        vector[index_strPrintable] = 1
+                        # print("letter: {} and index: {}".format(letter,index_strPrintable))
+                        # print(vector)
+                    return vector_2d
+
+                # tag_scores = self.model(sentence_in)
+                # create character level vectors to concate with the embeddings
+                hello = string.printable
+
+                beginChar_vector = np.zeros((len(sentence),len(string.printable)))
+                beginChar_vector = encode_one_char(sentence,beginChar_vector,first_char=True)
+
+                endChar_vector = np.zeros((len(sentence),len(string.printable)))
+                endChar_vector = encode_one_char(sentence,endChar_vector,first_char=False)
+
+
+                # print("beginChar_vector shape: ",beginChar_vector.shape)
+
+
+                tag_scores = self.model(sentence_in,hello)
+
                 print("len tag scores: ",len(tag_scores))
-                print(tag_scores)
+                # print(tag_scores)
                 # Step 4. Compute the loss, gradients, and update the parameters by
                 #  calling optimizer.step()
                 loss = loss_function(tag_scores, targets)
