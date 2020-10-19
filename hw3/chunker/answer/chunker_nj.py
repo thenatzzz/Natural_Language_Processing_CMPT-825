@@ -38,13 +38,61 @@ def prepare_sequence(seq, to_ix, unk):
         idxs = [to_ix[w] for w in map(lambda w: unk if w not in to_ix else w, seq)]
     return torch.tensor(idxs, dtype=torch.long)
 
+################################################################
+'''Helper functions'''
+def encode_one_char(sentence,vector_2d,first_char=True):
+    ''' vector size = string.printable == 100
+     one-hot encoding only the first/last letter of word '''
+
+    '''if word exists in string.printable, use 1; otherwise, 0'''
+    # iterate word by word in the sentence
+    for word,vector in zip(sentence,vector_2d):
+        if word == '[UNK]':
+            continue
+
+        if first_char:
+            index_word = INDEX_BEG
+        else:
+            index_word = len(word)-1
+
+        letter = word[index_word]
+        index_strPrintable= string.printable.find(letter) # letter to index
+        vector[index_strPrintable] = 1.0
+        # print("letter: {} and index: {}".format(letter,index_strPrintable))
+        # print(vector)
+    return vector_2d
+def encode_internal_chars(sentence,vector_2d):
+    ''' vector size = string.printable == 100
+     Encoding only the internal letters of word  (excluding begining and ending chars)'''
+
+    # iterate word by word in the sentence
+    for word,vector in zip(sentence,vector_2d):
+        if word == '[UNK]':
+            continue
+
+        # iif word length < 3, there is no internal
+        if len(word) < 3:
+            continue
+
+        internal_word = word[1:-1]
+        # print(internal_word)
+        # interate letter in the internal word
+        for letter in internal_word:
+            index_strPrintable= string.printable.find(letter) # letter to index
+            vector[index_strPrintable] += 1.0
+            # print("letter: {} and index: {}".format(letter,index_strPrintable))
+        # print(vector)
+        # print('==='*20)
+    return vector_2d
+############################################################
+
+
 class LSTMTaggerModel(nn.Module):
 
     def __init__(self, embedding_dim, hidden_dim, vocab_size, tagset_size):
         torch.manual_seed(1)
         super(LSTMTaggerModel, self).__init__()
         self.hidden_dim = hidden_dim
-        print(vocab_size,'vocab_size')
         self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
 
         # The LSTM takes word embeddings as inputs, and outputs hidden states
@@ -54,32 +102,18 @@ class LSTMTaggerModel(nn.Module):
         # The linear layer that maps from hidden state space to tag space
         self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
 
-    def forward(self, sentence,h):
-        print(sentence.shape, ' sentence shape')
+    def forward(self, sentence,encoding_tensor):
+        # print(sentence.shape, ' sentence shape')
         embeds = self.word_embeddings(sentence)
-        print(embeds.shape, " embed shape ,",h)
-        print(embeds.view(len(sentence), 1, -1).shape)
+        # print(embeds.shape, " embedding shape ,",encoding_tensor.shape,": encoding tensor shape " )
+        stacked_embeds = torch.cat([embeds,encoding_tensor],dim=1)
+        # print(stacked_embeds.shape, " stacked_embeds.shape")
+        # print(embeds.view(len(sentence), 1, -1).shape)
         lstm_out, _ = self.lstm(embeds.view(len(sentence), 1, -1))
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
         tag_scores = F.log_softmax(tag_space, dim=1)
         return tag_scores
-# Find letter index from all_letters, e.g. "a" = 0
-def letterToIndex(letter):
-    return all_letters.find(letter)
 
-# Just for demonstration, turn a letter into a <1 x n_letters> Tensor
-def letterToTensor(letter):
-    tensor = torch.zeros(1, n_letters)
-    tensor[0][letterToIndex(letter)] = 1
-    return tensor
-
-# Turn a line into a <line_length x 1 x n_letters>,
-# or an array of one-hot letter vectors
-def lineToTensor(line):
-    tensor = torch.zeros(len(line), 1, n_letters)
-    for li, letter in enumerate(line):
-        tensor[li][0][letterToIndex(letter)] = 1
-    return tensor
 class LSTMTagger:
 
     def __init__(self, trainfile, modelfile, modelsuffix, unk="[UNK]", epochs=10, embedding_dim=128, hidden_dim=64):
@@ -128,6 +162,7 @@ class LSTMTagger:
                 output.append(self.ix_to_tag[int(tag_scores[i].argmax(dim=0))])
         return output
 
+
     def train(self):
         loss_function = nn.NLLLoss()
 
@@ -135,12 +170,12 @@ class LSTMTagger:
         loss = float("inf")
         i = 0
         for epoch in range(self.epochs):
-            if i == 4:
-                break
+            # if i == 4:
+                # break
             for sentence, tags in tqdm.tqdm(self.training_data):
                 i+= 1
-                if i == 4:
-                    break
+                # if i == 4:
+                    # break
 
                 # Step 1. Remember that Pytorch accumulates gradients.
                 # We need to clear them out before each instance
@@ -150,63 +185,51 @@ class LSTMTagger:
                 # Tensors of word indices.
                 # sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk)
                 sentence_in = prepare_sequence(sentence, self.word_to_ix, self.unk).cuda()
-                print("len input:",len(sentence_in),sentence)
-                # print(sentence_in)
-                # print(tags)
+                # print("len input:",len(sentence_in),sentence)
 
                 # targets = prepare_sequence(tags, self.tag_to_ix, self.unk)
                 targets = prepare_sequence(tags, self.tag_to_ix, self.unk).cuda()
-                print("len targets: ",len(targets))
-                # print(targets)
+                # print("len targets: ",len(targets))
+
                 # Step 3. Run our forward pass.
-
-                def encode_one_char(sentence,vector_2d,first_char=True):
-                    ''' vector size = string.printable == 100
-                     one-hot encoding only the first/last letter of word '''
-
-                    '''if word exists in string.printable, use 1; otherwise, 0'''
-                    # iterate word by word in the sentence
-                    for word,vector in zip(sentence,vector_2d):
-                        if word == '[UNK]':
-                            continue
-
-                        if first_char:
-                            index_word = INDEX_BEG
-                        else:
-                            index_word = len(word)-1
-
-                        letter = word[index_word]
-                        index_strPrintable= string.printable.find(letter) # letter to index
-                        vector[index_strPrintable] = 1
-                        # print("letter: {} and index: {}".format(letter,index_strPrintable))
-                        # print(vector)
-                    return vector_2d
-
                 # tag_scores = self.model(sentence_in)
                 # create character level vectors to concate with the embeddings
-                hello = string.printable
-
+                '''encoding the beginning charactor of all words in the sentence'''
                 beginChar_vector = np.zeros((len(sentence),len(string.printable)))
                 beginChar_vector = encode_one_char(sentence,beginChar_vector,first_char=True)
 
+                '''encoding the ending charactor of all words in the sentence'''
                 endChar_vector = np.zeros((len(sentence),len(string.printable)))
                 endChar_vector = encode_one_char(sentence,endChar_vector,first_char=False)
 
+                '''encoding all internal charactors of all words in the sentence'''
+                internal_vector = np.zeros((len(sentence),len(string.printable)))
+                internal_vector = encode_internal_chars(sentence,internal_vector)
 
-                # print("beginChar_vector shape: ",beginChar_vector.shape)
+                ''' concate all 3 vectors '''
+                encoding_vector = np.concatenate((beginChar_vector,internal_vector,endChar_vector),axis=1)
+                # print(beginChar_vector.shape,endChar_vector.shape,internal_vector.shape,encoding_vector.shape)
+
+                '''create Tensor from numpy object '''
+                # encoding_tensor = torch.tensor(encoding_vector, dtype=torch.float)
+                encoding_tensor = torch.tensor(encoding_vector, dtype=torch.float).cuda()
 
 
-                tag_scores = self.model(sentence_in,hello)
+                # with np.printoptions(threshold=np.inf):
+                    # print(endChar_vector)
 
-                print("len tag scores: ",len(tag_scores))
+                tag_scores = self.model(sentence_in,encoding_tensor)
+
+                # print("len tag scores: ",len(tag_scores))
                 # print(tag_scores)
+
                 # Step 4. Compute the loss, gradients, and update the parameters by
                 #  calling optimizer.step()
                 loss = loss_function(tag_scores, targets)
                 loss.backward()
                 self.optimizer.step()
 
-                print('-'*50,'\n')
+                # print('-'*50,'\n')
             if epoch == self.epochs-1:
                 epoch_str = '' # last epoch so do not use epoch number in model filename
             else:
