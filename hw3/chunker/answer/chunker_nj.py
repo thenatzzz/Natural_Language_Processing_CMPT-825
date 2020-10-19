@@ -313,3 +313,6 @@ if __name__ == '__main__':
         sys.stdout = f # Change the standard output to the file we created.
         print("\n\n".join([ "\n".join(output) for output in decoder_output ]),flush=True)
         sys.stdout = original_stdout #
+
+
+    # fix decode
