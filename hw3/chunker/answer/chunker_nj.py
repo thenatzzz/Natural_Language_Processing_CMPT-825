@@ -93,23 +93,29 @@ class LSTMTaggerModel(nn.Module):
         torch.manual_seed(1)
         super(LSTMTaggerModel, self).__init__()
         self.hidden_dim = hidden_dim
-        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
+        # self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
+        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim=128)
+
 
         # The LSTM takes word embeddings as inputs, and outputs hidden states
         # with dimensionality hidden_dim.
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim, bidirectional=False)
+        # self.lstm = nn.LSTM(embedding_dim, hidden_dim, bidirectional=False)
+        self.lstm = nn.LSTM(428, hidden_dim, bidirectional=False)
 
         # The linear layer that maps from hidden state space to tag space
         self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
 
-    def forward(self, sentence,encoding_tensor):
+    def forward(self, sentence,encoding_tensor=None):
         # print(sentence.shape, ' sentence shape')
         embeds = self.word_embeddings(sentence)
         # print(embeds.shape, " embedding shape ,",encoding_tensor.shape,": encoding tensor shape " )
-        stacked_embeds = torch.cat([embeds,encoding_tensor],dim=1)
+        if encoding_tensor is not None:
+            stacked_embeds = torch.cat([embeds,encoding_tensor],dim=1)
+            embeds = stacked_embeds
         # print(stacked_embeds.shape, " stacked_embeds.shape")
         # print(embeds.view(len(sentence), 1, -1).shape)
         lstm_out, _ = self.lstm(embeds.view(len(sentence), 1, -1))
+
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
         tag_scores = F.log_softmax(tag_space, dim=1)
         return tag_scores
@@ -157,7 +163,30 @@ class LSTMTagger:
         output = []
         with torch.no_grad():
             inputs = prepare_sequence(seq, self.word_to_ix, self.unk)
-            tag_scores = self.model(inputs)
+
+            sentence = seq
+            '''encoding the beginning charactor of all words in the sentence'''
+            beginChar_vector = np.zeros((len(sentence),len(string.printable)))
+            beginChar_vector = encode_one_char(sentence,beginChar_vector,first_char=True)
+
+            '''encoding the ending charactor of all words in the sentence'''
+            endChar_vector = np.zeros((len(sentence),len(string.printable)))
+            endChar_vector = encode_one_char(sentence,endChar_vector,first_char=False)
+
+            '''encoding all internal charactors of all words in the sentence'''
+            internal_vector = np.zeros((len(sentence),len(string.printable)))
+            internal_vector = encode_internal_chars(sentence,internal_vector)
+
+            ''' concate all 3 vectors '''
+            encoding_vector = np.concatenate((beginChar_vector,internal_vector,endChar_vector),axis=1)
+            # print(beginChar_vector.shape,endChar_vector.shape,internal_vector.shape,encoding_vector.shape)
+
+            '''create Tensor from numpy object '''
+            # encoding_tensor = torch.tensor(encoding_vector, dtype=torch.float)
+            encoding_tensor = torch.tensor(encoding_vector, dtype=torch.float).cuda()
+
+            # tag_scores = self.model(inputs)
+            tag_scores = self.model(inputs,encoding_tensor)
             for i in range(len(inputs)):
                 output.append(self.ix_to_tag[int(tag_scores[i].argmax(dim=0))])
         return output
@@ -218,7 +247,7 @@ class LSTMTagger:
                 # with np.printoptions(threshold=np.inf):
                     # print(endChar_vector)
 
-                tag_scores = self.model(sentence_in,encoding_tensor)
+                tag_scores = self.model(sentence_in,encoding_tensor=encoding_tensor)
 
                 # print("len tag scores: ",len(tag_scores))
                 # print(tag_scores)
@@ -295,7 +324,9 @@ if __name__ == '__main__':
     modelfile = opts.modelfile
     if opts.modelfile[-4:] == '.tar':
         modelfile = opts.modelfile[:-4]
-    chunker = LSTMTagger(opts.trainfile, modelfile, opts.modelsuffix, opts.unk)
+    # chunker = LSTMTagger(opts.trainfile, modelfile, opts.modelsuffix, opts.unk)
+    chunker = LSTMTagger(opts.trainfile, modelfile, opts.modelsuffix, opts.unk,embedding_dim=428)
+
     # use the model file if available and opts.force is False
     if os.path.isfile(opts.modelfile + opts.modelsuffix) and not opts.force:
         decoder_output = chunker.decode(opts.inputfile)
