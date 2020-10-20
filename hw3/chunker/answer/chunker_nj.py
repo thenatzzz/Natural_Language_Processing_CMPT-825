@@ -10,7 +10,7 @@ import string
 import numpy as np
 
 INDEX_BEG = 0
-
+LENGTH_VECTOR_ENCODING = 300
 # dtype = torch.cuda.FloatTensor
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
@@ -120,25 +120,32 @@ class LSTMTaggerModel(nn.Module):
         # with dimensionality hidden_dim.
         '''if using character-level encoding, hidden dim to lstm = 128+300 = 428'''
         if char_encoding:
-            lstm_embedding_dim = embedding_dim+300
+            lstm_embedding_dim = embedding_dim+LENGTH_VECTOR_ENCODING
         else:
             lstm_embedding_dim = embedding_dim
 
         self.lstm = nn.LSTM(lstm_embedding_dim, hidden_dim, bidirectional=False)
+
+        ## second LSTM for character-level encoding vector
+        # self.lstm_encoding = nn.LSTM(LENGTH_VECTOR_ENCODING, hidden_dim, bidirectional=False)
 
         # The linear layer that maps from hidden state space to tag space
         self.hidden2tag = nn.Linear(hidden_dim, tagset_size)
 
     def forward(self, sentence,encoding_tensor=None):
         embeds = self.word_embeddings(sentence)
-        # print(embeds.shape, " embedding shape ,",encoding_tensor.shape,": encoding tensor shape " )
+
+        # # put character-level encoding vectors into LSTM before concatenating with embedding
+        # if encoding_tensor is not None:
+        #     reshaped_encoding_tensor = torch.reshape(encoding_tensor,(-1,1,LENGTH_VECTOR_ENCODING))
+        #     lstm_out_encoding, _ = self.lstm_encoding(reshaped_encoding_tensor)
+        #     encoding_tensor = torch.reshape(lstm_out_encoding,(-1,LENGTH_VECTOR_ENCODING))
 
         '''if using character-level encoding, we concatenate Embedding vector with new encoded vectors = 128+300 = 428'''
         if encoding_tensor is not None:
             embeds = torch.cat([embeds,encoding_tensor],dim=1)
 
         lstm_out, _ = self.lstm(embeds.view(len(sentence), 1, -1))
-
         tag_space = self.hidden2tag(lstm_out.view(len(sentence), -1))
         tag_scores = F.log_softmax(tag_space, dim=1)
         return tag_scores
