@@ -18,3 +18,5 @@ data/*.tar
 answer/data/data_chuck0-8_original/*
 answer/data/data_chuck0-8_428dim/*
 answer/output_z.txt
+
+data/chunker_original/*
