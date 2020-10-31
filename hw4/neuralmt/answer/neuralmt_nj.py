@@ -61,7 +61,7 @@ class AttentionModule(nn.Module):
         self.W_enc = nn.Linear(attention_dim, attention_dim, bias=False)#.to(hp.device)
         self.W_dec = nn.Linear(attention_dim, attention_dim, bias=False)#.to(hp.device)
         self.V_att = nn.Linear(attention_dim, 1, bias=False)#.to(hp.device)
-        print(attention_dim, ": attention_dim")
+        # print(attention_dim, ": attention_dim")
         return
 
     # Start working from here, both 'calcAlpha' and 'forward' need to be fixed
@@ -71,17 +71,15 @@ class AttentionModule(nn.Module):
         param decoder_hidden: (seq, batch, dim)
         """
         seq, batch, dim = encoder_out.shape
-        scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0).to(hp.device)
-        print(scores.shape,": scores.shape before ")
+        # scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0).to(hp.device) # 1,13,1
         # scores = torch.tanh(scores).permute(1,0,2).to(hp.device)
-        # scores = torch.tanh(scores).to(hp.device)
+        scores = torch.tanh(decoder_hidden+encoder_out).permute(1,0,2).to(hp.device)
 
-        print(scores.shape,": scores.shape after ----------------------")
+        # print(scores.shape,": scores.shape after ----------------------")
 
-        # print(self.V_att(scores).shape, "V_att shape ================")
-        # alpha = torch.nn.functional.softmax(scores, dim=1)
+        # alpha = torch.nn.functional.softmax(scores, dim=1)  # 1,13,1
         alpha = torch.nn.functional.softmax(self.V_att(scores), dim=1)#.to(hp.device)
-        print('===================')
+        # print(alpha.shape,'alpha shape===================')
         return alpha
 
     def forward(self, decoder_hidden, encoder_out):
@@ -89,21 +87,29 @@ class AttentionModule(nn.Module):
         encoder_out: (seq, batch, dim),
         decoder_hidden: (seq, batch, dim)
         """
-        encoder_out = encoder_out.permute(1,0,2)
-        decoder_hidden=decoder_hidden.permute(1,0,2)
+        # encoder_out = encoder_out.permute(1,0,2)
+        # decoder_hidden=decoder_hidden.permute(1,0,2)
 
-        print(decoder_hidden.shape, ": decoder_hidden shape") # 1,1,256
-        print(encoder_out.shape,": encoder_out shape")        # 7,1,256
-        # alpha = self.calcAlpha(decoder_hidden, encoder_out)
-        print(self.W_dec(decoder_hidden).shape, " :W_dec shape")
-        print(self.W_enc(encoder_out).shape, " :W_enc shape")
+        # print(decoder_hidden.shape, ": decoder_hidden shape") # 1,1,256
+        # print(encoder_out.shape,": encoder_out shape")        # 13,1,256
+        # print(self.W_dec(decoder_hidden).shape, " :W_dec shape")
+        # print(self.W_enc(encoder_out).shape, " :W_enc shape")
 
-        # alpha = self.calcAlpha(decoder_hidden, encoder_out)
-
+        # alpha = self.calcAlpha(decoder_hidden, encoder_out) # 1,13,1
         alpha = self.calcAlpha(self.W_dec(decoder_hidden), self.W_enc(encoder_out)).to(hp.device)
+        # print(alpha.shape, ' alpha shape _______________')
 
-        seq, _, dim = encoder_out.shape
-        context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
+        seq, _, dim = encoder_out.shape # 7,1,256
+        # print(torch.sum(encoder_out,dim=0).shape) # 1,256
+        # 1,13,1 * 1,13,256 = 1,256
+        # alpha 1,13,1
+        # encoder_out 13,1,256
+        # context 1,1,256
+        # context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
+        context = (torch.sum(alpha*encoder_out.permute(1,0,2), dim=1) ).reshape(1, 1, dim)
+
+        # print(context.shape, " context.shape") # 1,1,256
+        # print(alpha.permute(2,0,1).shape) # 1,1,13
         return context, alpha.permute(2, 0, 1)
 
 
