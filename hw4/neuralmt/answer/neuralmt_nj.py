@@ -382,7 +382,7 @@ def loadTestData(srcFile, srcLex, device=0, linesToLoad=sys.maxsize):
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
     optparser.add_option(
-        "-m", "--model", dest="model", default=os.path.join('data', 'seq2seq_E049.pt'), 
+        "-m", "--model", dest="model", default=os.path.join('data', 'seq2seq_E049.pt'),
         help="model file")
     optparser.add_option(
         "-i", "--input", dest="input", default=os.path.join('data', 'input', 'dev.txt'),
@@ -390,6 +390,9 @@ if __name__ == '__main__':
     optparser.add_option(
         "-n", "--num", dest="num", default=sys.maxsize, type='int',
         help="num of lines to load")
+    optparser.add_option("-o", "--outputfile", dest="outputfile", default='output.txt', help="print result to output file")
+
+
     (opts, _) = optparser.parse_args()
 
     model = Seq2Seq(build=False)
@@ -400,4 +403,12 @@ if __name__ == '__main__':
     test_iter = loadTestData(opts.input, model.fields['src'],
                                 device=hp.device, linesToLoad=opts.num)
     results = translate(model, test_iter)
-    print("\n".join(results))
+    # print("\n".join(results))
+
+    ''' Print out to file instead of using python ... > ... '''
+    original_stdout = sys.stdout
+    with open(opts.outputfile, 'w') as f:
+
+        sys.stdout = f # Change the standard output to the file we created.
+        print("\n".join(results))
+        sys.stdout = original_stdout

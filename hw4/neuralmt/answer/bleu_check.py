@@ -17,7 +17,8 @@ if __name__ == '__main__':
         out_data = [str(x).strip() for x in outh.read().splitlines()]
         output_data = out_data[:len(ref_data)]
         if len(ref_data) == len(output_data):
-            print(bleu(ref_data, output_data))
+            # print(bleu(ref_data, output_data))
+            print(bleu(ref_data, output_data).score)
+
         else:
             raise ValueError("reference and output are different lengths")
-
