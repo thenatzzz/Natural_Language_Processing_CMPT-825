@@ -134,6 +134,8 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
             output, encoder_out, decoder_hidden)
         outputs[t] = output
         alphas[t] = alpha.data
+        print(outputs[t].shape)
+        print(output.data.shape)
         output = torch.autograd.Variable(output.data.max(dim=2)[1])
         if int(output.data) == eos_index:
             break
