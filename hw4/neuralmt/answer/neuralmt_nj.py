@@ -19,6 +19,7 @@ from torch import nn
 
 import pandas as pd
 from torchtext import data
+import sacrebleu
 
 #import support.hyperparams as hp
 #import support.datasets as ds
@@ -147,6 +148,7 @@ def translate(model, test_iter):
     return results
 
 def remove_repeated_word(text):
+    '''function to remove consecutive repeated words'''
     # if len(text) less than 2, we do nothing
     if len(text) <  2:
         return text
@@ -169,187 +171,13 @@ def remove_repeated_word(text):
             prev_word = current_word
     return ' '.join(sentence)
 
-def beam_search_decoder(decoder, encoder_out, encoder_hidden, maxLen,
-                        eos_index):
-    seq1_len, batch_size, _ = encoder_out.size()
-    target_vocab_size = decoder.target_vocab_size
+def argmax(iterable):
+    '''get index of the max value (argmax) in the list'''
+    return max(enumerate(iterable), key=lambda x: x[1])[0]
 
-    outputs = torch.autograd.Variable(
-        encoder_out.data.new(maxLen, batch_size, target_vocab_size))
-    alphas = torch.zeros(maxLen, batch_size, seq1_len)
-    # take what we need from encoder
-    decoder_hidden = encoder_hidden[-decoder.n_layers:]
-    # start token (ugly hack)
-    output = torch.autograd.Variable(
-        outputs.data.new(1, batch_size).fill_(eos_index).long())
-
-    beam_width = 10
-    sequences = [[list(), 0.0]]
-      # walk over each step in sequence
-    for t in range(maxLen):
-        # output, decoder_hidden, alpha = decoder(
-            # output, encoder_out, decoder_hidden)
-        # outputs[t] = output
-        # alphas[t] = alpha.data
-        # output = torch.autograd.Variable(output.data.max(dim=2)[1])
-        log_prob, indexes = torch.topk(output, beam_width)
-
-        if int(output.data) == eos_index:
-            break
-        all_candidates = list()
-        # expand each current candidate
-        for i in range(len(sequences)):
-            output, decoder_hidden, alpha = decoder(
-                    output, encoder_out, decoder_hidden)
-            log_prob, indexes = torch.topk(output, beam_width)
-            print(log_prob,indexes)
-            seq, score = sequences[i]
-
-            for j in range(beam_width):
-                # candidate = [seq + [j], score - log(row[j])]
-                candidate = [seq + [indexes],
-                             score - log(log_prob[indexes])]
-
-                all_candidates.append(candidate)
-            # order all candidates by score
-            ordered = sorted(all_candidates, key=lambda tup: tup[1])
-            # select k best
-            sequences = ordered[:k]
-    return sequences
-    # torch.Size([50, 1, 25004])
-    return outputs, alphas.permute(1, 2, 0)
-
-
-class BeamSearchNode(object):
-    def __init__(self, hiddenstate, previousNode, wordId, logProb, length):
-        '''
-        :param hiddenstate:
-        :param previousNode:
-        :param wordId:
-        :param logProb:
-        :param length:
-        '''
-        self.h = hiddenstate
-        self.prevNode = previousNode
-        self.wordid = wordId
-        self.logp = logProb
-        self.leng = length
-
-    def eval(self, alpha=1.0):
-        reward = 0
-        # Add here a function for shaping a reward
-
-        return self.logp / float(self.leng - 1 + 1e-6) + alpha * reward
-
-# def beam_decode(target_tensor, decoder_hiddens, encoder_outputs=None):
-def beam_decode(decoder, encoder_hidden, eos_index,maxLen, encoder_outputs=None):
-    '''
-    :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
-    :param decoder_hidden: input tensor of shape [1, B, H] for start of the decoding
-    :param encoder_outputs: if you are using attention mechanism you can pass encoder outputs, [T, B, H] where T is the maximum length of input sentence
-    :return: decoded_batch
-    '''
-
-    beam_width = 10
-    topk = 1  # how many sentence do you want to generate
-    decoded_batch = []
-
-    # take what we need from encoder
-    decoder_hidden = encoder_hidden[-decoder.n_layers:]
-    seq1_len, batch_size, _ = encoder_outputs.size()
-    target_vocab_size = decoder.target_vocab_size
-    outputs = torch.autograd.Variable(
-        encoder_outputs.data.new(maxLen, batch_size, target_vocab_size))
-    # start token (ugly hack)
-    output = torch.autograd.Variable(
-        outputs.data.new(1, batch_size).fill_(eos_index).long())
-    output1 = output
-    # decoding goes sentence by sentence
-    # for idx in range(outputs.size(0)):
-    encoder_output = encoder_outputs
-    for idx in range(maxLen):
-        print(idx, " idx -----------------")
-        # Number of sentence to generate
-        endnodes = []
-        number_required = min((topk + 1), topk - len(endnodes))
-
-        # starting node -  hidden vector, previous node, word id, logp, length
-        node = BeamSearchNode(decoder_hidden, None, output1, 0, 1)
-        nodes = PriorityQueue()
-
-        # start the queue
-        nodes.put((-node.eval(), node))
-        qsize = 1
-
-        # start beam search
-        while True:
-            # give up when decoding takes too long
-            if qsize > 2000:
-                break
-
-            # fetch the best node
-            score, n = nodes.get()
-            # decoder_input = n.wordid
-            output = n.wordid
-            # decoder_input = n.wordid
-
-            decoder_hidden = n.h
-            EOS_token = 1
-
-            if n.wordid.item() == EOS_token and n.prevNode != None:
-                endnodes.append((score, n))
-                # if we reached maximum # of sentences required
-                if len(endnodes) >= number_required:
-                    break
-                else:
-                    continue
-
-            # decode for one step using decoder
-            # decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden, encoder_output)
-            output, decoder_hidden, _ = decoder(
-                output, encoder_output, decoder_hidden)
-            # PUT HERE REAL BEAM SEARCH OF TOP
-            # log_prob, indexes = torch.topk(decoder_output, beam_width)
-            log_prob, indexes = torch.topk(output, beam_width)
-            nextnodes = []
-
-            for new_k in range(beam_width):
-                decoded_t = indexes[0][0][new_k].view(1, -1)
-                # log_p = log_prob[0][new_k].item()
-                log_p = log_prob[0][0][new_k].item()
-
-                node = BeamSearchNode(
-                    decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
-                score = -node.eval()
-                nextnodes.append((score, node))
-
-            # put them into queue
-            for i in range(len(nextnodes)):
-                score, nn = nextnodes[i]
-                nodes.put((score, nn))
-                # increase qsize
-            qsize += len(nextnodes) - 1
-
-        # choose nbest paths, back trace them
-        if len(endnodes) == 0:
-            endnodes = [nodes.get() for _ in range(topk)]
-
-        utterances = []
-        import operator
-        for score, n in sorted(endnodes, key=operator.itemgetter(0)):
-            utterance = []
-            utterance.append(n.wordid)
-            # back trace
-            while n.prevNode != None:
-                n = n.prevNode
-                utterance.append(n.wordid)
-
-            utterance = utterance[::-1]
-            utterances.append(utterance)
-        print(len(decoded_batch))
-        decoded_batch.append(utterances)
-    # torch.Size([50, 1, 25004])
-    return decoded_batch
+def bleu(ref_t, pred_t):
+    '''calculate BLEU scores'''
+    return sacrebleu.corpus_bleu(pred_t, [ref_t], force=True, lowercase=True, tokenize='none')
 
 
 # ---Model Definition etc.---
@@ -472,8 +300,6 @@ class Seq2Seq(nn.Module):
         encoder_out, encoder_hidden = self.encoder(source)
 
         return greedyDecoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
-        # return beam_decode(self.decoder, encoder_hidden,eos_index,maxLen,encoder_outputs=encoder_out)
-        # return beam_search_decoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
 
     def tgt2txt(self, tgt):
         return " ".join([self.fields['tgt'].vocab.itos[int(i)] for i in tgt])
@@ -631,60 +457,49 @@ if __name__ == '__main__':
     optparser.add_option("-o", "--outputfile", dest="outputfile",
                          default='output.txt', help="print result to output file")
 
+    optparser.add_option("-t", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
     optparser.add_option(
         "-e", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E047.pt'),
         help="model file")
-    optparser.add_option("-t", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
     optparser.add_option(
         "-f", "--model3", dest="model3", default=os.path.join('data', 'seq2seq_E048.pt'),
+        help="model file")
+    optparser.add_option(
+        "-g", "--model4", dest="model4", default=os.path.join('data', 'seq2seq_E046.pt'),
         help="model file")
 
     (opts, _) = optparser.parse_args()
 
-    model = Seq2Seq(build=False)
-    model.load(opts.model)
-    model.to(hp.device)
-    model.eval()
-    # loading test dataset
-    test_iter = loadTestData(opts.input, model.fields['src'],
-                             device=hp.device, linesToLoad=opts.num)
-    results = translate(model, test_iter)
+    ''' main model '''
+    list_model=[opts.model,opts.model2,opts.model3,opts.model4]
+    test_iter = None
+    list_results = []
+    for opts_model in list_model:
+        model = Seq2Seq(build=False)
+        model.load(opts_model)
+        model.to(hp.device)
+        model.eval()
 
-    import sacrebleu
-    import sys
+        if test_iter is None:
+            '''load data once using for all models'''
+            test_iter = loadTestData(opts.input, model.fields['src'],
+                                     device=hp.device, linesToLoad=opts.num)
+        results = translate(model, test_iter)
+        list_results.append(results)
 
-    def bleu(ref_t, pred_t):
-        return sacrebleu.corpus_bleu(pred_t, [ref_t], force=True, lowercase=True, tokenize='none')
-
-    model2 = Seq2Seq(build=False)
-    model2.load(opts.model2)
-    model2.to(hp.device)
-    model2.eval()
-    results2 = translate(model2, test_iter)
-
-    model3 = Seq2Seq(build=False)
-    model3.load(opts.model3)
-    model3.to(hp.device)
-    model3.eval()
-    results3 = translate(model3, test_iter)
 
     with open(opts.ref, 'r') as refh:
         ref_data = [str(x).strip() for x in refh.read().splitlines()]
-    def argmax(iterable):
-        return max(enumerate(iterable), key=lambda x: x[1])[0]
-    final_result=[]
-    list_results = [results,results2,results3]
-    for i in range(len(results)):
-        score1 = bleu([ref_data[i]], [results[i]]).score
-        score2 = bleu([ref_data[i]], [results2[i]]).score
-        score3 = bleu([ref_data[i]], [results3[i]]).score
-        scores = [score1,score2,score3]
 
-        final_result.append(list_results[argmax(scores)][i])
-        # if score1 > score2:
-            # final_result.append(results[i])
-        # else:
-            # final_result.append(results2[i])
+    final_result=[]
+    for idx_row in range(len(list_results[0])):
+        scores = []
+        for result in list_results:
+            '''compare result with reference row by row '''
+            bleu_score =bleu([ref_data[idx_row]], [result[idx_row]]).score
+            scores.append(bleu_score)
+
+        final_result.append(list_results[argmax(scores)][idx_row])
 
 
     ''' Print out to file instead of using python ... > ... '''
