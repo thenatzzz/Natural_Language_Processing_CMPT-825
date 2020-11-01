@@ -139,6 +139,11 @@ def translate(model, test_iter):
         output, attention = model(batch.src)
         output = output.topk(1)[1]
         output = model.tgt2txt(output[:, 0].data).strip().split('<EOS>')[0]
+
+        ''' replace <unk> with the most frequent word "the" '''
+        output = output.replace('<unk>','the')
+        # print(output)
+
         results.append(output)
     return results
 
