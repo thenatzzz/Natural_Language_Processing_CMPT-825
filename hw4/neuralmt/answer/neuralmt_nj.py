@@ -139,6 +139,7 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
         output = torch.autograd.Variable(output.data.max(dim=2)[1])
         if int(output.data) == eos_index:
             break
+    print(outputs.shape, ' <---------------------')
     return outputs, alphas.permute(1, 2, 0)
 class BeamSearchNode(object):
     def __init__(self, hiddenstate, previousNode, wordId, logProb, length):
@@ -184,6 +185,7 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
     # start token (ugly hack)
     output = torch.autograd.Variable(
         outputs.data.new(1, batch_size).fill_(eos_index).long())
+    output1=output
     # decoding goes sentence by sentence
     # for idx in range(outputs.size(0)):
     encoder_output = encoder_outputs
@@ -194,7 +196,7 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
         number_required = min((topk + 1), topk - len(endnodes))
 
         # starting node -  hidden vector, previous node, word id, logp, length
-        node = BeamSearchNode(decoder_hidden, None, output, 0, 1)
+        node = BeamSearchNode(decoder_hidden, None, output1, 0, 1)
         nodes = PriorityQueue()
 
         # start the queue
@@ -210,14 +212,16 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
             score, n = nodes.get()
             # decoder_input = n.wordid
             output = n.wordid
-            print(score,n)
+            # print(score,n)
             # decoder_input = n.wordid
 
             # print("%%%%%%%%% ",decoder_input)
-            print("%%%%%%%%% ",output)
+            # print("%%%%%%%%% ",output)
 
             decoder_hidden = n.h
             EOS_token = 1
+
+            # print(n.wordid)#.item())
             if n.wordid.item() == EOS_token and n.prevNode != None:
                 endnodes.append((score, n))
                 # if we reached maximum # of sentences required
@@ -233,20 +237,20 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
             output, decoder_hidden, _ = decoder(
                 output, encoder_output,decoder_hidden)
-            print(output, " outputttttttttttttttttttttttt")
+            # print(output, " outputttttttttttttttttttttttt")
             # print(decoder_hidden, " decoder_hidden !!")
             # PUT HERE REAL BEAM SEARCH OF TOP
             # log_prob, indexes = torch.topk(decoder_output, beam_width)
             log_prob, indexes = torch.topk(output, beam_width)
-            print(log_prob, log_prob.shape,log_prob[0][0][0].item())
-            print(indexes.shape)
+            # print(log_prob, log_prob.shape,log_prob[0][0][0].item())
+            # print(indexes.shape)
             nextnodes = []
 
             for new_k in range(beam_width):
-                print("new_k: ",new_k)
+                # print("new_k: ",new_k)
                 decoded_t = indexes[0][0][new_k].view(1, -1)
-                print("decoded_t",decoded_t.shape)
-                print("$",indexes[0][0].tolist())
+                # print("decoded_t",decoded_t.shape)
+                # print("$",indexes[0][0].tolist())
                 # decoded_t = indexes[0][0].tolist()[new_k]
                 # decoded_t = decoded_t.tolist()[new_k]
 
@@ -283,9 +287,9 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
             utterance = utterance[::-1]
             utterances.append(utterance)
-
+        print(len(decoded_batch))
         decoded_batch.append(utterances)
-
+    # torch.Size([50, 1, 25004])
     return decoded_batch
 
 def translate(model, test_iter):
@@ -418,8 +422,7 @@ class Seq2Seq(nn.Module):
             maxLen = self.maxLen
         encoder_out, encoder_hidden = self.encoder(source)
 
-        # return greedyDecoder(self.decoder, encoder_out, encoder_hidden,
-                             # maxLen, eos_index)
+        # return greedyDecoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
         return beam_decode(self.decoder, encoder_hidden,eos_index,maxLen,encoder_outputs=encoder_out)
 
 
