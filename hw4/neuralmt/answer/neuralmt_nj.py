@@ -7,6 +7,7 @@
 # Jetic Gū
 #
 #
+from queue import PriorityQueue
 import os
 import re
 import sys
@@ -23,6 +24,8 @@ from torchtext import data
 #import support.datasets as ds
 
 # hyperparameters
+
+
 class hp:
     # vocab
     pad_idx = 1
@@ -51,6 +54,8 @@ class hp:
 # -- Step 1: Baseline ---
 # The attention module is completely broken now. Fix it using the definition
 # given in the HW description.
+
+
 class AttentionModule(nn.Module):
     def __init__(self, attention_dim):
         """
@@ -58,9 +63,11 @@ class AttentionModule(nn.Module):
         essential for successfully loading the saved model.
         """
         super(AttentionModule, self).__init__()
-        self.W_enc = nn.Linear(attention_dim, attention_dim, bias=False)#.to(hp.device)
-        self.W_dec = nn.Linear(attention_dim, attention_dim, bias=False)#.to(hp.device)
-        self.V_att = nn.Linear(attention_dim, 1, bias=False)#.to(hp.device)
+        self.W_enc = nn.Linear(attention_dim, attention_dim,
+                               bias=False)  # .to(hp.device)
+        self.W_dec = nn.Linear(attention_dim, attention_dim,
+                               bias=False)  # .to(hp.device)
+        self.V_att = nn.Linear(attention_dim, 1, bias=False)  # .to(hp.device)
         # print(attention_dim, ": attention_dim")
         return
 
@@ -72,14 +79,12 @@ class AttentionModule(nn.Module):
         """
         seq, batch, dim = encoder_out.shape
         # scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0).to(hp.device) # 1,13,1
-        # scores = torch.tanh(scores).permute(1,0,2).to(hp.device)
-        scores = torch.tanh(decoder_hidden+encoder_out).permute(1,0,2).to(hp.device)
-
-        # print(scores.shape,": scores.shape after ----------------------")
+        scores = torch.tanh(
+            decoder_hidden+encoder_out).permute(1, 0, 2).to(hp.device)
 
         # alpha = torch.nn.functional.softmax(scores, dim=1)  # 1,13,1
-        alpha = torch.nn.functional.softmax(self.V_att(scores), dim=1)#.to(hp.device)
-        # print(alpha.shape,'alpha shape===================')
+        alpha = torch.nn.functional.softmax(
+            self.V_att(scores), dim=1)  # .to(hp.device)
         return alpha
 
     def forward(self, decoder_hidden, encoder_out):
@@ -87,28 +92,19 @@ class AttentionModule(nn.Module):
         encoder_out: (seq, batch, dim),
         decoder_hidden: (seq, batch, dim)
         """
-        # encoder_out = encoder_out.permute(1,0,2)
-        # decoder_hidden=decoder_hidden.permute(1,0,2)
-
-        # print(decoder_hidden.shape, ": decoder_hidden shape") # 1,1,256
-        # print(encoder_out.shape,": encoder_out shape")        # 13,1,256
-        # print(self.W_dec(decoder_hidden).shape, " :W_dec shape")
-        # print(self.W_enc(encoder_out).shape, " :W_enc shape")
 
         # alpha = self.calcAlpha(decoder_hidden, encoder_out) # 1,13,1
-        alpha = self.calcAlpha(self.W_dec(decoder_hidden), self.W_enc(encoder_out)).to(hp.device)
-        # print(alpha.shape, ' alpha shape _______________')
+        alpha = self.calcAlpha(self.W_dec(decoder_hidden),
+                               self.W_enc(encoder_out)).to(hp.device)
 
-        seq, _, dim = encoder_out.shape # 7,1,256
-        # print(torch.sum(encoder_out,dim=0).shape) # 1,256
-        # 1,13,1 * 1,13,256 = 1,256
-        # alpha 1,13,1
-        # encoder_out 13,1,256
-        # context 1,1,256
+        seq, _, dim = encoder_out.shape  # 7,1,256
+
         # context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
-        context = (torch.sum(alpha*encoder_out.permute(1,0,2), dim=1) ).reshape(1, 1, dim)
+        context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),
+                   dim=1)).reshape(1, 1, dim)
+        # context = torch.matmul(alpha,encoder_out.permute(1, 0, 2)).reshape(1, 1, dim)
 
-        # print(context.shape, " context.shape") # 1,1,256
+        print(context.shape, " context.shape") # 1,1,256
         # print(alpha.permute(2,0,1).shape) # 1,1,13
         return context, alpha.permute(2, 0, 1)
 
@@ -140,7 +136,62 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
         if int(output.data) == eos_index:
             break
     print(outputs.shape, ' <---------------------')
+    # torch.Size([50, 1, 25004])
+
     return outputs, alphas.permute(1, 2, 0)
+
+
+def beam_search_decoder(decoder, encoder_out, encoder_hidden, maxLen,
+                        eos_index):
+    seq1_len, batch_size, _ = encoder_out.size()
+    target_vocab_size = decoder.target_vocab_size
+
+    outputs = torch.autograd.Variable(
+        encoder_out.data.new(maxLen, batch_size, target_vocab_size))
+    alphas = torch.zeros(maxLen, batch_size, seq1_len)
+    # take what we need from encoder
+    decoder_hidden = encoder_hidden[-decoder.n_layers:]
+    # start token (ugly hack)
+    output = torch.autograd.Variable(
+        outputs.data.new(1, batch_size).fill_(eos_index).long())
+
+    beam_width = 10
+    sequences = [[list(), 0.0]]
+      # walk over each step in sequence
+    for t in range(maxLen):
+        # output, decoder_hidden, alpha = decoder(
+            # output, encoder_out, decoder_hidden)
+        # outputs[t] = output
+        # alphas[t] = alpha.data
+        # output = torch.autograd.Variable(output.data.max(dim=2)[1])
+        log_prob, indexes = torch.topk(output, beam_width)
+
+        if int(output.data) == eos_index:
+            break
+        all_candidates = list()
+        # expand each current candidate
+        for i in range(len(sequences)):
+            output, decoder_hidden, alpha = decoder(
+                    output, encoder_out, decoder_hidden)
+            log_prob, indexes = torch.topk(output, beam_width)
+            print(log_prob,indexes)
+            seq, score = sequences[i]
+
+            for j in range(beam_width):
+                # candidate = [seq + [j], score - log(row[j])]
+                candidate = [seq + [indexes],
+                             score - log(log_prob[indexes])]
+
+                all_candidates.append(candidate)
+            # order all candidates by score
+            ordered = sorted(all_candidates, key=lambda tup: tup[1])
+            # select k best
+            sequences = ordered[:k]
+    return sequences
+    # torch.Size([50, 1, 25004])
+    return outputs, alphas.permute(1, 2, 0)
+
+
 class BeamSearchNode(object):
     def __init__(self, hiddenstate, previousNode, wordId, logProb, length):
         '''
@@ -161,10 +212,9 @@ class BeamSearchNode(object):
         # Add here a function for shaping a reward
 
         return self.logp / float(self.leng - 1 + 1e-6) + alpha * reward
-# def beam_decode(target_tensor, decoder_hiddens, encoder_outputs=None):
-from queue import PriorityQueue
-def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
+# def beam_decode(target_tensor, decoder_hiddens, encoder_outputs=None):
+def beam_decode(decoder, encoder_hidden, eos_index,maxLen, encoder_outputs=None):
     '''
     :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
     :param decoder_hidden: input tensor of shape [1, B, H] for start of the decoding
@@ -185,12 +235,12 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
     # start token (ugly hack)
     output = torch.autograd.Variable(
         outputs.data.new(1, batch_size).fill_(eos_index).long())
-    output1=output
+    output1 = output
     # decoding goes sentence by sentence
     # for idx in range(outputs.size(0)):
     encoder_output = encoder_outputs
     for idx in range(maxLen):
-        print(idx , " idx -----------------")
+        print(idx, " idx -----------------")
         # Number of sentence to generate
         endnodes = []
         number_required = min((topk + 1), topk - len(endnodes))
@@ -206,7 +256,8 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
         # start beam search
         while True:
             # give up when decoding takes too long
-            if qsize > 2000: break
+            if qsize > 2000:
+                break
 
             # fetch the best node
             score, n = nodes.get()
@@ -236,7 +287,7 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
                  # decoder_input, encoder_outputs, decoder_hidden)
 
             output, decoder_hidden, _ = decoder(
-                output, encoder_output,decoder_hidden)
+                output, encoder_output, decoder_hidden)
             # print(output, " outputttttttttttttttttttttttt")
             # print(decoder_hidden, " decoder_hidden !!")
             # PUT HERE REAL BEAM SEARCH OF TOP
@@ -258,8 +309,8 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
                 # log_p = log_prob[0][new_k].item()
                 log_p = log_prob[0][0][new_k].item()
 
-
-                node = BeamSearchNode(decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
+                node = BeamSearchNode(
+                    decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
                 # print(node)
                 nextnodes.append((score, node))
@@ -292,6 +343,7 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
     # torch.Size([50, 1, 25004])
     return decoded_batch
 
+
 def translate(model, test_iter):
     results = []
     for i, batch in tqdm(enumerate(test_iter)):
@@ -310,6 +362,7 @@ class Encoder(nn.Module):
     """
     Encoder class
     """
+
     def __init__(self, source_vocab_size, embed_dim, hidden_dim,
                  n_layers, dropout):
         super(Encoder, self).__init__()
@@ -422,9 +475,9 @@ class Seq2Seq(nn.Module):
             maxLen = self.maxLen
         encoder_out, encoder_hidden = self.encoder(source)
 
-        # return greedyDecoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
-        return beam_decode(self.decoder, encoder_hidden,eos_index,maxLen,encoder_outputs=encoder_out)
-
+        return greedyDecoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
+        # return beam_decode(self.decoder, encoder_hidden,eos_index,maxLen,encoder_outputs=encoder_out)
+        # return beam_search_decoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
 
     def tgt2txt(self, tgt):
         return " ".join([self.fields['tgt'].vocab.itos[int(i)] for i in tgt])
@@ -437,8 +490,10 @@ class Seq2Seq(nn.Module):
         self.build()
         self.load_state_dict(state_dict)
 
+
 class DataFrameDataset(data.Dataset):
     """Class for using pandas DataFrames as a datasource"""
+
     def __init__(self, examples, fields, filter_pred=None):
         """
         Create a dataset from a pandas dataframe of examples and Fields
@@ -462,6 +517,7 @@ class DataFrameDataset(data.Dataset):
                 self.fields.update(zip(n, f))
                 del self.fields[n]
 
+
 class SeriesExample(data.Example):
     """Class to convert a pandas Series to an Example"""
 
@@ -483,10 +539,12 @@ class SeriesExample(data.Example):
                 setattr(ex, key, data[key])
         return ex
 
+
 def biload(src_file, tgt_file, linesToLoad=50000, verbose=False):
     src = open(src_file).read().lower().strip().split("\n")
     tgt = open(tgt_file).read().lower().strip().split("\n")
     return list(map(lambda x: (x[0].strip().split(), x[1].strip().split()), zip(src, tgt)))[:linesToLoad]
+
 
 def bitext2Dataset(src, tgt, srcLex, tgtLex,
                    linesToLoad=50000, maxLen=hp.max_len):
@@ -498,6 +556,7 @@ def bitext2Dataset(src, tgt, srcLex, tgtLex,
     df = pd.DataFrame(data, columns=["src", "tgt"])
     dataset = DataFrameDataset(df, [('src', srcLex), ('tgt', tgtLex)])
     return dataset
+
 
 def loadData(batch_size, device=0,
              trainNum=sys.maxsize, testNum=sys.maxsize):
@@ -544,6 +603,7 @@ def loadData(batch_size, device=0,
 
     return train_iter, val_iter, test_iter, srcLex, tgtLex
 
+
 def loadTestData(srcFile, srcLex, device=0, linesToLoad=sys.maxsize):
     def tokenize(x):
         return x.split()
@@ -560,6 +620,7 @@ def loadTestData(srcFile, srcLex, device=0, linesToLoad=sys.maxsize):
         repeat=False)
     return test_iter
 
+
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
     optparser.add_option(
@@ -571,8 +632,8 @@ if __name__ == '__main__':
     optparser.add_option(
         "-n", "--num", dest="num", default=sys.maxsize, type='int',
         help="num of lines to load")
-    optparser.add_option("-o", "--outputfile", dest="outputfile", default='output.txt', help="print result to output file")
-
+    optparser.add_option("-o", "--outputfile", dest="outputfile",
+                         default='output.txt', help="print result to output file")
 
     (opts, _) = optparser.parse_args()
 
@@ -582,7 +643,7 @@ if __name__ == '__main__':
     model.eval()
     # loading test dataset
     test_iter = loadTestData(opts.input, model.fields['src'],
-                                device=hp.device, linesToLoad=opts.num)
+                             device=hp.device, linesToLoad=opts.num)
     results = translate(model, test_iter)
     # print("\n".join(results))
 
@@ -590,6 +651,6 @@ if __name__ == '__main__':
     original_stdout = sys.stdout
     with open(opts.outputfile, 'w') as f:
 
-        sys.stdout = f # Change the standard output to the file we created.
+        sys.stdout = f  # Change the standard output to the file we created.
         print("\n".join(results))
         sys.stdout = original_stdout
