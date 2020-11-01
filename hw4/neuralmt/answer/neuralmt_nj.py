@@ -291,16 +291,11 @@ def beam_decode(decoder, encoder_hidden, eos_index,maxLen, encoder_outputs=None)
             score, n = nodes.get()
             # decoder_input = n.wordid
             output = n.wordid
-            # print(score,n)
             # decoder_input = n.wordid
-
-            # print("%%%%%%%%% ",decoder_input)
-            # print("%%%%%%%%% ",output)
 
             decoder_hidden = n.h
             EOS_token = 1
 
-            # print(n.wordid)#.item())
             if n.wordid.item() == EOS_token and n.prevNode != None:
                 endnodes.append((score, n))
                 # if we reached maximum # of sentences required
@@ -311,36 +306,21 @@ def beam_decode(decoder, encoder_hidden, eos_index,maxLen, encoder_outputs=None)
 
             # decode for one step using decoder
             # decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden, encoder_output)
-            # output, decoder_hidden, alpha = decoder(
-                 # decoder_input, encoder_outputs, decoder_hidden)
-
             output, decoder_hidden, _ = decoder(
                 output, encoder_output, decoder_hidden)
-            # print(output, " outputttttttttttttttttttttttt")
-            # print(decoder_hidden, " decoder_hidden !!")
             # PUT HERE REAL BEAM SEARCH OF TOP
             # log_prob, indexes = torch.topk(decoder_output, beam_width)
             log_prob, indexes = torch.topk(output, beam_width)
-            # print(log_prob, log_prob.shape,log_prob[0][0][0].item())
-            # print(indexes.shape)
             nextnodes = []
 
             for new_k in range(beam_width):
-                # print("new_k: ",new_k)
                 decoded_t = indexes[0][0][new_k].view(1, -1)
-                # print("decoded_t",decoded_t.shape)
-                # print("$",indexes[0][0].tolist())
-                # decoded_t = indexes[0][0].tolist()[new_k]
-                # decoded_t = decoded_t.tolist()[new_k]
-
-                # print("$$$$$$ ",indexes[0][new_k].view(1, -1))
                 # log_p = log_prob[0][new_k].item()
                 log_p = log_prob[0][0][new_k].item()
 
                 node = BeamSearchNode(
                     decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
-                # print(node)
                 nextnodes.append((score, node))
 
             # put them into queue
@@ -374,8 +354,6 @@ def beam_decode(decoder, encoder_hidden, eos_index,maxLen, encoder_outputs=None)
 
 # ---Model Definition etc.---
 # DO NOT MODIFY ANYTHING BELOW HERE
-
-
 class Encoder(nn.Module):
     """
     Encoder class
