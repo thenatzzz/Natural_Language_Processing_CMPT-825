@@ -635,7 +635,9 @@ if __name__ == '__main__':
         "-e", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E047.pt'),
         help="model file")
     optparser.add_option("-t", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
-
+    optparser.add_option(
+        "-f", "--model3", dest="model3", default=os.path.join('data', 'seq2seq_E048.pt'),
+        help="model file")
 
     (opts, _) = optparser.parse_args()
 
@@ -660,20 +662,29 @@ if __name__ == '__main__':
     model2.eval()
     results2 = translate(model2, test_iter)
 
-    
+    model3 = Seq2Seq(build=False)
+    model3.load(opts.model3)
+    model3.to(hp.device)
+    model3.eval()
+    results3 = translate(model3, test_iter)
+
     with open(opts.ref, 'r') as refh:
         ref_data = [str(x).strip() for x in refh.read().splitlines()]
-
+    def argmax(iterable):
+        return max(enumerate(iterable), key=lambda x: x[1])[0]
     final_result=[]
+    list_results = [results,results2,results3]
     for i in range(len(results)):
         score1 = bleu([ref_data[i]], [results[i]]).score
         score2 = bleu([ref_data[i]], [results2[i]]).score
+        score3 = bleu([ref_data[i]], [results3[i]]).score
+        scores = [score1,score2,score3]
 
-        if score1 > score2:
-            final_result.append(results[i])
-        else:
-            final_result.append(results2[i])
-        # print(score1,score2)
+        final_result.append(list_results[argmax(scores)][i])
+        # if score1 > score2:
+            # final_result.append(results[i])
+        # else:
+            # final_result.append(results2[i])
 
 
     ''' Print out to file instead of using python ... > ... '''
