@@ -81,10 +81,10 @@ class AttentionModule(nn.Module):
         # scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0).to(hp.device) # 1,13,1
         scores = torch.tanh(
             decoder_hidden+encoder_out).permute(1, 0, 2).to(hp.device)
-
         # alpha = torch.nn.functional.softmax(scores, dim=1)  # 1,13,1
         alpha = torch.nn.functional.softmax(
             self.V_att(scores), dim=1)  # .to(hp.device)
+
         return alpha
 
     def forward(self, decoder_hidden, encoder_out):
@@ -92,20 +92,15 @@ class AttentionModule(nn.Module):
         encoder_out: (seq, batch, dim),
         decoder_hidden: (seq, batch, dim)
         """
-
         # alpha = self.calcAlpha(decoder_hidden, encoder_out) # 1,13,1
         alpha = self.calcAlpha(self.W_dec(decoder_hidden),
                                self.W_enc(encoder_out)).to(hp.device)
 
         seq, _, dim = encoder_out.shape  # 7,1,256
-
         # context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
         context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),
                    dim=1)).reshape(1, 1, dim)
-        # context = torch.matmul(alpha,encoder_out.permute(1, 0, 2)).reshape(1, 1, dim)
 
-        print(context.shape, " context.shape") # 1,1,256
-        # print(alpha.permute(2,0,1).shape) # 1,1,13
         return context, alpha.permute(2, 0, 1)
 
 
@@ -130,12 +125,10 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
             output, encoder_out, decoder_hidden)
         outputs[t] = output
         alphas[t] = alpha.data
-        print(outputs[t].shape)
-        print(output.data.shape)
         output = torch.autograd.Variable(output.data.max(dim=2)[1])
         if int(output.data) == eos_index:
             break
-    print(outputs.shape, ' <---------------------')
+    # print(outputs.shape, ' <---------------------')
     # torch.Size([50, 1, 25004])
 
     return outputs, alphas.permute(1, 2, 0)
@@ -541,8 +534,8 @@ class SeriesExample(data.Example):
 
 
 def biload(src_file, tgt_file, linesToLoad=50000, verbose=False):
-    src = open(src_file).read().lower().strip().split("\n")
-    tgt = open(tgt_file).read().lower().strip().split("\n")
+    src = open(src_file,encoding='utf-8').read().lower().strip().split("\n")
+    tgt = open(tgt_file,encoding='utf-8').read().lower().strip().split("\n")
     return list(map(lambda x: (x[0].strip().split(), x[1].strip().split()), zip(src, tgt)))[:linesToLoad]
 
 
@@ -649,7 +642,7 @@ if __name__ == '__main__':
 
     ''' Print out to file instead of using python ... > ... '''
     original_stdout = sys.stdout
-    with open(opts.outputfile, 'w') as f:
+    with open(opts.outputfile, 'w',encoding='utf-8') as f:
 
         sys.stdout = f  # Change the standard output to the file we created.
         print("\n".join(results))
