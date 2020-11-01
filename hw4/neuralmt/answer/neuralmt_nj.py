@@ -79,11 +79,11 @@ class AttentionModule(nn.Module):
         """
         seq, batch, dim = encoder_out.shape
         # scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0).to(hp.device) # 1,13,1
-        scores = torch.tanh(
-            decoder_hidden+encoder_out).permute(1, 0, 2).to(hp.device)
+        # scores = torch.tanh(decoder_hidden+encoder_out).permute(1, 0, 2).to(hp.device)
+        scores = torch.tanh(self.W_dec(decoder_hidden)+self.W_enc(encoder_out)).permute(1, 0, 2).to(hp.device)
+
         # alpha = torch.nn.functional.softmax(scores, dim=1)  # 1,13,1
-        alpha = torch.nn.functional.softmax(
-            self.V_att(scores), dim=1)  # .to(hp.device)
+        alpha = torch.nn.functional.softmax(self.V_att(scores), dim=1)  # .to(hp.device)
 
         return alpha
 
@@ -93,13 +93,12 @@ class AttentionModule(nn.Module):
         decoder_hidden: (seq, batch, dim)
         """
         # alpha = self.calcAlpha(decoder_hidden, encoder_out) # 1,13,1
-        alpha = self.calcAlpha(self.W_dec(decoder_hidden),
-                               self.W_enc(encoder_out)).to(hp.device)
+        # alpha = self.calcAlpha(self.W_dec(decoder_hidden),self.W_enc(encoder_out)).to(hp.device)
+        alpha = self.calcAlpha(decoder_hidden,encoder_out).to(hp.device)
 
         seq, _, dim = encoder_out.shape  # 7,1,256
         # context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
-        context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),
-                   dim=1)).reshape(1, 1, dim)
+        context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),dim=1)).reshape(1, 1, dim)
 
         return context, alpha.permute(2, 0, 1)
 
@@ -140,12 +139,35 @@ def translate(model, test_iter):
         output = output.topk(1)[1]
         output = model.tgt2txt(output[:, 0].data).strip().split('<EOS>')[0]
 
+        '''remove repeated consecutive translated texts'''
+        output = remove_repeated_word(output)
         ''' replace <unk> with the most frequent word "the" '''
         output = output.replace('<unk>','the')
-        # print(output)
-
         results.append(output)
     return results
+
+def remove_repeated_word(text):
+    # if len(text) less than 2, we do nothing
+    if len(text) <  2:
+        return text
+
+    sentence = []
+    list_text = text.split()
+    for idx in range(len(list_text)):
+        # first word, we move to next word and set the prev as the first word
+        if idx ==0:
+            prev_word = list_text[idx]
+            sentence.append(prev_word)
+            continue
+
+        current_word = list_text[idx]
+        # if previous word is the same as current word, we don't to sentence
+        if prev_word== current_word:
+            continue
+        else:
+            sentence.append(current_word)
+            prev_word = current_word
+    return ' '.join(sentence)
 
 def beam_search_decoder(decoder, encoder_out, encoder_hidden, maxLen,
                         eos_index):
