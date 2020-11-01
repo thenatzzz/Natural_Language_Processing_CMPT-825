@@ -182,30 +182,19 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
     outputs = torch.autograd.Variable(
         encoder_outputs.data.new(maxLen, batch_size, target_vocab_size))
     # start token (ugly hack)
-    decoder_input = torch.autograd.Variable(
+    output = torch.autograd.Variable(
         outputs.data.new(1, batch_size).fill_(eos_index).long())
     # decoding goes sentence by sentence
     # for idx in range(outputs.size(0)):
+    encoder_output = encoder_outputs
     for idx in range(maxLen):
-
-        encoder_output = encoder_outputs
-
-        #
-        # if isinstance(decoder_hiddens, tuple):  # LSTM case
-        #     decoder_hidden = (decoder_hiddens[0][:,idx, :].unsqueeze(0),decoder_hiddens[1][:,idx, :].unsqueeze(0))
-        # else:
-        #     decoder_hidden = decoder_hiddens[:, idx, :].unsqueeze(0)
-        # encoder_output = encoder_outputs[:,idx, :].unsqueeze(1)
-
-        # Start with the start of the sentence token
-        # decoder_input = torch.LongTensor([[SOS_token]], device=device)
-
+        print(idx , " idx -----------------")
         # Number of sentence to generate
         endnodes = []
         number_required = min((topk + 1), topk - len(endnodes))
 
         # starting node -  hidden vector, previous node, word id, logp, length
-        node = BeamSearchNode(decoder_hidden, None, decoder_input, 0, 1)
+        node = BeamSearchNode(decoder_hidden, None, output, 0, 1)
         nodes = PriorityQueue()
 
         # start the queue
@@ -219,7 +208,12 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
             # fetch the best node
             score, n = nodes.get()
+            # decoder_input = n.wordid
+            # output = n.wordid
+            print(score,n)
             decoder_input = n.wordid
+
+            print("%%%%%%%%% ",decoder_input)
             decoder_hidden = n.h
             EOS_token = 1
             if n.wordid.item() == EOS_token and n.prevNode != None:
@@ -232,20 +226,35 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
             # decode for one step using decoder
             # decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden, encoder_output)
-            # output, decoder_hidden, alpha = decoder(
-                # output, encoder_outputs, decoder_hiddens)
-            decoder_output, decoder_hidden, _ = decoder(
-                decoder_input, decoder_hidden, encoder_output)
+            output, decoder_hidden, alpha = decoder(
+                 decoder_input, encoder_outputs, decoder_hidden)
+
+            # output, decoder_hidden, _ = decoder(
+                # output, encoder_output,decoder_hidden)
+            print(output, " outputttttttttttttttttttttttt")
+            # print(decoder_hidden, " decoder_hidden !!")
             # PUT HERE REAL BEAM SEARCH OF TOP
-            log_prob, indexes = torch.topk(decoder_output, beam_width)
+            # log_prob, indexes = torch.topk(decoder_output, beam_width)
+            log_prob, indexes = torch.topk(output, beam_width)
+            print(log_prob, log_prob.shape,log_prob[0][0][0].item())
+            print(indexes.shape)
             nextnodes = []
 
             for new_k in range(beam_width):
-                decoded_t = indexes[0][new_k].view(1, -1)
-                log_p = log_prob[0][new_k].item()
+                print("new_k: ",new_k)
+                # decoded_t = indexes[0][new_k].view(1, -1)
+                print("$",indexes[0][0].tolist())
+                decoded_t = indexes[0][0].tolist()[new_k]
+                # decoded_t = decoded_t.tolist()[new_k]
+
+                # print("$$$$$$ ",indexes[0][new_k].view(1, -1))
+                # log_p = log_prob[0][new_k].item()
+                log_p = log_prob[0][0][new_k].item()
+
 
                 node = BeamSearchNode(decoder_hidden, n, decoded_t, n.logp + log_p, n.leng + 1)
                 score = -node.eval()
+                # print(node)
                 nextnodes.append((score, node))
 
             # put them into queue
