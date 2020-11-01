@@ -20,6 +20,7 @@ from torch import nn
 import pandas as pd
 from torchtext import data
 import sacrebleu
+import random
 
 #import support.hyperparams as hp
 #import support.datasets as ds
@@ -457,20 +458,22 @@ if __name__ == '__main__':
     optparser.add_option("-o", "--outputfile", dest="outputfile",
                          default='output.txt', help="print result to output file")
 
-    optparser.add_option("-t", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
+    optparser.add_option("-r", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
     optparser.add_option(
-        "-e", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E047.pt'),
+        "-e", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E048.pt'),
         help="model file")
     optparser.add_option(
-        "-f", "--model3", dest="model3", default=os.path.join('data', 'seq2seq_E048.pt'),
+        "-f", "--model3", dest="model3", default=os.path.join('data', 'seq2seq_E047.pt'),
         help="model file")
     optparser.add_option(
         "-g", "--model4", dest="model4", default=os.path.join('data', 'seq2seq_E046.pt'),
         help="model file")
+    optparser.add_option("-t", "--train", dest="train", default='False',help="train to learn ensemble weights")
 
     (opts, _) = optparser.parse_args()
 
-    ''' main model '''
+    '''load all models '''
+    ''' each model took around 6 mins for decoding (GPU)'''
     list_model=[opts.model,opts.model2,opts.model3,opts.model4]
     test_iter = None
     list_results = []
@@ -487,20 +490,44 @@ if __name__ == '__main__':
         results = translate(model, test_iter)
         list_results.append(results)
 
-
+    '''Get reference file '''
     with open(opts.ref, 'r') as refh:
         ref_data = [str(x).strip() for x in refh.read().splitlines()]
 
     final_result=[]
+    ''' initialize dict to learn weight of ensemble models '''
+    dict_count = {}
+    for idx_model in range(len(list_model)):
+        dict_count["model_"+str(idx_model)] =0
+
+    '''iterate row by row of the translated text'''
     for idx_row in range(len(list_results[0])):
         scores = []
-        for result in list_results:
-            '''compare result with reference row by row '''
-            bleu_score =bleu([ref_data[idx_row]], [result[idx_row]]).score
-            scores.append(bleu_score)
 
-        final_result.append(list_results[argmax(scores)][idx_row])
+        if opts.train == 'True':
+            for result in list_results:
+                '''compare result with reference row by row '''
+                bleu_score =bleu([ref_data[idx_row]], [result[idx_row]]).score
+                scores.append(bleu_score)
 
+            idx_max = argmax(scores)
+            final_result.append(list_results[idx_max][idx_row])
+            dict_count["model_"+str(idx_max)] += 1
+
+        elif opts.train=='False':
+            '''randomly draw according to weight of trained ensemble models'''
+            '''Default weight from trained ensemble model(E049,...,E046) =[0.46, 0.24, 0.26,0.04] '''
+            idx_draw = random.choices(population=[0,1,2,3], weights=[0.46, 0.24, 0.26,0.04],k=1)[0]
+            print(idx_draw)
+            final_result.append(list_results[idx_draw][idx_row])
+            dict_count["model_"+str(idx_draw)] += 1
+
+    print(dict_count)
+    if opts.train == 'True':
+        ''' get weight of trained ensemble models'''
+        for model,val in dict_count.items():
+            dict_count[model] = val/len(list_results[0])
+        print("weight: ",dict_count)
 
     ''' Print out to file instead of using python ... > ... '''
     original_stdout = sys.stdout
