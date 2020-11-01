@@ -4,5 +4,5 @@ Group: Oasis
 
 
 main file:
-chunker.py
-chunker.ipynb
+neurualmt.py
+neuralmt.ipynb
