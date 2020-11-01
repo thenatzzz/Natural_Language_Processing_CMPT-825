@@ -19,12 +19,10 @@ from torch import nn
 import pandas as pd
 from torchtext import data
 
-# import support.hyperparams as hp
-# import support.datasets as ds
+#import support.hyperparams as hp
+#import support.datasets as ds
 
 # hyperparameters
-
-
 class hp:
     # vocab
     pad_idx = 1
@@ -53,8 +51,6 @@ class hp:
 # -- Step 1: Baseline ---
 # The attention module is completely broken now. Fix it using the definition
 # given in the HW description.
-
-
 class AttentionModule(nn.Module):
     def __init__(self, attention_dim):
         """
@@ -62,11 +58,9 @@ class AttentionModule(nn.Module):
         essential for successfully loading the saved model.
         """
         super(AttentionModule, self).__init__()
-        self.W_enc = nn.Linear(attention_dim, attention_dim,
-                               bias=False)  # .to(hp.device)
-        self.W_dec = nn.Linear(attention_dim, attention_dim,
-                               bias=False)  # .to(hp.device)
-        self.V_att = nn.Linear(attention_dim, 1, bias=False)  # .to(hp.device)
+        self.W_enc = nn.Linear(attention_dim, attention_dim, bias=False)#.to(hp.device)
+        self.W_dec = nn.Linear(attention_dim, attention_dim, bias=False)#.to(hp.device)
+        self.V_att = nn.Linear(attention_dim, 1, bias=False)#.to(hp.device)
         # print(attention_dim, ": attention_dim")
         return
 
@@ -79,14 +73,12 @@ class AttentionModule(nn.Module):
         seq, batch, dim = encoder_out.shape
         # scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0).to(hp.device) # 1,13,1
         # scores = torch.tanh(scores).permute(1,0,2).to(hp.device)
-        scores = torch.tanh(
-            decoder_hidden+encoder_out).permute(1, 0, 2).to(hp.device)
+        scores = torch.tanh(decoder_hidden+encoder_out).permute(1,0,2).to(hp.device)
 
         # print(scores.shape,": scores.shape after ----------------------")
 
         # alpha = torch.nn.functional.softmax(scores, dim=1)  # 1,13,1
-        alpha = torch.nn.functional.softmax(
-            self.V_att(scores), dim=1)  # .to(hp.device)
+        alpha = torch.nn.functional.softmax(self.V_att(scores), dim=1)#.to(hp.device)
         # print(alpha.shape,'alpha shape===================')
         return alpha
 
@@ -104,19 +96,17 @@ class AttentionModule(nn.Module):
         # print(self.W_enc(encoder_out).shape, " :W_enc shape")
 
         # alpha = self.calcAlpha(decoder_hidden, encoder_out) # 1,13,1
-        alpha = self.calcAlpha(self.W_dec(decoder_hidden),
-                               self.W_enc(encoder_out)).to(hp.device)
+        alpha = self.calcAlpha(self.W_dec(decoder_hidden), self.W_enc(encoder_out)).to(hp.device)
         # print(alpha.shape, ' alpha shape _______________')
 
-        seq, _, dim = encoder_out.shape  # 7,1,256
+        seq, _, dim = encoder_out.shape # 7,1,256
         # print(torch.sum(encoder_out,dim=0).shape) # 1,256
         # 1,13,1 * 1,13,256 = 1,256
         # alpha 1,13,1
         # encoder_out 13,1,256
         # context 1,1,256
         # context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
-        context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),
-                   dim=1)).reshape(1, 1, dim)
+        context = (torch.sum(alpha*encoder_out.permute(1,0,2), dim=1) ).reshape(1, 1, dim)
 
         # print(context.shape, " context.shape") # 1,1,256
         # print(alpha.permute(2,0,1).shape) # 1,1,13
@@ -128,7 +118,6 @@ class AttentionModule(nn.Module):
 # you can change 'greedyDecoder' and 'translate'.
 def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
                   eos_index):
-    print(encoder_out.shape, encoder_hidden.shape,maxLen,eos_index)
     seq1_len, batch_size, _ = encoder_out.size()
     target_vocab_size = decoder.target_vocab_size
 
@@ -145,34 +134,12 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
             output, encoder_out, decoder_hidden)
         outputs[t] = output
         alphas[t] = alpha.data
+        print(outputs[t].shape)
+        print(output.data.shape)
         output = torch.autograd.Variable(output.data.max(dim=2)[1])
         if int(output.data) == eos_index:
             break
     return outputs, alphas.permute(1, 2, 0)
-
-
-
-def translate(model, test_iter):
-    results = []
-    for i, batch in tqdm(enumerate(test_iter)):
-        output, attention = model(batch.src)
-        # print(output.shape, ' ++++++++++++++++++++++++')
-        output = output.topk(1)[1]
-        # print(output.topk(1),output.topk(1)[1])
-        print(output.topk(5)[1])
-
-        # print(output.shape, ' ++++++++++++++++++++++++')
-        output = model.tgt2txt(output[:, 0].data).strip().split('<EOS>')[0]
-        results.append(output)
-    return results
-
-from queue import PriorityQueue
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-SOS_token = 0
-EOS_token = 1
-MAX_LENGTH = 50
-
 class BeamSearchNode(object):
     def __init__(self, hiddenstate, previousNode, wordId, logProb, length):
         '''
@@ -193,43 +160,45 @@ class BeamSearchNode(object):
         # Add here a function for shaping a reward
 
         return self.logp / float(self.leng - 1 + 1e-6) + alpha * reward
+# def beam_decode(target_tensor, decoder_hiddens, encoder_outputs=None):
+from queue import PriorityQueue
+def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
-def beamDecoder(target_tensor, decoder_hiddens, encoder_outputs=None):
     '''
     :param target_tensor: target indexes tensor of shape [B, T] where B is the batch size and T is the maximum length of the output sentence
     :param decoder_hidden: input tensor of shape [1, B, H] for start of the decoding
     :param encoder_outputs: if you are using attention mechanism you can pass encoder outputs, [T, B, H] where T is the maximum length of input sentence
     :return: decoded_batch
     '''
-    # print(encoder_out.shape, encoder_hidden.shape,      maxLen,   eos_index)
-    # torch.Size([13, 1, 256]), torch.Size([4, 1, 256]), maxLen=50, index eos=2
-    # encoder_outputs,
+
     beam_width = 10
     topk = 1  # how many sentence do you want to generate
     decoded_batch = []
-    '''
-    seq1_len, batch_size, _ = encoder_out.size()
-    target_vocab_size = decoder.target_vocab_size
 
-    outputs = torch.autograd.Variable(
-        encoder_out.data.new(maxLen, batch_size, target_vocab_size))
-    alphas = torch.zeros(maxLen, batch_size, seq1_len)
     # take what we need from encoder
     decoder_hidden = encoder_hidden[-decoder.n_layers:]
+    seq1_len, batch_size, _ = encoder_outputs.size()
+    target_vocab_size = decoder.target_vocab_size
+    outputs = torch.autograd.Variable(
+        encoder_outputs.data.new(maxLen, batch_size, target_vocab_size))
     # start token (ugly hack)
-    output = torch.autograd.Variable(
+    decoder_input = torch.autograd.Variable(
         outputs.data.new(1, batch_size).fill_(eos_index).long())
-    '''
     # decoding goes sentence by sentence
-    for idx in range(target_tensor.size(0)):
-        if isinstance(decoder_hiddens, tuple):  # LSTM case
-            decoder_hidden = (decoder_hiddens[0][:,idx, :].unsqueeze(0),decoder_hiddens[1][:,idx, :].unsqueeze(0))
-        else:
-            decoder_hidden = decoder_hiddens[:, idx, :].unsqueeze(0)
-        encoder_output = encoder_outputs[:,idx, :].unsqueeze(1)
+    # for idx in range(outputs.size(0)):
+    for idx in range(maxLen):
+
+        encoder_output = encoder_outputs
+
+        #
+        # if isinstance(decoder_hiddens, tuple):  # LSTM case
+        #     decoder_hidden = (decoder_hiddens[0][:,idx, :].unsqueeze(0),decoder_hiddens[1][:,idx, :].unsqueeze(0))
+        # else:
+        #     decoder_hidden = decoder_hiddens[:, idx, :].unsqueeze(0)
+        # encoder_output = encoder_outputs[:,idx, :].unsqueeze(1)
 
         # Start with the start of the sentence token
-        decoder_input = torch.LongTensor([[SOS_token]], device=device)
+        # decoder_input = torch.LongTensor([[SOS_token]], device=device)
 
         # Number of sentence to generate
         endnodes = []
@@ -252,7 +221,7 @@ def beamDecoder(target_tensor, decoder_hiddens, encoder_outputs=None):
             score, n = nodes.get()
             decoder_input = n.wordid
             decoder_hidden = n.h
-
+            EOS_token = 1
             if n.wordid.item() == EOS_token and n.prevNode != None:
                 endnodes.append((score, n))
                 # if we reached maximum # of sentences required
@@ -262,8 +231,11 @@ def beamDecoder(target_tensor, decoder_hiddens, encoder_outputs=None):
                     continue
 
             # decode for one step using decoder
-            decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden, encoder_output)
-
+            # decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden, encoder_output)
+            # output, decoder_hidden, alpha = decoder(
+                # output, encoder_outputs, decoder_hiddens)
+            decoder_output, decoder_hidden, _ = decoder(
+                decoder_input, decoder_hidden, encoder_output)
             # PUT HERE REAL BEAM SEARCH OF TOP
             log_prob, indexes = torch.topk(decoder_output, beam_width)
             nextnodes = []
@@ -303,6 +275,14 @@ def beamDecoder(target_tensor, decoder_hiddens, encoder_outputs=None):
 
     return decoded_batch
 
+def translate(model, test_iter):
+    results = []
+    for i, batch in tqdm(enumerate(test_iter)):
+        output, attention = model(batch.src)
+        output = output.topk(1)[1]
+        output = model.tgt2txt(output[:, 0].data).strip().split('<EOS>')[0]
+        results.append(output)
+    return results
 
 
 # ---Model Definition etc.---
@@ -425,8 +405,9 @@ class Seq2Seq(nn.Module):
             maxLen = self.maxLen
         encoder_out, encoder_hidden = self.encoder(source)
 
-        return greedyDecoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
-        return beamDecoder(target_tensor, decoder_hiddens, encoder_outputs=encoder_out):
+        # return greedyDecoder(self.decoder, encoder_out, encoder_hidden,
+                             # maxLen, eos_index)
+        return beam_decode(self.decoder, encoder_hidden,eos_index,maxLen,encoder_outputs=encoder_out)
 
 
     def tgt2txt(self, tgt):
