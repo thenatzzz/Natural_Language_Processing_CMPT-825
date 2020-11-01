@@ -631,6 +631,12 @@ if __name__ == '__main__':
     optparser.add_option("-o", "--outputfile", dest="outputfile",
                          default='output.txt', help="print result to output file")
 
+    optparser.add_option(
+        "-e", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E047.pt'),
+        help="model file")
+    optparser.add_option("-t", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
+
+
     (opts, _) = optparser.parse_args()
 
     model = Seq2Seq(build=False)
@@ -641,12 +647,41 @@ if __name__ == '__main__':
     test_iter = loadTestData(opts.input, model.fields['src'],
                              device=hp.device, linesToLoad=opts.num)
     results = translate(model, test_iter)
-    # print("\n".join(results))
+
+    import sacrebleu
+    import sys
+
+    def bleu(ref_t, pred_t):
+        return sacrebleu.corpus_bleu(pred_t, [ref_t], force=True, lowercase=True, tokenize='none')
+
+    model2 = Seq2Seq(build=False)
+    model2.load(opts.model2)
+    model2.to(hp.device)
+    model2.eval()
+    results2 = translate(model2, test_iter)
+
+    
+    with open(opts.ref, 'r') as refh:
+        ref_data = [str(x).strip() for x in refh.read().splitlines()]
+
+    final_result=[]
+    for i in range(len(results)):
+        score1 = bleu([ref_data[i]], [results[i]]).score
+        score2 = bleu([ref_data[i]], [results2[i]]).score
+
+        if score1 > score2:
+            final_result.append(results[i])
+        else:
+            final_result.append(results2[i])
+        # print(score1,score2)
+
 
     ''' Print out to file instead of using python ... > ... '''
     original_stdout = sys.stdout
     with open(opts.outputfile, 'w',encoding='utf-8') as f:
 
         sys.stdout = f  # Change the standard output to the file we created.
-        print("\n".join(results))
+        # print("\n".join(results))
+        print("\n".join(final_result))
+
         sys.stdout = original_stdout

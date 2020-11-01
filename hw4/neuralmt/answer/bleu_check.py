@@ -19,6 +19,11 @@ if __name__ == '__main__':
         if len(ref_data) == len(output_data):
             # print(bleu(ref_data, output_data))
             print(bleu(ref_data, output_data).score)
+            # print(len(ref_data))
+            # print(bleu(ref_data[:800], output_data[:800]).score)
 
+            # print(type(ref_data),type(output_data))
         else:
+            print(bleu(ref_data[:len(output_data)], output_data).score)
+
             raise ValueError("reference and output are different lengths")
