@@ -133,6 +133,14 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
 
     return outputs, alphas.permute(1, 2, 0)
 
+def translate(model, test_iter):
+    results = []
+    for i, batch in tqdm(enumerate(test_iter)):
+        output, attention = model(batch.src)
+        output = output.topk(1)[1]
+        output = model.tgt2txt(output[:, 0].data).strip().split('<EOS>')[0]
+        results.append(output)
+    return results
 
 def beam_search_decoder(decoder, encoder_out, encoder_hidden, maxLen,
                         eos_index):
@@ -335,16 +343,6 @@ def beam_decode(decoder, encoder_hidden, eos_index,maxLen, encoder_outputs=None)
         decoded_batch.append(utterances)
     # torch.Size([50, 1, 25004])
     return decoded_batch
-
-
-def translate(model, test_iter):
-    results = []
-    for i, batch in tqdm(enumerate(test_iter)):
-        output, attention = model(batch.src)
-        output = output.topk(1)[1]
-        output = model.tgt2txt(output[:, 0].data).strip().split('<EOS>')[0]
-        results.append(output)
-    return results
 
 
 # ---Model Definition etc.---
