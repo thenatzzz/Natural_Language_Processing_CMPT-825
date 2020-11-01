@@ -209,11 +209,13 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
             # fetch the best node
             score, n = nodes.get()
             # decoder_input = n.wordid
-            # output = n.wordid
+            output = n.wordid
             print(score,n)
-            decoder_input = n.wordid
+            # decoder_input = n.wordid
 
-            print("%%%%%%%%% ",decoder_input)
+            # print("%%%%%%%%% ",decoder_input)
+            print("%%%%%%%%% ",output)
+
             decoder_hidden = n.h
             EOS_token = 1
             if n.wordid.item() == EOS_token and n.prevNode != None:
@@ -226,11 +228,11 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
             # decode for one step using decoder
             # decoder_output, decoder_hidden = decoder(decoder_input, decoder_hidden, encoder_output)
-            output, decoder_hidden, alpha = decoder(
-                 decoder_input, encoder_outputs, decoder_hidden)
+            # output, decoder_hidden, alpha = decoder(
+                 # decoder_input, encoder_outputs, decoder_hidden)
 
-            # output, decoder_hidden, _ = decoder(
-                # output, encoder_output,decoder_hidden)
+            output, decoder_hidden, _ = decoder(
+                output, encoder_output,decoder_hidden)
             print(output, " outputttttttttttttttttttttttt")
             # print(decoder_hidden, " decoder_hidden !!")
             # PUT HERE REAL BEAM SEARCH OF TOP
@@ -242,9 +244,10 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
 
             for new_k in range(beam_width):
                 print("new_k: ",new_k)
-                # decoded_t = indexes[0][new_k].view(1, -1)
+                decoded_t = indexes[0][0][new_k].view(1, -1)
+                print("decoded_t",decoded_t.shape)
                 print("$",indexes[0][0].tolist())
-                decoded_t = indexes[0][0].tolist()[new_k]
+                # decoded_t = indexes[0][0].tolist()[new_k]
                 # decoded_t = decoded_t.tolist()[new_k]
 
                 # print("$$$$$$ ",indexes[0][new_k].view(1, -1))
@@ -269,6 +272,7 @@ def beam_decode(decoder,encoder_hidden,eos_index,maxLen, encoder_outputs=None):
             endnodes = [nodes.get() for _ in range(topk)]
 
         utterances = []
+        import operator
         for score, n in sorted(endnodes, key=operator.itemgetter(0)):
             utterance = []
             utterance.append(n.wordid)
