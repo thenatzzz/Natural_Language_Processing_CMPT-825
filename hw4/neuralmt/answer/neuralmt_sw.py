@@ -70,9 +70,28 @@ class AttentionModule(nn.Module):
         param decoder_hidden: (seq, batch, dim)
         """
         seq, batch, dim = encoder_out.shape
+
+        #hidden = decoder_hidden.unsqueeze(1).repeat(1, seq, 1)
+        #hidden = decoder_hidden.repeat(1, seq, 1)
+
         scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0)
-        alpha = torch.nn.functional.softmax(scores, dim=1)
+
+        #alpha = torch.nn.functional.softmax(scores, dim=1)
+
+        #alpha = torch.tanh(self.W_dec(torch.cat((hidden, scores), dim=2)))
+
+        #alpha = torch.tanh(self.W_dec(hidden+scores), dim=2)
+        #alpha = torch.tanh(self.W_dec(decoder_hidden) + self.W_enc(scores))
+
+        alpha = torch.tanh(self.W_dec(decoder_hidden) + self.W_enc(encoder_out)).permute(1, 0, 2)
+
+        #alpha = self.V_att(alpha).squeeze(2)
+        alpha = self.V_att(alpha)
+
+        alpha = torch.nn.functional.softmax(alpha, dim=1)
+
         return alpha
+
 
     def forward(self, decoder_hidden, encoder_out):
         """
@@ -81,8 +100,9 @@ class AttentionModule(nn.Module):
         """
         alpha = self.calcAlpha(decoder_hidden, encoder_out)
         seq, _, dim = encoder_out.shape
-        context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
+        context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),dim=1)).reshape(1, 1, dim)
         return context, alpha.permute(2, 0, 1)
+
 
 
 # -- Step 2: Improvements ---
