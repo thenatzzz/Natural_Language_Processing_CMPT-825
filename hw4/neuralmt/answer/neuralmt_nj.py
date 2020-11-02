@@ -488,7 +488,6 @@ if __name__ == '__main__':
         # loading test dataset
         test_iter = loadTestData(opts.input, model.fields['src'],
                                     device=hp.device, linesToLoad=opts.num)
-        # results = translate(model, test_iter)
         final_result = translate(model, test_iter)
         print("\n".join(final_result))
 
