@@ -454,82 +454,106 @@ if __name__ == '__main__':
         help="input file")
     optparser.add_option(
         "-n", "--num", dest="num", default=sys.maxsize, type='int',
+        # "-n", "--num", dest="num", default=5, type='int',
         help="num of lines to load")
-    optparser.add_option("-o", "--outputfile", dest="outputfile",
+    optparser.add_option(
+        "-o", "--outputfile", dest="outputfile",
                          default='output.txt', help="print result to output file")
 
-    optparser.add_option("-r", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
+
     optparser.add_option(
-        "-e", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E048.pt'),
+        "-r", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
+    optparser.add_option(
+        "-a", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E048.pt'),
         help="model file")
     optparser.add_option(
-        "-f", "--model3", dest="model3", default=os.path.join('data', 'seq2seq_E047.pt'),
+        "-b", "--model3", dest="model3", default=os.path.join('data', 'seq2seq_E047.pt'),
         help="model file")
     optparser.add_option(
-        "-g", "--model4", dest="model4", default=os.path.join('data', 'seq2seq_E046.pt'),
+        "-c", "--model4", dest="model4", default=os.path.join('data', 'seq2seq_E046.pt'),
         help="model file")
-    optparser.add_option("-t", "--train", dest="train", default='True',help="train to learn ensemble weights")
+    optparser.add_option(
+        "-t", "--train", dest="train", default='True',help="train to learn ensemble weights")
+    optparser.add_option(
+        # "-e", "--ensemble", dest="ensemble", default='True',help="use ensemble mode or not")
+        "-e", "--ensemble", dest="ensemble", default='False',help="use ensemble mode or not")
 
     (opts, _) = optparser.parse_args()
 
-    '''load all models '''
-    ''' each model took around 6 mins for decoding (GPU)'''
-    list_model=[opts.model,opts.model2,opts.model3,opts.model4]
-    test_iter = None
-    list_results = []
-    for opts_model in list_model:
+    if opts.ensemble == 'False':
         model = Seq2Seq(build=False)
-        model.load(opts_model)
+        model.load(opts.model)
         model.to(hp.device)
         model.eval()
+        # loading test dataset
+        test_iter = loadTestData(opts.input, model.fields['src'],
+                                    device=hp.device, linesToLoad=opts.num)
+        # results = translate(model, test_iter)
+        final_result = translate(model, test_iter)
+        print("\n".join(final_result))
 
-        if test_iter is None:
-            '''load data once using for all models'''
-            test_iter = loadTestData(opts.input, model.fields['src'],
-                                     device=hp.device, linesToLoad=opts.num)
-        results = translate(model, test_iter)
-        list_results.append(results)
+    else:
+        '''Use Ensemble mode (load up various models and decode), took long time !'''
+        '''load all models '''
+        ''' each model took around 6 mins for decoding (GPU)'''
+        list_model=[opts.model,opts.model2,opts.model3,opts.model4]
+        test_iter = None
+        list_results = []
+        for opts_model in list_model:
+            model = Seq2Seq(build=False)
+            model.load(opts_model)
+            model.to(hp.device)
+            model.eval()
 
-    '''Get reference file '''
-    with open(opts.ref, 'r') as refh:
-        ref_data = [str(x).strip() for x in refh.read().splitlines()]
+            if test_iter is None:
+                '''load data once using for all models'''
+                test_iter = loadTestData(opts.input, model.fields['src'],
+                                         device=hp.device, linesToLoad=opts.num)
+            results = translate(model, test_iter)
+            list_results.append(results)
 
-    final_result=[]
-    ''' initialize dict to learn weight of ensemble models '''
-    dict_count = {}
-    for idx_model in range(len(list_model)):
-        dict_count["model_"+str(idx_model)] =0
+        '''Get reference file '''
+        with open(opts.ref, 'r') as refh:
+            ref_data = [str(x).strip() for x in refh.read().splitlines()]
 
-    '''iterate row by row of the translated text'''
-    for idx_row in range(len(list_results[0])):
-        scores = []
-        '''use the below function if we decode and find ensemble weights during training phase (dev.txt)'''
+        final_result=[]
+        ''' initialize dict to learn weight of ensemble models '''
+        dict_count = {}
+        for idx_model in range(len(list_model)):
+            dict_count["model_"+str(idx_model)] =0
+
+        '''iterate row by row of the translated text'''
+        for idx_row in range(len(list_results[0])):
+            scores = []
+            '''use the below function if we decode and find ensemble weights during training phase (dev.txt)'''
+            if opts.train == 'True' and (len(ref_data) == len(test_iter)):
+                for result in list_results:
+                    '''compare result with reference row by row '''
+                    bleu_score =bleu([ref_data[idx_row]], [result[idx_row]]).score
+                    scores.append(bleu_score)
+
+                # find index of max BLEU scores
+                idx_max = argmax(scores)
+                final_result.append(list_results[idx_max][idx_row])
+                dict_count["model_"+str(idx_max)] += 1
+
+            # elif opts.train=='False':
+            else:
+                '''else, we decode during test phase (test.txt)'''
+                '''Default: get weights from trained ensemble model(E049,...,E046) =[0.42, 0.24, 0.18,0.16] '''
+                default_weight = [0.42, 0.24, 0.18,0.16]
+
+                '''randomly draw according to weight of trained ensemble models'''
+                idx_draw = random.choices(population=[i for i in range(len(list_results))], weights=default_weight ,k=1)[0]
+                final_result.append(list_results[idx_draw][idx_row])
+                dict_count["model_"+str(idx_draw)] += 1
+
         if opts.train == 'True' and (len(ref_data) == len(test_iter)):
-            for result in list_results:
-                '''compare result with reference row by row '''
-                bleu_score =bleu([ref_data[idx_row]], [result[idx_row]]).score
-                scores.append(bleu_score)
+            ''' get weight of trained ensemble models'''
+            for model,val in dict_count.items():
+                dict_count[model] = val/len(list_results[0])
 
-            idx_max = argmax(scores)
-            final_result.append(list_results[idx_max][idx_row])
-            dict_count["model_"+str(idx_max)] += 1
-
-        # elif opts.train=='False':
-        else:
-            '''else, we decode during test phase (test.txt)'''
-            '''randomly draw according to weight of trained ensemble models'''
-            '''Default: get weights from trained ensemble model(E049,...,E046) =[0.42, 0.24, 0.18,0.16] '''
-            default_weight = [0.42, 0.24, 0.18,0.16]
-            idx_draw = random.choices(population=[i for i in range(len(list_results))], weights=default_weight ,k=1)[0]
-            final_result.append(list_results[idx_draw][idx_row])
-            dict_count["model_"+str(idx_draw)] += 1
-            print(default_weight)
-
-    if opts.train == 'True' and (len(ref_data) == len(test_iter)):
-        ''' get weight of trained ensemble models'''
-        for model,val in dict_count.items():
-            dict_count[model] = val/len(list_results[0])
-        print("weight: ",dict_count)
+        print("\n".join(final_result))
 
     ''' Print out to file instead of using python ... > ... '''
     original_stdout = sys.stdout
