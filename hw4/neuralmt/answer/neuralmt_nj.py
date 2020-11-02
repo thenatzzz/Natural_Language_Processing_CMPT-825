@@ -468,7 +468,7 @@ if __name__ == '__main__':
     optparser.add_option(
         "-g", "--model4", dest="model4", default=os.path.join('data', 'seq2seq_E046.pt'),
         help="model file")
-    optparser.add_option("-t", "--train", dest="train", default='False',help="train to learn ensemble weights")
+    optparser.add_option("-t", "--train", dest="train", default='True',help="train to learn ensemble weights")
 
     (opts, _) = optparser.parse_args()
 
@@ -503,8 +503,8 @@ if __name__ == '__main__':
     '''iterate row by row of the translated text'''
     for idx_row in range(len(list_results[0])):
         scores = []
-
-        if opts.train == 'True':
+        '''use the below function if we decode and find ensemble weights during training phase (dev.txt)'''
+        if opts.train == 'True' and (len(ref_data) == len(test_iter)):
             for result in list_results:
                 '''compare result with reference row by row '''
                 bleu_score =bleu([ref_data[idx_row]], [result[idx_row]]).score
@@ -514,16 +514,18 @@ if __name__ == '__main__':
             final_result.append(list_results[idx_max][idx_row])
             dict_count["model_"+str(idx_max)] += 1
 
-        elif opts.train=='False':
+        # elif opts.train=='False':
+        else:
+            '''else, we decode during test phase (test.txt)'''
             '''randomly draw according to weight of trained ensemble models'''
-            '''Default weight from trained ensemble model(E049,...,E046) =[0.46, 0.24, 0.26,0.04] '''
-            idx_draw = random.choices(population=[0,1,2,3], weights=[0.46, 0.24, 0.26,0.04],k=1)[0]
-            print(idx_draw)
+            '''Default: get weights from trained ensemble model(E049,...,E046) =[0.42, 0.24, 0.18,0.16] '''
+            default_weight = [0.42, 0.24, 0.18,0.16]
+            idx_draw = random.choices(population=[i for i in range(len(list_results))], weights=default_weight ,k=1)[0]
             final_result.append(list_results[idx_draw][idx_row])
             dict_count["model_"+str(idx_draw)] += 1
+            print(default_weight)
 
-    print(dict_count)
-    if opts.train == 'True':
+    if opts.train == 'True' and (len(ref_data) == len(test_iter)):
         ''' get weight of trained ensemble models'''
         for model,val in dict_count.items():
             dict_count[model] = val/len(list_results[0])
