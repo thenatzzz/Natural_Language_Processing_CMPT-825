@@ -70,7 +70,6 @@ class AttentionModule(nn.Module):
         self.W_dec = nn.Linear(attention_dim, attention_dim,
                                bias=False)  # .to(hp.device)
         self.V_att = nn.Linear(attention_dim, 1, bias=False)  # .to(hp.device)
-        # print(attention_dim, ": attention_dim")
         return
 
     # Start working from here, both 'calcAlpha' and 'forward' need to be fixed
@@ -80,11 +79,8 @@ class AttentionModule(nn.Module):
         param decoder_hidden: (seq, batch, dim)
         """
         seq, batch, dim = encoder_out.shape
-        # scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0).to(hp.device) # 1,13,1
-        # scores = torch.tanh(decoder_hidden+encoder_out).permute(1, 0, 2).to(hp.device)
         scores = torch.tanh(self.W_dec(decoder_hidden)+self.W_enc(encoder_out)).permute(1, 0, 2).to(hp.device)
 
-        # alpha = torch.nn.functional.softmax(scores, dim=1)  # 1,13,1
         alpha = torch.nn.functional.softmax(self.V_att(scores), dim=1)  # .to(hp.device)
 
         return alpha
@@ -94,12 +90,9 @@ class AttentionModule(nn.Module):
         encoder_out: (seq, batch, dim),
         decoder_hidden: (seq, batch, dim)
         """
-        # alpha = self.calcAlpha(decoder_hidden, encoder_out) # 1,13,1
-        # alpha = self.calcAlpha(self.W_dec(decoder_hidden),self.W_enc(encoder_out)).to(hp.device)
         alpha = self.calcAlpha(decoder_hidden,encoder_out).to(hp.device)
 
         seq, _, dim = encoder_out.shape  # 7,1,256
-        # context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
         context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),dim=1)).reshape(1, 1, dim)
 
         return context, alpha.permute(2, 0, 1)
@@ -129,8 +122,6 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
         output = torch.autograd.Variable(output.data.max(dim=2)[1])
         if int(output.data) == eos_index:
             break
-    # print(outputs.shape, ' <---------------------')
-    # torch.Size([50, 1, 25004])
 
     return outputs, alphas.permute(1, 2, 0)
 
@@ -536,7 +527,6 @@ if __name__ == '__main__':
                 final_result.append(list_results[idx_max][idx_row])
                 dict_count["model_"+str(idx_max)] += 1
 
-            # elif opts.train=='False':
             else:
                 '''else, we decode during test phase (test.txt)'''
                 '''Default: get weights from trained ensemble model(E049,...,E046) =[0.42, 0.24, 0.18,0.16] '''
@@ -559,7 +549,6 @@ if __name__ == '__main__':
     with open(opts.outputfile, 'w',encoding='utf-8') as f:
 
         sys.stdout = f  # Change the standard output to the file we created.
-        # print("\n".join(results))
         print("\n".join(final_result))
 
         sys.stdout = original_stdout

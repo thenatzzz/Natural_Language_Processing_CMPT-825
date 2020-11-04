@@ -7,6 +7,7 @@
 # Jetic Gū
 #
 #
+from queue import PriorityQueue
 import os
 import re
 import sys
@@ -18,11 +19,15 @@ from torch import nn
 
 import pandas as pd
 from torchtext import data
+import sacrebleu
+import random
 
 #import support.hyperparams as hp
 #import support.datasets as ds
 
 # hyperparameters
+
+
 class hp:
     # vocab
     pad_idx = 1
@@ -51,6 +56,8 @@ class hp:
 # -- Step 1: Baseline ---
 # The attention module is completely broken now. Fix it using the definition
 # given in the HW description.
+
+
 class AttentionModule(nn.Module):
     def __init__(self, attention_dim):
         """
@@ -58,9 +65,11 @@ class AttentionModule(nn.Module):
         essential for successfully loading the saved model.
         """
         super(AttentionModule, self).__init__()
-        self.W_enc = nn.Linear(attention_dim, attention_dim, bias=False)
-        self.W_dec = nn.Linear(attention_dim, attention_dim, bias=False)
-        self.V_att = nn.Linear(attention_dim, 1, bias=False)
+        self.W_enc = nn.Linear(attention_dim, attention_dim,
+                               bias=False)  # .to(hp.device)
+        self.W_dec = nn.Linear(attention_dim, attention_dim,
+                               bias=False)  # .to(hp.device)
+        self.V_att = nn.Linear(attention_dim, 1, bias=False)  # .to(hp.device)
         return
 
     # Start working from here, both 'calcAlpha' and 'forward' need to be fixed
@@ -70,8 +79,10 @@ class AttentionModule(nn.Module):
         param decoder_hidden: (seq, batch, dim)
         """
         seq, batch, dim = encoder_out.shape
-        scores = torch.Tensor([seq * [batch * [1]]]).permute(2, 1, 0)
-        alpha = torch.nn.functional.softmax(scores, dim=1)
+        scores = torch.tanh(self.W_dec(decoder_hidden)+self.W_enc(encoder_out)).permute(1, 0, 2).to(hp.device)
+
+        alpha = torch.nn.functional.softmax(self.V_att(scores), dim=1)  # .to(hp.device)
+
         return alpha
 
     def forward(self, decoder_hidden, encoder_out):
@@ -79,9 +90,11 @@ class AttentionModule(nn.Module):
         encoder_out: (seq, batch, dim),
         decoder_hidden: (seq, batch, dim)
         """
-        alpha = self.calcAlpha(decoder_hidden, encoder_out)
-        seq, _, dim = encoder_out.shape
-        context = (torch.sum(encoder_out, dim=0) / seq).reshape(1, 1, dim)
+        alpha = self.calcAlpha(decoder_hidden,encoder_out).to(hp.device)
+
+        seq, _, dim = encoder_out.shape  # 7,1,256
+        context = (torch.sum(alpha*encoder_out.permute(1, 0, 2),dim=1)).reshape(1, 1, dim)
+
         return context, alpha.permute(2, 0, 1)
 
 
@@ -109,8 +122,8 @@ def greedyDecoder(decoder, encoder_out, encoder_hidden, maxLen,
         output = torch.autograd.Variable(output.data.max(dim=2)[1])
         if int(output.data) == eos_index:
             break
-    return outputs, alphas.permute(1, 2, 0)
 
+    return outputs, alphas.permute(1, 2, 0)
 
 def translate(model, test_iter):
     results = []
@@ -118,18 +131,54 @@ def translate(model, test_iter):
         output, attention = model(batch.src)
         output = output.topk(1)[1]
         output = model.tgt2txt(output[:, 0].data).strip().split('<EOS>')[0]
+
+        '''remove repeated consecutive translated texts'''
+        output = remove_repeated_word(output)
+        ''' replace <unk> with the most frequent word "the" '''
+        output = output.replace('<unk>','the')
         results.append(output)
     return results
+
+def remove_repeated_word(text):
+    '''function to remove consecutive repeated words'''
+    # if len(text) less than 2, we do nothing
+    if len(text) <  2:
+        return text
+
+    sentence = []
+    list_text = text.split()
+    for idx in range(len(list_text)):
+        # first word, we move to next word and set the prev as the first word
+        if idx ==0:
+            prev_word = list_text[idx]
+            sentence.append(prev_word)
+            continue
+
+        current_word = list_text[idx]
+        # if previous word is the same as current word, we don't to sentence
+        if prev_word== current_word:
+            continue
+        else:
+            sentence.append(current_word)
+            prev_word = current_word
+    return ' '.join(sentence)
+
+def argmax(iterable):
+    '''get index of the max value (argmax) in the list'''
+    return max(enumerate(iterable), key=lambda x: x[1])[0]
+
+def bleu(ref_t, pred_t):
+    '''calculate BLEU scores'''
+    return sacrebleu.corpus_bleu(pred_t, [ref_t], force=True, lowercase=True, tokenize='none')
 
 
 # ---Model Definition etc.---
 # DO NOT MODIFY ANYTHING BELOW HERE
-
-
 class Encoder(nn.Module):
     """
     Encoder class
     """
+
     def __init__(self, source_vocab_size, embed_dim, hidden_dim,
                  n_layers, dropout):
         super(Encoder, self).__init__()
@@ -242,8 +291,7 @@ class Seq2Seq(nn.Module):
             maxLen = self.maxLen
         encoder_out, encoder_hidden = self.encoder(source)
 
-        return greedyDecoder(self.decoder, encoder_out, encoder_hidden,
-                             maxLen, eos_index)
+        return greedyDecoder(self.decoder, encoder_out, encoder_hidden, maxLen, eos_index)
 
     def tgt2txt(self, tgt):
         return " ".join([self.fields['tgt'].vocab.itos[int(i)] for i in tgt])
@@ -256,8 +304,10 @@ class Seq2Seq(nn.Module):
         self.build()
         self.load_state_dict(state_dict)
 
+
 class DataFrameDataset(data.Dataset):
     """Class for using pandas DataFrames as a datasource"""
+
     def __init__(self, examples, fields, filter_pred=None):
         """
         Create a dataset from a pandas dataframe of examples and Fields
@@ -281,6 +331,7 @@ class DataFrameDataset(data.Dataset):
                 self.fields.update(zip(n, f))
                 del self.fields[n]
 
+
 class SeriesExample(data.Example):
     """Class to convert a pandas Series to an Example"""
 
@@ -302,10 +353,12 @@ class SeriesExample(data.Example):
                 setattr(ex, key, data[key])
         return ex
 
+
 def biload(src_file, tgt_file, linesToLoad=50000, verbose=False):
-    src = open(src_file).read().lower().strip().split("\n")
-    tgt = open(tgt_file).read().lower().strip().split("\n")
+    src = open(src_file,encoding='utf-8').read().lower().strip().split("\n")
+    tgt = open(tgt_file,encoding='utf-8').read().lower().strip().split("\n")
     return list(map(lambda x: (x[0].strip().split(), x[1].strip().split()), zip(src, tgt)))[:linesToLoad]
+
 
 def bitext2Dataset(src, tgt, srcLex, tgtLex,
                    linesToLoad=50000, maxLen=hp.max_len):
@@ -317,6 +370,7 @@ def bitext2Dataset(src, tgt, srcLex, tgtLex,
     df = pd.DataFrame(data, columns=["src", "tgt"])
     dataset = DataFrameDataset(df, [('src', srcLex), ('tgt', tgtLex)])
     return dataset
+
 
 def loadData(batch_size, device=0,
              trainNum=sys.maxsize, testNum=sys.maxsize):
@@ -363,6 +417,7 @@ def loadData(batch_size, device=0,
 
     return train_iter, val_iter, test_iter, srcLex, tgtLex
 
+
 def loadTestData(srcFile, srcLex, device=0, linesToLoad=sys.maxsize):
     def tokenize(x):
         return x.split()
@@ -379,25 +434,121 @@ def loadTestData(srcFile, srcLex, device=0, linesToLoad=sys.maxsize):
         repeat=False)
     return test_iter
 
+
 if __name__ == '__main__':
     optparser = optparse.OptionParser()
     optparser.add_option(
-        "-m", "--model", dest="model", default=os.path.join('data', 'seq2seq_E049.pt'), 
+        "-m", "--model", dest="model", default=os.path.join('data', 'seq2seq_E049.pt'),
         help="model file")
     optparser.add_option(
         "-i", "--input", dest="input", default=os.path.join('data', 'input', 'dev.txt'),
         help="input file")
     optparser.add_option(
         "-n", "--num", dest="num", default=sys.maxsize, type='int',
+        # "-n", "--num", dest="num", default=5, type='int',
         help="num of lines to load")
+    optparser.add_option(
+        "-o", "--outputfile", dest="outputfile",
+                         default='output.txt', help="print result to output file")
+
+
+    optparser.add_option(
+        "-r", "--refcases", dest="ref", default=os.path.join('data', 'reference', 'dev.out'), help="references [default: data/reference/dev.out]")
+    optparser.add_option(
+        "-a", "--model2", dest="model2", default=os.path.join('data', 'seq2seq_E048.pt'),
+        help="model file")
+    optparser.add_option(
+        "-b", "--model3", dest="model3", default=os.path.join('data', 'seq2seq_E047.pt'),
+        help="model file")
+    optparser.add_option(
+        "-c", "--model4", dest="model4", default=os.path.join('data', 'seq2seq_E046.pt'),
+        help="model file")
+    optparser.add_option(
+        "-t", "--train", dest="train", default='True',help="train to learn ensemble weights")
+    optparser.add_option(
+        # "-e", "--ensemble", dest="ensemble", default='True',help="use ensemble mode or not")
+        "-e", "--ensemble", dest="ensemble", default='False',help="use ensemble mode or not")
+
     (opts, _) = optparser.parse_args()
 
-    model = Seq2Seq(build=False)
-    model.load(opts.model)
-    model.to(hp.device)
-    model.eval()
-    # loading test dataset
-    test_iter = loadTestData(opts.input, model.fields['src'],
-                                device=hp.device, linesToLoad=opts.num)
-    results = translate(model, test_iter)
-    print("\n".join(results))
+    if opts.ensemble == 'False':
+        model = Seq2Seq(build=False)
+        model.load(opts.model)
+        model.to(hp.device)
+        model.eval()
+        # loading test dataset
+        test_iter = loadTestData(opts.input, model.fields['src'],
+                                    device=hp.device, linesToLoad=opts.num)
+        final_result = translate(model, test_iter)
+        print("\n".join(final_result))
+
+    else:
+        '''Use Ensemble mode (load up various models and decode), took long time !'''
+        '''load all models '''
+        ''' each model took around 6 mins for decoding (GPU)'''
+        list_model=[opts.model,opts.model2,opts.model3,opts.model4]
+        test_iter = None
+        list_results = []
+        for opts_model in list_model:
+            model = Seq2Seq(build=False)
+            model.load(opts_model)
+            model.to(hp.device)
+            model.eval()
+
+            if test_iter is None:
+                '''load data once using for all models'''
+                test_iter = loadTestData(opts.input, model.fields['src'],
+                                         device=hp.device, linesToLoad=opts.num)
+            results = translate(model, test_iter)
+            list_results.append(results)
+
+        '''Get reference file '''
+        with open(opts.ref, 'r') as refh:
+            ref_data = [str(x).strip() for x in refh.read().splitlines()]
+
+        final_result=[]
+        ''' initialize dict to learn weight of ensemble models '''
+        dict_count = {}
+        for idx_model in range(len(list_model)):
+            dict_count["model_"+str(idx_model)] =0
+
+        '''iterate row by row of the translated text'''
+        for idx_row in range(len(list_results[0])):
+            scores = []
+            '''use the below function if we decode and find ensemble weights during training phase (dev.txt)'''
+            if opts.train == 'True' and (len(ref_data) == len(test_iter)):
+                for result in list_results:
+                    '''compare result with reference row by row '''
+                    bleu_score =bleu([ref_data[idx_row]], [result[idx_row]]).score
+                    scores.append(bleu_score)
+
+                # find index of max BLEU scores
+                idx_max = argmax(scores)
+                final_result.append(list_results[idx_max][idx_row])
+                dict_count["model_"+str(idx_max)] += 1
+
+            else:
+                '''else, we decode during test phase (test.txt)'''
+                '''Default: get weights from trained ensemble model(E049,...,E046) =[0.42, 0.24, 0.18,0.16] '''
+                default_weight = [0.42, 0.24, 0.18,0.16]
+
+                '''randomly draw according to weight of trained ensemble models'''
+                idx_draw = random.choices(population=[i for i in range(len(list_results))], weights=default_weight ,k=1)[0]
+                final_result.append(list_results[idx_draw][idx_row])
+                dict_count["model_"+str(idx_draw)] += 1
+
+        if opts.train == 'True' and (len(ref_data) == len(test_iter)):
+            ''' get weight of trained ensemble models'''
+            for model,val in dict_count.items():
+                dict_count[model] = val/len(list_results[0])
+
+        print("\n".join(final_result))
+
+    ''' Print out to file instead of using python ... > ... '''
+    original_stdout = sys.stdout
+    with open(opts.outputfile, 'w',encoding='utf-8') as f:
+
+        sys.stdout = f  # Change the standard output to the file we created.
+        print("\n".join(final_result))
+
+        sys.stdout = original_stdout
