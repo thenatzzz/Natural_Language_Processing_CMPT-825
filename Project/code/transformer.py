@@ -1,6 +1,6 @@
 from transformers import T5ForConditionalGeneration, T5Tokenizer
-# import torch
-# torch.cuda.is_available()
+import torch
+torch.cuda.is_available()
 # initialize the model architecture and weights
 model = T5ForConditionalGeneration.from_pretrained("t5-base")#.to('cuda:0')
 # initialize the model tokenizer
@@ -39,8 +39,8 @@ for article in [article1,article2,article3,article1,article2,article3]:
     # generate the summarization output
     outputs = model.generate(
         inputs,
-        # max_length=150,
-        max_length=60,
+        max_length=150,
+        # max_length=60,
         min_length=40,
         length_penalty=2.0,
         num_beams=4,
