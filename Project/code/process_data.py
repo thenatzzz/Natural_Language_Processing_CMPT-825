@@ -107,7 +107,7 @@ if __name__ == '__main__':
     # pickle.dump(stories, open('cnn_dataset.pkl', 'wb'))
 
     # load from file
-    stories = pickle.load(open('processedID_cnn_dataset.pkl', 'rb'))
+    stories = pickle.load(open('data/processedID_cnn_dataset.pkl', 'rb'))
     print('Loaded Stories %d' % len(stories))
     print(stories[2344])
     # i = 0
