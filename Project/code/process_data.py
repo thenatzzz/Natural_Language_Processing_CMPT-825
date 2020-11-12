@@ -109,7 +109,8 @@ if __name__ == '__main__':
     # load from file
     stories = pickle.load(open('data/processedID_cnn_dataset.pkl', 'rb'))
     print('Loaded Stories %d' % len(stories))
-    print(stories[23944])
+    print(stories[2])
+    print(len(stories[2]['story']))
     # i = 0
     # for example in stories:
         # example['id'] = 'id_'+str(i)
