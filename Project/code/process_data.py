@@ -133,7 +133,7 @@ if __name__ == '__main__':
 
     ''' load from file: original paper 287k (CNN+DM):
     after processing:(CNN+DM=311964 ) DM=219503, CNN=92461 '''
-    # stories = pickle.load(open('data_zip/processedID_dm_dataset.pkl', 'rb'))
+    stories = pickle.load(open('data_zip/processedID_dm_dataset.pkl', 'rb'))
     # stories = pickle.load(open('data_zip/processedID_cnn_dataset.pkl', 'rb'))
     # print('Loaded Stories %d' % len(stories))
 
@@ -165,13 +165,15 @@ if __name__ == '__main__':
         # story['story'] = remove_short_sen(story['story'])
 
     ''' check min length of sentence in our inputs and remove'''
-    # for story in tqdm(stories):
-        # try:
+    for story in tqdm(stories):
+        try:
             # if len(story['story'][0].split(' ')) < MIN_LENGTH:
-                # print(story['story'][0:2])
-                # print('0000000000')
-        # except:
-            # print(story['id'])
+            if len(story['highlights'][0].split(' ')) < 5:
+
+                print(story['highlights'][:])
+                print('0000000000')
+        except:
+            print(story['id'])
             # print(story['story'])
             # stories.remove(story)
 
