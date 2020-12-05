@@ -31,6 +31,8 @@ https://vault.sfu.ca/index.php/s/3CbZSqq0abUshGv
 
 1. Tensorflow 2.0
 2. Huggingface Transformers API
+3. Python ML Libraries eg. Pandas, Numpy
+4. Python 3.6 and above
 
 
 **In this project, we are using the following models:**
@@ -41,3 +43,9 @@ https://vault.sfu.ca/index.php/s/3CbZSqq0abUshGv
 4. T5-small model
 5. T5-base model
 6. T5-large model
+
+
+**Datasets:**
+
+- CNN and Dailymail datasets (one online source: https://cs.nyu.edu/~kcho/DMQA/)
+
